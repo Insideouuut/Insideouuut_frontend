@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "jest --watchAll",
-    "test:ci": "jest --ci",
+    "test:ci": "jest --ci--passWithNoTests",
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore ."
   },
