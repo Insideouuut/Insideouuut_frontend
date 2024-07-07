@@ -49,4 +49,4 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync S3 bucket
-        run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        run: aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
