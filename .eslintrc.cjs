@@ -28,6 +28,7 @@ module.exports = {
   ],
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
+    'react/prop-types': 'off', // 이 줄을 추가하여 'react/prop-types' 규칙을 비활성화
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
     'prettier/prettier': ['error'], // Prettier 규칙을 ESLint에서 오류로 표시
