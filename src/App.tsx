@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import './App.css';
-function App() {
+
+const App = () => {
   return (
     <>
       <h1 className="text-3xl font-bold underline">Hello world!</h1>
@@ -10,6 +11,6 @@ function App() {
       </Link>
     </>
   );
-}
+};
 
 export default App;

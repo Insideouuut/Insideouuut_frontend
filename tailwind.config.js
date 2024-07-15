@@ -16,6 +16,14 @@ module.exports = {
         '2xl': '1400px',
       },
     },
+    fontFamily: {
+      neoLight: ['NanumSquareNeoLight', 'sans-serif'],
+      neo: ['NanumSquareNeo', 'sans-serif'],
+      neoBold: ['NanumSquareNeoBold', 'sans-serif'],
+      neoExtraBold: ['NanumSquareNeoExtraBold', 'sans-serif'],
+      neoHeavy: ['NanumSquareNeoHeavy', 'sans-serif'],
+      neoVariable: ['NanumSquareNeoVariable', 'sans-serif'],
+    },
     extend: {
       colors: {
         border: 'hsl(var(--border))',
