@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 interface NotificationModalProps {
   toggleNotificationModal: () => void;
+  setHasNotifications: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface Notification {
@@ -13,6 +14,7 @@ interface Notification {
 
 const NotificationModal: React.FC<NotificationModalProps> = ({
   toggleNotificationModal,
+  setHasNotifications,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -59,6 +61,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       (notification) => notification.id !== id,
     );
     setNotifications(updatedNotifications);
+    if (updatedNotifications.length === 0) {
+      setHasNotifications(false);
+    }
   };
 
   const handleRemoveWithAnimation = (id: number) => {
