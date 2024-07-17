@@ -46,7 +46,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
     <div
       className="absolute"
       ref={modalRef}
-      style={{ top: `${coords.top}px`, left: `${coords.left-45}px` }}
+      style={{ top: `${coords.top}px`, left: `${coords.left - 45}px` }}
     >
       <div className="bg-white rounded-lg shadow-lg p-6 w-32">
         <ul className="space-y-3">

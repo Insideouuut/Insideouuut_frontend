@@ -34,7 +34,10 @@ const Header: React.FC<HeaderProps> = ({
           {isLoggedIn ? (
             <ul className="flex gap-10">
               <li>
-                <Link to="/location" className="flex font-neoExtraBold border-x-2 px-8 gap-1">
+                <Link
+                  to="/location"
+                  className="flex font-neoExtraBold border-x-2 px-8 gap-1"
+                >
                   내 위치
                   <img src={location} alt="Location" />
                 </Link>
@@ -69,12 +72,23 @@ const Header: React.FC<HeaderProps> = ({
         {isLoggedIn ? (
           <div className="flex items-center space-x-4 relative">
             <div>
-              <input type="text" placeholder="검색" className="text-sm border rounded px-5 py-2" />
-              <Button className="ml-2 hover:text-neutral-100 hover:bg-green-700">검색</Button>
+              <input
+                type="text"
+                placeholder="검색"
+                className="text-sm border rounded px-5 py-2"
+              />
+              <Button className="ml-2 hover:text-neutral-100 hover:bg-green-700">
+                검색
+              </Button>
             </div>
-            <button onClick={toggleNotificationModal} className="focus:outline-none">
+            <button
+              onClick={toggleNotificationModal}
+              className="focus:outline-none"
+            >
               <img
-                src={hasNotifications ? notification_active : notification_default}
+                src={
+                  hasNotifications ? notification_active : notification_default
+                }
                 alt="Notifications"
                 className="h-8 w-8 cursor-pointer"
               />
@@ -92,13 +106,19 @@ const Header: React.FC<HeaderProps> = ({
           <ul className="flex space-x-4">
             <li>
               <Link to="/">
-                <Button variant={'outline'} className="font-neoBold border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100">
+                <Button
+                  variant={'outline'}
+                  className="font-neoBold border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100"
+                >
                   회원가입 하러가기
                 </Button>
               </Link>
             </li>
             <li>
-              <Button onClick={handleLoginLogout} className="font-neoBold hover:text-neutral-100 hover:bg-green-700">
+              <Button
+                onClick={handleLoginLogout}
+                className="font-neoBold hover:text-neutral-100 hover:bg-green-700"
+              >
                 로그인 하러가기
               </Button>
             </li>
