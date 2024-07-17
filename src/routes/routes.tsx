@@ -1,3 +1,4 @@
+import Login from '@/pages/Auth/Login';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import Landing from '../pages/LandingPage/LandingPage';
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: '/setlocation',
     element: <SetLocation />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
   },
 ]);
 
