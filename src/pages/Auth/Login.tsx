@@ -1,9 +1,11 @@
+import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Lottie from 'lottie-react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -125,11 +127,12 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="hidden bg-muted lg:block">
-          <img
-            src="https://placehold.co/400"
-            alt="Placeholder"
-            className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        <div className="flex items-center justify-center">
+          <Lottie
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '80%' }}
           />
         </div>
       </form>

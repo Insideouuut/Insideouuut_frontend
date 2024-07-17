@@ -1,3 +1,4 @@
+import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Lottie from 'lottie-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -137,10 +139,11 @@ const Signup = () => {
         className="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
       >
         <div className="flex items-center justify-center">
-          <img
-            src="https://placehold.co/400"
-            alt="Placeholder"
-            className="object-cover"
+          <Lottie
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '80%' }}
           />
         </div>
 
