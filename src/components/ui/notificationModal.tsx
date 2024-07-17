@@ -84,7 +84,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     >
       <div className="bg-white rounded-lg shadow-lg p-5 w-[280px]">
         <h2 className="text-sm font-neoBold mb-5">알림 목록</h2>
-        <ul className="space-y-4 max-h-40 overflow-y-auto">
+        <ul className="space-y-4 max-h-40 overflow-y-auto scrollbar-hide">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <li
