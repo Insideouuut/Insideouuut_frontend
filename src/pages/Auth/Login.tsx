@@ -111,7 +111,7 @@ const Login = () => {
                 >
                   이메일/비밀번호 찾기
                 </Link>
-                <Link to="/signup-1" className="text-green-600 text-sm">
+                <Link to="/signup" className="text-green-600 text-sm">
                   회원가입
                 </Link>
               </div>
