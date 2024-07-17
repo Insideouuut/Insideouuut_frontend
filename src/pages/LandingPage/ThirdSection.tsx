@@ -1,7 +1,7 @@
-import tempImg from '@/components/icons/modongtmp.svg';
-import noteImg from '@/components/icons/note.svg';
-import reviewImg from '@/components/icons/review.svg';
-import studyImg from '@/components/icons/study.png';
+import tempImg from '@/assets/icons/modongtmp.svg';
+import noteImg from '@/assets/icons/note.svg';
+import reviewImg from '@/assets/icons/review.svg';
+import studyImg from '@/assets/icons/study.png';
 import React from 'react';
 
 const ThirdSection: React.FC = () => {
