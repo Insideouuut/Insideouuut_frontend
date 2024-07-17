@@ -26,7 +26,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         toggleProfileModal();
       }
     },
-    [toggleProfileModal]
+    [toggleProfileModal],
   );
 
   const handleMouseLeave = useCallback(() => {
