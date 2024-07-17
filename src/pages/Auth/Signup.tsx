@@ -123,7 +123,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="max-h-full">
+    <div className="max-h-screen">
       <Header
         toggleProfileModal={() => null}
         toggleNotificationModal={() => null}
@@ -134,18 +134,18 @@ const Signup = () => {
       />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
+        className="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
       >
-        <div className="hidden bg-muted lg:block">
+        <div className="flex items-center justify-center">
           <img
             src="https://placehold.co/400"
             alt="Placeholder"
-            className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+            className="object-cover"
           />
         </div>
 
         <div className="flex items-center justify-center py-12">
-          <div className="mx-auto flex flex-col gap-6 w-3/4 h-2/3">
+          <div className="mx-auto flex flex-col gap-6 w-3/4 h-full">
             {step === 1 && (
               <>
                 <div className="flex items-center gap-4">
@@ -168,7 +168,7 @@ const Signup = () => {
                       {...register('email')}
                     />
                     {errors.email && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.email.message}
                       </span>
                     )}
@@ -183,7 +183,7 @@ const Signup = () => {
                       {...register('password')}
                     />
                     {errors.password && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.password.message}
                       </span>
                     )}
@@ -194,7 +194,7 @@ const Signup = () => {
                       {...register('confirmPassword')}
                     />
                     {errors.confirmPassword && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.confirmPassword.message}
                       </span>
                     )}
@@ -238,7 +238,7 @@ const Signup = () => {
                       {...register('name')}
                     />
                     {errors.name && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.name.message}
                       </span>
                     )}
@@ -253,7 +253,7 @@ const Signup = () => {
                       {...register('nickname')}
                     />
                     {errors.nickname && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.nickname.message}
                       </span>
                     )}
@@ -268,7 +268,7 @@ const Signup = () => {
                       {...register('phoneNumber')}
                     />
                     {errors.phoneNumber && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.phoneNumber.message}
                       </span>
                     )}
@@ -283,7 +283,7 @@ const Signup = () => {
                       {...register('birth')}
                     />
                     {errors.birth && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.birth.message}
                       </span>
                     )}
@@ -356,7 +356,7 @@ const Signup = () => {
                       </div>
                     </div>
                     {errors.gender && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.gender.message}
                       </span>
                     )}
@@ -385,7 +385,7 @@ const Signup = () => {
                       </ToggleGroupItem>
                     </ToggleGroup>
                     {errors.interests && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.interests.message}
                       </span>
                     )}
@@ -400,7 +400,7 @@ const Signup = () => {
                       {...register('location')}
                     />
                     {errors.location && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.location.message}
                       </span>
                     )}
@@ -441,7 +441,7 @@ const Signup = () => {
                       </SelectContent>
                     </Select>
                     {errors.mbti && (
-                      <span className="text-red-500">
+                      <span className="text-red-500 text-sm">
                         {errors.mbti.message}
                       </span>
                     )}
