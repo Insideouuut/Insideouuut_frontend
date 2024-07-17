@@ -19,14 +19,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         toggleProfileModal();
       }
     },
-    [toggleProfileModal],
+    [toggleProfileModal]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -45,11 +42,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   }, [handleClickOutside, handleMouseLeave]);
 
   return (
-    <div
-      className="absolute"
-      ref={modalRef}
-      style={{ top: `${coords.top}px`, left: `${coords.left - 45}px` }}
-    >
+    <div className="absolute" ref={modalRef} style={{ top: `${coords.top}px`, left: `${coords.left-45}px` }}>
       <div className="bg-white rounded-lg shadow-lg p-6 w-32">
         <ul className="space-y-3">
           <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">
