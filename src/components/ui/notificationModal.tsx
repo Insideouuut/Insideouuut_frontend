@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 interface NotificationModalProps {
   toggleNotificationModal: () => void;
   setHasNotifications: React.Dispatch<React.SetStateAction<boolean>>;
+  coords: { top: number; left: number };
 }
 
 interface Notification {
@@ -15,17 +16,14 @@ interface Notification {
 const NotificationModal: React.FC<NotificationModalProps> = ({
   toggleNotificationModal,
   setHasNotifications,
+  coords,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, message: '새로운 모임이 생성되었습니다.', time: '2시간 전' },
     { id: 2, message: '동아리 가입 신청이 승인되었습니다.', time: '1일 전' },
     { id: 3, message: '모임 일정이 업데이트되었습니다.', time: '3일 전' },
-    {
-      id: 4,
-      message: '모임 참가자가 새로운 메시지를 보냈습니다.',
-      time: '4시간 전',
-    },
+    { id: 4, message: '모임 참가자가 새로운 메시지를 보냈습니다.', time: '4시간 전' },
     { id: 5, message: '새로운 동아리가 생성되었습니다.', time: '2일 전' },
     { id: 6, message: '모임 일정이 변경되었습니다.', time: '5일 전' },
     { id: 7, message: '동아리 모임이 곧 시작됩니다.', time: '3일 전' },
@@ -75,7 +73,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   };
 
   return (
-    <div className="absolute top-16 right-2" ref={modalRef}>
+    <div
+      className="absolute"
+      ref={modalRef}
+      style={{ top: `${coords.top}px`, left: `${coords.left-115}px` }}
+    >
       <div className="bg-white rounded-lg shadow-lg p-5 w-[280px]">
         <h2 className="text-sm font-neoBold mb-5">알림 목록</h2>
         <ul className="space-y-4 max-h-40 overflow-y-auto">
