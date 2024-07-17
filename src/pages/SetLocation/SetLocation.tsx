@@ -1,8 +1,8 @@
 import animationData from '@/assets/lottie/setlocation.json';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import { Button } from '@/components/ui/button';
-import Footer from '@/components/ui/Footer';
-import Header from '@/components/ui/Header';
 import {
   HoverCard,
   HoverCardContent,

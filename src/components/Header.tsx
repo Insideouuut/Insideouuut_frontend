@@ -1,8 +1,8 @@
-import location from '@/components/icons/location.svg';
-import logo from '@/components/icons/logo.png';
-import notification_active from '@/components/icons/notification_active.svg';
-import notification_default from '@/components/icons/notification_default.svg';
-import profileImage from '@/components/icons/profile.webp';
+import location from '@/assets/icons/location.svg';
+import logo from '@/assets/icons/logo.png';
+import notification_active from '@/assets/icons/notification_active.svg';
+import notification_default from '@/assets/icons/notification_default.svg';
+import profileImage from '@/assets/icons/profile.webp';
 import { Button } from '@/components/ui/button';
 import React, { RefObject } from 'react';
 import { Link } from 'react-router-dom';
