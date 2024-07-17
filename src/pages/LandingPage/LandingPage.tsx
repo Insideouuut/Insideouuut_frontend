@@ -13,8 +13,20 @@ const LandingPage: React.FC = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [profileCoords, setProfileCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
-  const [notificationCoords, setNotificationCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [profileCoords, setProfileCoords] = useState<{
+    top: number;
+    left: number;
+  }>({
+    top: 0,
+    left: 0,
+  });
+  const [notificationCoords, setNotificationCoords] = useState<{
+    top: number;
+    left: number;
+  }>({
+    top: 0,
+    left: 0,
+  });
   const profileRef = useRef<HTMLImageElement>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
