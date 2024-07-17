@@ -1,8 +1,8 @@
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Footer from '../../components/ui/Footer';
-import Header from '../../components/ui/Header';
 import Infomation from './Infomation';
 import SecondSection from './SecondSection';
 import SocialSection from './SocialSection';

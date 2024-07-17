@@ -1,4 +1,4 @@
-import talkImg from '@/components/icons/talk.png';
+import talkImg from '@/assets/icons/talk.png';
 import { Button } from '@/components/ui/button';
 import React from 'react';
 //수정

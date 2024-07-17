@@ -1,4 +1,4 @@
-import runImg from '@/components/icons/run.png';
+import runImg from '@/assets/icons/run.png';
 import { Button } from '@/components/ui/button';
 import React from 'react';
 
