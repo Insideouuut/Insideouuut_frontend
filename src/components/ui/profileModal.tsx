@@ -2,27 +2,31 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 interface ProfileModalProps {
-  toggleProfileModal: (e?: React.MouseEvent) => void;
+  toggleProfileModal: () => void;
   handleLogout: () => void;
-  profileRef: React.RefObject<HTMLImageElement>;
-  coords: { top: number; left: number };
+  coords: {
+    top: number;
+    left: number;
+  };
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({
   toggleProfileModal,
   handleLogout,
-  profileRef,
   coords,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         toggleProfileModal();
       }
     },
-    [toggleProfileModal]
+    [toggleProfileModal],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -41,7 +45,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   }, [handleClickOutside, handleMouseLeave]);
 
   return (
-    <div className="absolute" ref={modalRef} style={{ top: `${coords.top}px`, left: `${coords.left-40}px` }}>
+    <div
+      className="absolute"
+      ref={modalRef}
+      style={{ top: `${coords.top}px`, left: `${coords.left - 45}px` }}
+    >
       <div className="bg-white rounded-lg shadow-lg p-6 w-32">
         <ul className="space-y-3">
           <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">
@@ -51,7 +59,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
           </li>
           <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">
             <Link to="/participation-list" onClick={toggleProfileModal}>
-              모임/동아리 참여 목록
+              <p>모임/동아리</p>참여 목록
             </Link>
           </li>
           <div

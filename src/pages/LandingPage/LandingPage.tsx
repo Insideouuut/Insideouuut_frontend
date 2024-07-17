@@ -63,7 +63,6 @@ const LandingPage: React.FC = () => {
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
           handleLogout={handleLogout}
-          profileRef={profileRef}
           coords={profileCoords}
         />
       )}

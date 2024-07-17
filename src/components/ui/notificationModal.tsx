@@ -4,7 +4,10 @@ import React, { useEffect, useRef, useState } from 'react';
 interface NotificationModalProps {
   toggleNotificationModal: () => void;
   setHasNotifications: React.Dispatch<React.SetStateAction<boolean>>;
-  coords: { top: number; left: number };
+  coords: {
+    top: number;
+    left: number;
+  };
 }
 
 interface Notification {
@@ -23,7 +26,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     { id: 1, message: '새로운 모임이 생성되었습니다.', time: '2시간 전' },
     { id: 2, message: '동아리 가입 신청이 승인되었습니다.', time: '1일 전' },
     { id: 3, message: '모임 일정이 업데이트되었습니다.', time: '3일 전' },
-    { id: 4, message: '모임 참가자가 새로운 메시지를 보냈습니다.', time: '4시간 전' },
+    {
+      id: 4,
+      message: '모임 참가자가 새로운 메시지를 보냈습니다.',
+      time: '4시간 전',
+    },
     { id: 5, message: '새로운 동아리가 생성되었습니다.', time: '2일 전' },
     { id: 6, message: '모임 일정이 변경되었습니다.', time: '5일 전' },
     { id: 7, message: '동아리 모임이 곧 시작됩니다.', time: '3일 전' },
