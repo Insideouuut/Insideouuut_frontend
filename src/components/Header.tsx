@@ -12,7 +12,7 @@ interface HeaderProps {
   toggleNotificationModal: (e: React.MouseEvent) => void;
   isLoggedIn: boolean;
   handleLoginLogout: () => void;
-  profileRef: RefObject<HTMLImageElement>;
+  profileRef: RefObject<HTMLImageElement> | null;
   hasNotifications: boolean;
 }
 
@@ -105,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({
         ) : (
           <ul className="flex space-x-4">
             <li>
-              <Link to="/">
+              <Link to="/signup">
                 <Button
                   variant={'outline'}
                   className="font-neoBold border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100"
@@ -115,12 +115,14 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             </li>
             <li>
-              <Button
-                onClick={handleLoginLogout}
-                className="font-neoBold hover:text-neutral-100 hover:bg-green-700"
-              >
-                로그인 하러가기
-              </Button>
+              <Link to="/login">
+                <Button
+                  onClick={handleLoginLogout}
+                  className="font-neoBold hover:text-neutral-100 hover:bg-green-700"
+                >
+                  로그인 하러가기
+                </Button>
+              </Link>
             </li>
           </ul>
         )}
