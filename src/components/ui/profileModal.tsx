@@ -4,12 +4,16 @@ import { Link } from 'react-router-dom';
 interface ProfileModalProps {
   toggleProfileModal: () => void;
   handleLogout: () => void;
-  profileRef: React.RefObject<HTMLImageElement>;
+  coords: {
+    top: number;
+    left: number;
+  };
 }
 
 const ProfileModal: React.FC<ProfileModalProps> = ({
   toggleProfileModal,
   handleLogout,
+  coords,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +45,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   }, [handleClickOutside, handleMouseLeave]);
 
   return (
-    <div className="absolute top-16 right-2" ref={modalRef}>
+    <div
+      className="absolute"
+      ref={modalRef}
+      style={{ top: `${coords.top}px`, left: `${coords.left - 45}px` }}
+    >
       <div className="bg-white rounded-lg shadow-lg p-6 w-32">
         <ul className="space-y-3">
           <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">

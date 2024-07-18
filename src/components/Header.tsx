@@ -8,8 +8,8 @@ import React, { RefObject } from 'react';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
-  toggleProfileModal: () => void;
-  toggleNotificationModal: () => void;
+  toggleProfileModal: (e: React.MouseEvent) => void;
+  toggleNotificationModal: (e: React.MouseEvent) => void;
   isLoggedIn: boolean;
   handleLoginLogout: () => void;
   profileRef: RefObject<HTMLImageElement> | null;
@@ -43,17 +43,17 @@ const Header: React.FC<HeaderProps> = ({
                 </Link>
               </li>
               <li>
-                <Link to="/create-group" className="font-neoExtraBold ">
+                <Link to="/create-group" className="font-neoExtraBold">
                   모임 생성
                 </Link>
               </li>
               <li>
-                <Link to="/create-club" className="font-neoExtraBold ">
+                <Link to="/create-club" className="font-neoExtraBold">
                   동아리 생성
                 </Link>
               </li>
               <li>
-                <Link to="/chat" className="font-neoExtraBold ">
+                <Link to="/chat" className="font-neoExtraBold">
                   채팅
                 </Link>
               </li>

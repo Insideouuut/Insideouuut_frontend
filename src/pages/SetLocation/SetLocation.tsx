@@ -20,14 +20,30 @@ const SetLocation: React.FC = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
+  const [profileCoords, setProfileCoords] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+  const [notificationCoords, setNotificationCoords] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
   const [location, setLocation] = useState(''); // 위치 상태
 
-  const toggleProfileModal = () => {
+  const toggleProfileModal = (e?: React.MouseEvent) => {
+    if (e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setProfileCoords({ top: rect.bottom, left: rect.left });
+    }
     setIsProfileModalOpen(!isProfileModalOpen);
   };
 
-  const toggleNotificationModal = () => {
+  const toggleNotificationModal = (e?: React.MouseEvent) => {
+    if (e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setNotificationCoords({ top: rect.bottom, left: rect.left });
+    }
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
@@ -95,13 +111,14 @@ const SetLocation: React.FC = () => {
           <ProfileModal
             toggleProfileModal={toggleProfileModal}
             handleLogout={handleLogout}
-            profileRef={profileRef}
+            coords={profileCoords}
           />
         )}
         {isNotificationModalOpen && (
           <NotificationModal
             toggleNotificationModal={toggleNotificationModal}
             setHasNotifications={setHasNotifications}
+            coords={notificationCoords}
           />
         )}
       </div>
