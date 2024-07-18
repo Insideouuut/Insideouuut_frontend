@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
 
 const ClubRegistration: React.FC = () => {
   const [isAgreed, setIsAgreed] = useState(false);
@@ -7,7 +7,7 @@ const ClubRegistration: React.FC = () => {
   const [formData, setFormData] = useState<{ [key: string]: string }>({
     mbti: '',
     age: '',
-    participation: ''
+    participation: '',
   });
 
   // 예시 데이터
@@ -19,7 +19,10 @@ const ClubRegistration: React.FC = () => {
   ];
 
   const questions = [
-    { id: 'mbti', label: '1. MBTI (잘 모르면 외향형, 내향형 정도로 작성해주세요.)' },
+    {
+      id: 'mbti',
+      label: '1. MBTI (잘 모르면 외향형, 내향형 정도로 작성해주세요.)',
+    },
     { id: 'age', label: '2. 나이 (만 나이)' },
     { id: 'participation', label: '3. 가입 시 잘 참여하겠습니까?' },
   ];
@@ -28,12 +31,16 @@ const ClubRegistration: React.FC = () => {
     const { id, value } = e.target;
     setFormData({
       ...formData,
-      [id]: value
+      [id]: value,
     });
   };
 
   const isFormValid = () => {
-    return isAgreed && isInfoAgreed && Object.values(formData).every(field => field.trim() !== '');
+    return (
+      isAgreed &&
+      isInfoAgreed &&
+      Object.values(formData).every((field) => field.trim() !== '')
+    );
   };
 
   return (
@@ -63,7 +70,10 @@ const ClubRegistration: React.FC = () => {
         <div className="space-y-4 bg-white p-8 border-2 border-[#B4E3BF] rounded-lg">
           {questions.map((question) => (
             <div key={question.id}>
-              <label htmlFor={question.id} className="block mb-2 font-neoBold text-sm">
+              <label
+                htmlFor={question.id}
+                className="block mb-2 font-neoBold text-sm"
+              >
                 {question.label}
               </label>
               <input
