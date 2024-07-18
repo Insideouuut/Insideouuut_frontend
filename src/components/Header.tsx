@@ -12,7 +12,7 @@ interface HeaderProps {
   toggleNotificationModal: () => void;
   isLoggedIn: boolean;
   handleLoginLogout: () => void;
-  profileRef: RefObject<HTMLImageElement>;
+  profileRef: RefObject<HTMLImageElement> | null;
   hasNotifications: boolean;
 }
 
