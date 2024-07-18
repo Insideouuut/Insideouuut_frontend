@@ -29,6 +29,7 @@ const SetLocation: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
+  const [location, setLocation] = useState(''); // 위치 상태
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -51,6 +52,12 @@ const SetLocation: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
+  // 위치 데이터를 업데이트하는 함수
+  const handleLocationSelect = (newLocation: string) => {
+    setLocation(newLocation);
+  };
+
+
   return (
     <div>
       <Header
@@ -70,12 +77,15 @@ const SetLocation: React.FC = () => {
         />
         <main className="flex-grow container mx-auto py-4 px-4 flex flex-col items-center">
           <section className="bg-white p-8 w-full mt-8 rounded shadow-md flex flex-col items-center">
-            <MapComponent />
+            <MapComponent onLocationSelect={handleLocationSelect} />
             <div className="flex space-x-4 p-8 items-center justify-center">
-              <Map className="text-primary" />
+              <Map className="text-primary " />
               <p className="font-neoBold whitespace-nowrap">우리 동네</p>
-              <Input className="w-auto" />
-              <Button className="font-neoBold">현재 위치로 불러오기</Button>
+              <Input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="시, 구, 동 입력"
+              />
             </div>
 
             <HoverCard>
