@@ -30,6 +30,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        'section-green': '#B4E3BF',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

@@ -1,10 +1,12 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
+import Main from '@/pages/Main/Main';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -30,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/main',
+    element: <Main />,
   },
 ]);
 
