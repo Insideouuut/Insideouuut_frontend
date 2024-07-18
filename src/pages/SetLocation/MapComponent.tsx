@@ -1,4 +1,3 @@
-// MapComponent.tsx
 import React, { useEffect } from 'react';
 
 interface MapComponentProps {
