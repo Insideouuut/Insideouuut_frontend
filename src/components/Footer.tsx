@@ -50,7 +50,9 @@ const Footer: React.FC = () => {
           </li>
         </ul>
       </div>
-      <p className="text-center mt-10">&copy; 2024 ModongPage. All rights reserved.</p>
+      <p className="text-center mt-10">
+        &copy; 2024 ModongPage. All rights reserved.
+      </p>
     </footer>
   );
 };
