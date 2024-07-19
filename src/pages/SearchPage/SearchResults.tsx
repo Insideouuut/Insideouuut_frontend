@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import GroupCard from "../../components/GroupCard";
-import studyImg from '@/assets/icons/study.png';
 import gameImg from '@/assets/icons/game.png';
 import runImg from '@/assets/icons/run.png';
+import studyImg from '@/assets/icons/study.png';
+import React, { useState } from 'react';
+import GroupCard from '../../components/GroupCard';
 
 interface SearchResultsProps {
   activeTopTab: string;
@@ -148,15 +148,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       date: '7월 30일 오후 7시',
       location: '종로구',
       participants: '(6/8)',
-    }
+    },
   ];
 
   const fullData = [...Array(3).fill(exampleData)].flat();
 
-  const filteredData = fullData.filter(item => 
-    (activeTopTab === '전체' || item.clubTypes.includes(activeTopTab)) &&
-    (activeBottomTab === '전체' || item.meetingTypes.includes(activeBottomTab)) &&
-    (item.title.includes(searchQuery) || item.subtitle.includes(searchQuery))
+  const filteredData = fullData.filter(
+    (item) =>
+      (activeTopTab === '전체' || item.clubTypes.includes(activeTopTab)) &&
+      (activeBottomTab === '전체' ||
+        item.meetingTypes.includes(activeBottomTab)) &&
+      (item.title.includes(searchQuery) || item.subtitle.includes(searchQuery)),
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -222,8 +224,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               }}
               className={`mx-1 px-2 py-1 rounded ${
                 currentPage === index + 1
-                  ? "bg-green-600 text-white"
-                  : "hover:bg-stone-200"
+                  ? 'bg-green-600 text-white'
+                  : 'hover:bg-stone-200'
               }`}
             >
               {index + 1}

@@ -2,9 +2,8 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import Search from './search';
-import SearchResults from './SearchResults';
 import React, { useRef, useState } from 'react';
+import Search from './search';
 
 const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -58,7 +57,7 @@ const SearchPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Search/>
+      <Search />
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal

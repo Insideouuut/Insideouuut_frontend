@@ -1,6 +1,6 @@
-import React from 'react';
 import locationImg from '@/assets/icons/location.svg';
 import peopleImg from '@/assets/icons/people.png';
+import React from 'react';
 
 interface GroupCardProps {
   clubTypes: string[];
@@ -23,7 +23,9 @@ const GroupCard: React.FC<GroupCardProps> = ({
   location,
   participants,
 }) => {
-  const participantRatio = parseInt(participants.split('/')[0].replace('(', '')) / parseInt(participants.split('/')[1].replace(')', ''));
+  const participantRatio =
+    parseInt(participants.split('/')[0].replace('(', '')) /
+    parseInt(participants.split('/')[1].replace(')', ''));
   const isAlmostFull = participantRatio >= 0.8;
 
   const getColorByClubType = (type: string) => {
@@ -52,7 +54,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
   return (
     <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[160px]">
-      <div className='w-[140px] h-[135px]'>
+      <div className="w-[140px] h-[135px]">
         <img
           src={imageSrc}
           alt={title}
@@ -89,8 +91,12 @@ const GroupCard: React.FC<GroupCardProps> = ({
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
           <p>{date}</p>
-          <div className='flex mt-1 items-center'>
-            <img src={locationImg} alt="Location Icon" className="w-[13px] h-[13px] mr-1" />
+          <div className="flex mt-1 items-center">
+            <img
+              src={locationImg}
+              alt="Location Icon"
+              className="w-[13px] h-[13px] mr-1"
+            />
             <p className="mr-4">{location}</p>
             <img src={peopleImg} alt="People Icon" className="w-4 h-4 mr-1" />
             <p>{participants}</p>
