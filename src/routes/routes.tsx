@@ -5,6 +5,7 @@ import App from '../App';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+import SearchPage from '../pages/SearchPage/SearchPage'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     path: '/signup',
     element: <Signup />,
   },
+  {
+    path: '/search',
+    element: <SearchPage />,
+  }
 ]);
 
 const Routes = () => {
