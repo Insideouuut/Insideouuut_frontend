@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
+import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/search',
+    element: <SearchPage />,
   },
 ]);
 
