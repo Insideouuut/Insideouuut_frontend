@@ -1,5 +1,6 @@
-import runImg from '@/assets/icons/run.png';
+import animationData from '@/assets/lottie/communication.json';
 import { Button } from '@/components/ui/button';
+import Lottie from 'lottie-react';
 import React from 'react';
 
 const Infomation: React.FC = () => {
@@ -28,7 +29,12 @@ const Infomation: React.FC = () => {
           <Button className="font-neoBold">모임 참여하기 &gt;</Button>
         </div>
         <div>
-          <img src={runImg} alt="hero-img" className="w-[500px] h-[480px]" />
+          <Lottie
+              animationData={animationData}
+              loop
+              autoplay
+              style={{ width: '600px', height: '480px',marginBottom:'50px' }}
+            />
         </div>
       </div>
     </section>
