@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import BottomImg from './BottomImg.png';
+import BottomImg from './BottomBG.png';
 import ModongCard from './ModongCard';
 
 interface Info {
