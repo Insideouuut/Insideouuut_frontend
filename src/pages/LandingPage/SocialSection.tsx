@@ -1,7 +1,7 @@
-import talkImg from '@/components/icons/talk.png';
+import talkImg from '@/assets/icons/talk.png';
 import { Button } from '@/components/ui/button';
 import React from 'react';
-
+//수정
 const SocialSection: React.FC = () => {
   return (
     <section className="flex bg-gray-50 h-[620px] py-20">

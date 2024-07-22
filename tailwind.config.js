@@ -13,7 +13,11 @@ module.exports = {
       center: true,
       padding: '2rem',
       screens: {
-        '2xl': '1400px',
+        '2xl': '1080px',
+        xl: '1080px', // xl 크기일 때도 1080px로 설정
+        lg: '1080px', // lg 크기일 때도 1080px로 설정
+        md: '1080px', // md 크기일 때도 1080px로 설정
+        sm: '100%', // sm 크기일 때는 100%로 설정
       },
     },
     fontFamily: {
@@ -86,5 +90,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('tailwind-scrollbar-hide')],
 };

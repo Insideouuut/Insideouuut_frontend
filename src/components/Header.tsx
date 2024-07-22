@@ -1,18 +1,18 @@
-import location from '@/components/icons/location.svg';
-import logo from '@/components/icons/logo.png';
-import notification_active from '@/components/icons/notification_active.svg';
-import notification_default from '@/components/icons/notification_default.svg';
-import profileImage from '@/components/icons/profile.webp';
+import location from '@/assets/icons/location.svg';
+import logo from '@/assets/icons/logo.png';
+import notification_active from '@/assets/icons/notification_active.svg';
+import notification_default from '@/assets/icons/notification_default.svg';
+import profileImage from '@/assets/icons/profile.webp';
 import { Button } from '@/components/ui/button';
 import React, { RefObject } from 'react';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
-  toggleProfileModal: () => void;
-  toggleNotificationModal: () => void;
+  toggleProfileModal: (e: React.MouseEvent) => void;
+  toggleNotificationModal: (e: React.MouseEvent) => void;
   isLoggedIn: boolean;
   handleLoginLogout: () => void;
-  profileRef: RefObject<HTMLImageElement>;
+  profileRef: RefObject<HTMLImageElement> | null;
   hasNotifications: boolean;
 }
 
@@ -43,17 +43,17 @@ const Header: React.FC<HeaderProps> = ({
                 </Link>
               </li>
               <li>
-                <Link to="/create-group" className="font-neoExtraBold ">
+                <Link to="/create-group" className="font-neoExtraBold">
                   모임 생성
                 </Link>
               </li>
               <li>
-                <Link to="/create-club" className="font-neoExtraBold ">
+                <Link to="/create-club" className="font-neoExtraBold">
                   동아리 생성
                 </Link>
               </li>
               <li>
-                <Link to="/chat" className="font-neoExtraBold ">
+                <Link to="/chat" className="font-neoExtraBold">
                   채팅
                 </Link>
               </li>
@@ -105,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({
         ) : (
           <ul className="flex space-x-4">
             <li>
-              <Link to="/">
+              <Link to="/signup">
                 <Button
                   variant={'outline'}
                   className="font-neoBold border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100"
@@ -115,12 +115,14 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             </li>
             <li>
-              <Button
-                onClick={handleLoginLogout}
-                className="font-neoBold hover:text-neutral-100 hover:bg-green-700"
-              >
-                로그인 하러가기
-              </Button>
+              <Link to="/login">
+                <Button
+                  onClick={handleLoginLogout}
+                  className="font-neoBold hover:text-neutral-100 hover:bg-green-700"
+                >
+                  로그인 하러가기
+                </Button>
+              </Link>
             </li>
           </ul>
         )}

@@ -1,4 +1,4 @@
-import gameImg from '@/components/icons/game.png';
+import gameImg from '@/assets/icons/game.png';
 import { Button } from '@/components/ui/button';
 import React from 'react';
 
