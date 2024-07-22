@@ -1,6 +1,4 @@
-import gameImg from '@/assets/icons/game.png';
-import runImg from '@/assets/icons/run.png';
-import studyImg from '@/assets/icons/study.png';
+import { dummyData } from '@/components/dummyData';
 import React, { useState } from 'react';
 import GroupCard from '../../components/GroupCard';
 
@@ -18,147 +16,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  const exampleData = [
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['운동'],
-      imageSrc: runImg,
-      title: '한강 러닝 크루 1',
-      subtitle: '20~30대 러닝크루입니다.',
-      date: '7월 19일 오후 5시',
-      location: '광진구',
-      participants: '(7/8)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: studyImg,
-      title: '독서 모임 1',
-      subtitle: '매주 독서 토론을 합니다.',
-      date: '7월 20일 오후 3시',
-      location: '강남구',
-      participants: '(5/6)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: gameImg,
-      title: '게임 동아리 1',
-      subtitle: '다양한 게임을 함께 즐겨요.',
-      date: '7월 21일 오후 4시',
-      location: '서초구',
-      participants: '(10/10)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['운동'],
-      imageSrc: runImg,
-      title: '조깅 모임 1',
-      subtitle: '조깅을 통해 건강을 챙겨요.',
-      date: '7월 22일 오전 6시',
-      location: '송파구',
-      participants: '(8/10)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['스터디'],
-      imageSrc: studyImg,
-      title: '스터디 동아리 1',
-      subtitle: '함께 공부하며 지식을 나눠요.',
-      date: '7월 23일 오후 2시',
-      location: '용산구',
-      participants: '(3/5)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: gameImg,
-      title: '보드게임 모임 1',
-      subtitle: '보드게임을 함께 즐겨요.',
-      date: '7월 24일 오후 7시',
-      location: '종로구',
-      participants: '(6/8)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['운동'],
-      imageSrc: runImg,
-      title: '한강 러닝 크루 2',
-      subtitle: '20~30대 러닝크루입니다.',
-      date: '7월 25일 오후 5시',
-      location: '광진구',
-      participants: '(7/8)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: studyImg,
-      title: '독서 모임 2',
-      subtitle: '매주 독서 토론을 합니다.',
-      date: '7월 26일 오후 3시',
-      location: '강남구',
-      participants: '(5/6)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: gameImg,
-      title: '게임 동아리 2',
-      subtitle: '다양한 게임을 함께 즐겨요.',
-      date: '7월 27일 오후 4시',
-      location: '서초구',
-      participants: '(10/10)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['운동'],
-      imageSrc: runImg,
-      title: '조깅 모임 2',
-      subtitle: '조깅을 통해 건강을 챙겨요.',
-      date: '7월 28일 오전 6시',
-      location: '송파구',
-      participants: '(8/10)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['스터디'],
-      imageSrc: studyImg,
-      title: '스터디 동아리 2',
-      subtitle: '함께 공부하며 지식을 나눠요.',
-      date: '7월 29일 오후 2시',
-      location: '용산구',
-      participants: '(3/5)',
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: gameImg,
-      title: '보드게임 모임 2',
-      subtitle: '보드게임을 함께 즐겨요.',
-      date: '7월 30일 오후 7시',
-      location: '종로구',
-      participants: '(6/8)',
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['사교/취미'],
-      imageSrc: gameImg,
-      title: '보드게임 할사람',
-      subtitle: '보드게임을 함께 즐겨요.',
-      date: '7월 30일 오후 7시',
-      location: '종로구',
-      participants: '(6/8)',
-    },
-  ];
-
-  const fullData = [...Array(3).fill(exampleData)].flat();
-
-  const filteredData = fullData.filter(
+  const filteredData = dummyData.filter(
     (item) =>
       (activeTopTab === '전체' || item.clubTypes.includes(activeTopTab)) &&
       (activeBottomTab === '전체' ||
         item.meetingTypes.includes(activeBottomTab)) &&
-      (item.title.includes(searchQuery) || item.subtitle.includes(searchQuery)),
+      (item.title.includes(searchQuery) ||
+        item.description.includes(searchQuery)),
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -205,12 +69,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 key={index}
                 clubTypes={item.clubTypes}
                 meetingTypes={item.meetingTypes}
-                imageSrc={item.imageSrc}
+                imageUrl={item.imageUrl}
                 title={item.title}
-                subtitle={item.subtitle}
+                description={item.description}
                 date={item.date}
                 location={item.location}
-                participants={item.participants}
+                members={item.members}
               />
             ))}
           </div>
