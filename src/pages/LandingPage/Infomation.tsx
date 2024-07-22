@@ -1,7 +1,9 @@
-import animationData from '@/assets/lottie/communication.json';
-import { Button } from '@/components/ui/button';
-import Lottie from 'lottie-react';
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import animationData from '@/assets/lottie/communication.json';
+import Lottie from 'lottie-react';
+import { Link } from'react-router-dom';
+
 
 const Infomation: React.FC = () => {
   return (
@@ -26,7 +28,7 @@ const Infomation: React.FC = () => {
             </p>
             <p>모동과 함께 친구를 만들어가요.</p>
           </p>
-          <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+          <Link to ='/login'><Button className="font-neoBold">모임 참여하기 &gt;</Button></Link>
         </div>
         <div>
           <Lottie
