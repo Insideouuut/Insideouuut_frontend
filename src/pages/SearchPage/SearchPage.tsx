@@ -1,13 +1,11 @@
-import runImg from '@/assets/icons/run.png';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import ClubRegistration from './ClubRegistration';
+import Search from './search';
 
-const GroupJoinPage: React.FC = () => {
+const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -59,13 +57,7 @@ const GroupJoinPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <HeroSection
-        backgroundColor="bg-primary"
-        title="모임 / 동아리 가입하기"
-        subtitle="우리의 다양한 모임과 동아리에서 새로운 취미를 발견하고,'기존의 취미를 더욱 즐겁게 누려보세요.'"
-        imageData={{ src: runImg, alt: 'Run Icon' }}
-      />
-      <ClubRegistration />
+      <Search />
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
@@ -85,4 +77,4 @@ const GroupJoinPage: React.FC = () => {
   );
 };
 
-export default GroupJoinPage;
+export default SearchPage;
