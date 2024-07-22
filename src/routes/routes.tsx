@@ -1,5 +1,7 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
+import CreateClub from '@/pages/Create/CreateClub';
+import CreateMeeting from '@/pages/Create/CreateMeeting';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import Landing from '../pages/LandingPage/LandingPage';
@@ -26,6 +28,14 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/create-club',
+    element: <CreateClub />,
+  },
+  {
+    path: '/create-meeting',
+    element: <CreateMeeting />,
   },
 ]);
 
