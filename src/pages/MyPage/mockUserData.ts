@@ -1,5 +1,5 @@
 export const mockUserData = {
-  imageUrl: 'https://via.placeholder.com/200',
+  imageUrl: 'https://via.placeholder.com/100',
   email: 'mock@example.com',
   name: '김모동',
   nickname: '김모동모동',
