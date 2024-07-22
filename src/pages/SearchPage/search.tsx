@@ -15,6 +15,7 @@ const Search: React.FC = () => {
   const topTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const bottomTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>('');
 
   useEffect(() => {
     const activeTab = topTabRefs.current[topTabs.indexOf(activeTopTab)];
@@ -36,6 +37,12 @@ const Search: React.FC = () => {
       });
     }
   }, [activeBottomTab]);
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSubmittedSearchQuery(searchQuery);
+    }
+  };
 
   return (
     <section className="w-full pt-8 flex-col bg-green-600 flex justify-center">
@@ -96,8 +103,12 @@ const Search: React.FC = () => {
               placeholder="검색어를 입력하세요"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
             />
-            <button className="ml-2 text-green-600">
+            <button
+              className="ml-2 text-green-600"
+              onClick={() => setSubmittedSearchQuery(searchQuery)}
+            >
               <img src={search} alt="search" className="w-[23px]" />
             </button>
           </div>
@@ -106,7 +117,7 @@ const Search: React.FC = () => {
       <SearchResults
         activeTopTab={activeTopTab}
         activeBottomTab={activeBottomTab}
-        searchQuery={searchQuery}
+        searchQuery={submittedSearchQuery}
       />
     </section>
   );
