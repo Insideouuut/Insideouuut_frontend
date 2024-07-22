@@ -19,7 +19,7 @@ const ModongCard: React.FC<ModongCardProps> = ({
   imageUrl,
   title,
   description,
-  createdAt,
+
   members,
 }) => {
   const isAlmostFull = members.current / members.total >= 0.8;
