@@ -40,14 +40,12 @@ const router = createBrowserRouter([
     element: <Signup />,
   },
   {
-
     path: '/main',
     element: <Main />,
-  }
+  },
   {
     path: '/search',
     element: <SearchPage />,
-
   },
   {
     path: '/create-club',

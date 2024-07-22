@@ -1,4 +1,3 @@
-
 import { MapPin, Users } from 'lucide-react';
 
 import locationImg from '@/assets/icons/location.svg';
@@ -60,7 +59,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   return (
     <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[160px]">
       <div className="w-[140px] h-[135px]">
-       <img
+        <img
           src={imageUrl}
           alt={title}
           className="w-full h-full rounded-lg object-cover"
@@ -98,7 +97,6 @@ const GroupCard: React.FC<GroupCardProps> = ({
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
           <p>{date}</p>
           <div className="flex mt-1 items-center">
-
             <MapPin />
             <p className="mr-4">{location}</p>
             <Users />
@@ -112,7 +110,6 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <p className="mr-4">{location}</p>
             <img src={peopleImg} alt="People Icon" className="w-4 h-4 mr-1" />
             <p>{participants}</p>
-
           </div>
         </div>
       </div>
