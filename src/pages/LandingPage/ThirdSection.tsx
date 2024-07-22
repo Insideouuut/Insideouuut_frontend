@@ -1,7 +1,8 @@
 import tempImg from '@/assets/icons/modongtmp.svg';
 import noteImg from '@/assets/icons/note.svg';
 import reviewImg from '@/assets/icons/review.svg';
-import studyImg from '@/assets/icons/study.png';
+import animationData from '@/assets/lottie/search.json';
+import Lottie from 'lottie-react';
 import React from 'react';
 
 const ThirdSection: React.FC = () => {
@@ -46,10 +47,11 @@ const ThirdSection: React.FC = () => {
           </ul>
         </div>
         <div>
-          <img
-            src={studyImg}
-            alt="스터디 이미지"
-            className="w-[400px] h-[390px]"
+          <Lottie
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '540px' }}
           />
         </div>
       </div>
