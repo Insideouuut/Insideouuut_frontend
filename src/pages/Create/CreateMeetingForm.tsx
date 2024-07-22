@@ -27,7 +27,6 @@ import { useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-// 공통 스키마
 const MeetingSchema = z.object({
   meetingCategory: z.enum(['사교/취미', '운동', '스터디']),
   membershipFee: z.union([z.literal('있음'), z.literal('없음')]),

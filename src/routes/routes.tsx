@@ -1,6 +1,7 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
 import CreateClub from '@/pages/Create/CreateClub';
+import CreateMeeting from '@/pages/Create/CreateMeeting';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: '/create-club',
     element: <CreateClub />,
+  },
+  {
+    path: '/create-meeting',
+    element: <CreateMeeting />,
   },
 ]);
 

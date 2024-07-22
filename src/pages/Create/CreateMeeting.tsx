@@ -4,21 +4,43 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import CreateMeetingForm from '@/pages/Create/CreateMeetingForm';
 import { useRef, useState } from 'react';
-import CreateMeetingForm from './CreateMeetingForm';
 
-const CreateClub = () => {
+const CreateMeeting = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
+  const [profileCoords, setProfileCoords] = useState<{
+    top: number;
+    left: number;
+  }>({
+    top: 0,
+    left: 0,
+  });
+  const [notificationCoords, setNotificationCoords] = useState<{
+    top: number;
+    left: number;
+  }>({
+    top: 0,
+    left: 0,
+  });
   const profileRef = useRef<HTMLImageElement>(null);
 
-  const toggleProfileModal = () => {
+  const toggleProfileModal = (e?: React.MouseEvent) => {
+    if (e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setProfileCoords({ top: rect.bottom, left: rect.left });
+    }
     setIsProfileModalOpen(!isProfileModalOpen);
   };
 
-  const toggleNotificationModal = () => {
+  const toggleNotificationModal = (e?: React.MouseEvent) => {
+    if (e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setNotificationCoords({ top: rect.bottom, left: rect.left });
+    }
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
@@ -51,17 +73,18 @@ const CreateClub = () => {
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
           handleLogout={handleLogout}
-          profileRef={profileRef}
+          coords={profileCoords}
         />
       )}
       {isNotificationModalOpen && (
         <NotificationModal
           toggleNotificationModal={toggleNotificationModal}
           setHasNotifications={setHasNotifications}
+          coords={notificationCoords}
         />
       )}
     </>
   );
 };
 
-export default CreateClub;
+export default CreateMeeting;
