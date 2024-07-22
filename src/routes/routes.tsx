@@ -1,11 +1,13 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
+import CreateClub from '@/pages/Create/CreateClub';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -35,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: '/search',
     element: <SearchPage />,
+  },
+  {
+    path: '/create-club',
+    element: <CreateClub />,
   },
 ]);
 
