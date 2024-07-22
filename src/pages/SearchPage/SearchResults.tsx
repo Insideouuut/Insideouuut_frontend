@@ -184,7 +184,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   };
 
   return (
-    <div className="w-full h-[1242px] bg-stone-200">
+    <div className="w-full bg-stone-200">
       <div className="mx-auto py-5 px-8 flex-col  w-[1040px] bg-white">
         <h2 className="font-neoBold text-lg mb-2">모임 목록</h2>
         <ul className="w-full flex pr-16 space-x-5 justify-end text-[12px] font-neoBold mb-4">
@@ -192,53 +192,63 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           <li>날짜순</li>
           <li>가까운순</li>
         </ul>
-        <div className="w-[92%] h-full mx-auto grid grid-cols-2 grid-rows-6 gap-4 pb-5">
-          {currentItems.map((item, index) => (
-            <GroupCard
-              key={index}
-              clubTypes={item.clubTypes}
-              meetingTypes={item.meetingTypes}
-              imageSrc={item.imageSrc}
-              title={item.title}
-              subtitle={item.subtitle}
-              date={item.date}
-              location={item.location}
-              participants={item.participants}
-            />
-          ))}
-        </div>
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handlePrevPage}
-            className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
-            disabled={currentPage === 1}
-          >
-            {'<'}
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => (
+        {filteredData.length === 0 ? (
+          <div className="w-full flex justify-center items-center h-40">
+            <p className="text-lg font-neoBold">
+              &#39;{searchQuery}&#39;에 대한 검색결과가 없습니다.
+            </p>
+          </div>
+        ) : (
+          <div className="w-full mx-auto grid grid-cols-2 gap-4 pb-5">
+            {currentItems.map((item, index) => (
+              <GroupCard
+                key={index}
+                clubTypes={item.clubTypes}
+                meetingTypes={item.meetingTypes}
+                imageSrc={item.imageSrc}
+                title={item.title}
+                subtitle={item.subtitle}
+                date={item.date}
+                location={item.location}
+                participants={item.participants}
+              />
+            ))}
+          </div>
+        )}
+        {filteredData.length > 0 && (
+          <div className="flex justify-center mt-4">
             <button
-              key={index}
-              onClick={() => {
-                setCurrentPage(index + 1);
-                window.scrollTo({ top: 484, behavior: 'smooth' });
-              }}
-              className={`mx-1 px-2 py-1 rounded ${
-                currentPage === index + 1
-                  ? 'bg-green-600 text-white'
-                  : 'hover:bg-stone-200'
-              }`}
+              onClick={handlePrevPage}
+              className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
+              disabled={currentPage === 1}
             >
-              {index + 1}
+              {'<'}
             </button>
-          ))}
-          <button
-            onClick={handleNextPage}
-            className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
-            disabled={currentPage === totalPages}
-          >
-            {'>'}
-          </button>
-        </div>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setCurrentPage(index + 1);
+                  window.scrollTo({ top: 484, behavior: 'smooth' });
+                }}
+                className={`mx-1 px-2 py-1 rounded ${
+                  currentPage === index + 1
+                    ? 'bg-green-600 text-white'
+                    : 'hover:bg-stone-200'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              onClick={handleNextPage}
+              className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
+              disabled={currentPage === totalPages}
+            >
+              {'>'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
