@@ -3,12 +3,9 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Infomation from './Infomation';
-import SecondSection from './SecondSection';
-import SocialSection from './SocialSection';
-import ThirdSection from './ThirdSection';
+import Search from './search';
 
-const LandingPage: React.FC = () => {
+const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -60,10 +57,7 @@ const LandingPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Infomation />
-      <SecondSection />
-      <ThirdSection />
-      <SocialSection />
+      <Search />
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
@@ -83,4 +77,4 @@ const LandingPage: React.FC = () => {
   );
 };
 
-export default LandingPage;
+export default SearchPage;

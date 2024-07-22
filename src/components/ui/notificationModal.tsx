@@ -4,6 +4,10 @@ import React, { useEffect, useRef, useState } from 'react';
 interface NotificationModalProps {
   toggleNotificationModal: () => void;
   setHasNotifications: React.Dispatch<React.SetStateAction<boolean>>;
+  coords: {
+    top: number;
+    left: number;
+  };
 }
 
 interface Notification {
@@ -15,6 +19,7 @@ interface Notification {
 const NotificationModal: React.FC<NotificationModalProps> = ({
   toggleNotificationModal,
   setHasNotifications,
+  coords,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -75,10 +80,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   };
 
   return (
-    <div className="absolute top-16 right-2" ref={modalRef}>
+    <div
+      className="absolute"
+      ref={modalRef}
+      style={{ top: `${coords.top}px`, left: `${coords.left - 115}px` }}
+    >
       <div className="bg-white rounded-lg shadow-lg p-5 w-[280px]">
         <h2 className="text-sm font-neoBold mb-5">알림 목록</h2>
-        <ul className="space-y-4 max-h-40 overflow-y-auto">
+        <ul className="space-y-4 max-h-40 overflow-y-auto scrollbar-hide">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <li

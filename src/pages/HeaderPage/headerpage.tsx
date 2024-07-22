@@ -3,10 +3,6 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Infomation from './Infomation';
-import SecondSection from './SecondSection';
-import SocialSection from './SocialSection';
-import ThirdSection from './ThirdSection';
 
 const LandingPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -60,10 +56,7 @@ const LandingPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Infomation />
-      <SecondSection />
-      <ThirdSection />
-      <SocialSection />
+      {/*컨텐츠 영역*/}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
