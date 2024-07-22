@@ -1,32 +1,31 @@
-import locationImg from '@/assets/icons/location.svg';
-import peopleImg from '@/assets/icons/people.png';
+import { MapPin, Users } from 'lucide-react';
 import React from 'react';
 
 interface GroupCardProps {
   clubTypes: string[];
   meetingTypes: string[];
-  imageSrc: string;
+  imageUrl: string;
   title: string;
-  subtitle: string;
+  description: string;
   date: string;
   location: string;
-  participants: string;
+  members: {
+    current: number;
+    total: number;
+  };
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({
   clubTypes,
   meetingTypes,
-  imageSrc,
+  imageUrl,
   title,
-  subtitle,
+  description,
   date,
   location,
-  participants,
+  members,
 }) => {
-  const participantRatio =
-    parseInt(participants.split('/')[0].replace('(', '')) /
-    parseInt(participants.split('/')[1].replace(')', ''));
-  const isAlmostFull = participantRatio >= 0.8;
+  const isAlmostFull = members.current / members.total >= 0.8;
 
   const getColorByClubType = (type: string) => {
     switch (type) {
@@ -56,7 +55,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
     <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[160px]">
       <div className="w-[140px] h-[135px]">
         <img
-          src={imageSrc}
+          src={imageUrl}
           alt={title}
           className="w-full h-full rounded-lg object-cover"
         />
@@ -87,19 +86,15 @@ const GroupCard: React.FC<GroupCardProps> = ({
             )}
           </div>
           <h2 className="text-base font-neoBold mb-1">{title}</h2>
-          <p className="text-gray-500 text-[12px]">{subtitle}</p>
+          <p className="text-gray-500 text-[12px]">{description}</p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
           <p>{date}</p>
           <div className="flex mt-1 items-center">
-            <img
-              src={locationImg}
-              alt="Location Icon"
-              className="w-[13px] h-[13px] mr-1"
-            />
+            <MapPin />
             <p className="mr-4">{location}</p>
-            <img src={peopleImg} alt="People Icon" className="w-4 h-4 mr-1" />
-            <p>{participants}</p>
+            <Users />
+            <p>{`${members.current}/${members.total}`}</p>
           </div>
         </div>
       </div>

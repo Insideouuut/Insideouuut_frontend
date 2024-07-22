@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, ClipboardList, MessageCircle, Settings, Lock } from 'lucide-react';
+import { Home, ClipboardList, MessageCircleMore, Settings, Lock } from 'lucide-react';
 
 const ClubSidebar: React.FC = () => {
     const [isBoardOpen, setIsBoardOpen] = useState(false);
@@ -31,7 +31,7 @@ const ClubSidebar: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-2 cursor-pointer p-2 hover:bg-gray-100">
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircleMore className="w-5 h-5" />
                     <span className="text-sm">채팅</span>
                 </div>
                 <div className="flex items-center space-x-2 cursor-pointer p-2 hover:bg-gray-100">
