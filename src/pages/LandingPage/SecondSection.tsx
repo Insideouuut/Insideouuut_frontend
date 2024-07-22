@@ -1,8 +1,8 @@
 import animationData from '@/assets/lottie/people.json';
-import Lottie from 'lottie-react';
 import { Button } from '@/components/ui/button';
+import Lottie from 'lottie-react';
 import React from 'react';
-import { Link } from'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SecondSection: React.FC = () => {
   return (
@@ -10,11 +10,11 @@ const SecondSection: React.FC = () => {
       <div className="w-[1040px] flex items-center justify-between mx-auto">
         <div>
           <Lottie
-              animationData={animationData}
-              loop
-              autoplay
-              style={{ width: '540px',marginBottom:'30px' }}
-            />
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '540px', marginBottom: '30px' }}
+          />
         </div>
         <div className="text-left">
           <h2 className="font-neoBold mb-4 text-green-600 text-[30px]">
@@ -28,7 +28,9 @@ const SecondSection: React.FC = () => {
             <p>가까운 동네 친구들과</p>
             <p>하고싶은 취미를 즐겨보세요.</p>
           </p>
-          <Link to= '/login'><Button className="font-neoBold">모임 참여하기 &gt;</Button></Link>
+          <Link to="/login">
+            <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+          </Link>
         </div>
       </div>
     </section>

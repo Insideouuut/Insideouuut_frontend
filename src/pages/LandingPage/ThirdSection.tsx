@@ -47,12 +47,12 @@ const ThirdSection: React.FC = () => {
           </ul>
         </div>
         <div>
-        <Lottie
-              animationData={animationData}
-              loop
-              autoplay
-              style={{ width: '540px' }}
-            />
+          <Lottie
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '540px' }}
+          />
         </div>
       </div>
     </section>

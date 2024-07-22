@@ -1,9 +1,8 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
 import animationData from '@/assets/lottie/communication.json';
+import { Button } from '@/components/ui/button';
 import Lottie from 'lottie-react';
-import { Link } from'react-router-dom';
-
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Infomation: React.FC = () => {
   return (
@@ -28,15 +27,17 @@ const Infomation: React.FC = () => {
             </p>
             <p>모동과 함께 친구를 만들어가요.</p>
           </p>
-          <Link to ='/login'><Button className="font-neoBold">모임 참여하기 &gt;</Button></Link>
+          <Link to="/login">
+            <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+          </Link>
         </div>
         <div>
           <Lottie
-              animationData={animationData}
-              loop
-              autoplay
-              style={{ width: '600px', height: '480px',marginBottom:'50px' }}
-            />
+            animationData={animationData}
+            loop
+            autoplay
+            style={{ width: '600px', height: '480px', marginBottom: '50px' }}
+          />
         </div>
       </div>
     </section>
