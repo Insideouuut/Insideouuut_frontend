@@ -8,7 +8,7 @@ import { Edit2, Heart, Map, User, UserRoundSearch } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CategoryButton from './CategoryButton';
-import MiddleSection from './MiddleSectoin';
+import MiddleSection from './MiddleSection';
 
 const Main: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
