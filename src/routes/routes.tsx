@@ -6,6 +6,7 @@ import Main from '@/pages/Main/Main';
 import MyPage from '@/pages/MyPage/MyPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
+import ClubPage from '../pages/ClubPage/ClubPage';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: '/search',
     element: <SearchPage />,
+  },
+  {
+    path: '/club',
+    element: <ClubPage />,
   },
   {
     path: '/create-club',

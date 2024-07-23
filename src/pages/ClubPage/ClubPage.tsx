@@ -3,9 +3,25 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Search from './searchHero';
+import ClubHero from './ClubHero';
+import ClubMain from './ClubMain';
+import ClubSidebar from './ClubSidebar';
+import ClubPost from './ex';
 
-const SearchPage: React.FC = () => {
+interface ClubData {
+  type: '동아리' | '모임';
+  category: '운동' | '사교/취미' | '공부';
+  title: string;
+  description: string;
+  schedule: string;
+  location: string;
+  members: string;
+  role: '관리자' | '일반 회원';
+  backgroundColor: string;
+  backgroundImage: string;
+}
+
+const ClubPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,6 +63,33 @@ const SearchPage: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
+  const handleColorChange = (newColor: string) => {
+    setClubData((prevData) => ({ ...prevData, backgroundColor: newColor }));
+  };
+
+  const [clubData, setClubData] = useState<ClubData>({
+    type: '동아리',
+    category: '사교/취미',
+    title: '한강 러닝 크루',
+    description: '다같이 모여서 즐겁게 러닝해요!',
+    schedule: '24.07.17(화)',
+    location: '노원구',
+    members: '10/30',
+    role: '관리자',
+    backgroundColor: 'bg-green-100',
+    backgroundImage: '',
+  });
+
+  const clubInfo = {
+    name: clubData.title,
+    description: clubData.description,
+    meetingTimes: clubData.schedule,
+    location: clubData.location,
+    maxParticipants: 30,
+    currentParticipants: 10,
+    contact: 'contact@example.com',
+  };
+
   return (
     <div className="relative">
       <Header
@@ -57,7 +100,15 @@ const SearchPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Search />
+      <ClubHero clubData={clubData} onColorChange={handleColorChange} />
+      <div className="flex mt-4 justify-center">
+        <ClubSidebar />
+        <div>
+          <ClubMain clubData={clubInfo} />
+          <ClubPost />
+          {/* ex 페이지에서 컨텐츠 부분 추가 */}
+        </div>
+      </div>
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
@@ -77,4 +128,4 @@ const SearchPage: React.FC = () => {
   );
 };
 
-export default SearchPage;
+export default ClubPage;
