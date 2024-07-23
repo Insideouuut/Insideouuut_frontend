@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { PaintbrushVertical, CalendarDays, MapPin, Users, ClipboardList, MessageCircleMore } from 'lucide-react';
 import profileImg from '@/assets/icons/profile.webp';
+import {
+  CalendarDays,
+  ClipboardList,
+  MapPin,
+  MessageCircleMore,
+  PaintbrushVertical,
+  Users,
+} from 'lucide-react';
+import React, { useState } from 'react';
 
 interface ClubData {
   type: '동아리' | '모임';
@@ -87,7 +94,11 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
       <div className="flex items-center mx-auto w-[920px] justify-between">
         <div className="flex flex-col h-[80%]">
           <div>
-            <button onClick={openModal} className="mb-5 p-1 bg-black bg-opacity-10 rounded hover:bg-opacity-25">
+            <button
+              onClick={openModal}
+              className="mb-5 p-1 bg-black bg-opacity-10 rounded hover:bg-opacity-25"
+              aria-label="Change Background Color"
+            >
               <PaintbrushVertical className="w-4 h-4" />
             </button>
           </div>
@@ -101,10 +112,19 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
                       key={color}
                       className={`w-10 h-10 ${color} rounded cursor-pointer`}
                       onClick={() => handleColorSelect(color)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleColorSelect(color);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Select ${color}`}
                     />
                   ))}
                 </div>
-                <button onClick={closeModal} className="mt-4 bg-gray-500 text-white px-4 py-2 rounded">
+                <button
+                  onClick={closeModal}
+                  className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+                >
                   Cancel
                 </button>
               </div>
@@ -133,34 +153,49 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
             {clubData.description}
           </p>
         </div>
-        <div className='relative flex flex-col items-end w-[30%] h-full mt-24'>
-            <div className='flex w-28 flex-col gap-y-[2px]'>
-              <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><CalendarDays className='w-[17px]' /><p className='w-[80%] text-center text-[11px]'>{clubData.schedule}</p></p>
-              <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><MapPin className='w-[17px]'/><p className='w-[80%] text-center'>{clubData.location}</p></p>
-              <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><Users className='w-[17px]'/><p className='w-[80%] text-center'>{clubData.members}</p></p>
-            </div>
+        <div className="relative flex flex-col items-end w-[30%] h-full mt-24">
+          <div className="flex w-28 flex-col gap-y-[2px]">
+            <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
+              <CalendarDays className="w-[17px]" />
+              <p className="w-[80%] text-center text-[11px]">
+                {clubData.schedule}
+              </p>
+            </p>
+            <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
+              <MapPin className="w-[17px]" />
+              <p className="w-[80%] text-center">{clubData.location}</p>
+            </p>
+            <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
+              <Users className="w-[17px]" />
+              <p className="w-[80%] text-center">{clubData.members}</p>
+            </p>
+          </div>
           <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
             <img
               src={profileData.profileImage}
               alt="Profile"
               className="w-10 h-10 rounded-full ml-4"
             />
-            <div className='w-full'>
-                <div className="flex justify-center w-full">
-                    <p className="text-black font-neo flex items-end">{profileData.nickname}</p>
-                    <p className="text-gray-600 text-sm font-neo flex items-end">{clubData.role}</p>
-                </div>
-                <div className='flex justify-center mt-2'>
-                    <button className=" w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500  rounded-md hover:bg-opacity-70">
-                        <ClipboardList/>
-                    </button>
-                    <button className="w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500 rounded-md ml-[10px] hover:bg-opacity-70">
-                        <MessageCircleMore/>
-                    </button>
-                    <button className="w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500 rounded-md ml-[10px] hover:bg-opacity-70">
-                        <Users/>
-                    </button>
-                </div>
+            <div className="w-full">
+              <div className="flex justify-center w-full">
+                <p className="text-black font-neo flex items-end">
+                  {profileData.nickname}
+                </p>
+                <p className="text-gray-600 text-sm font-neo flex items-end">
+                  {clubData.role}
+                </p>
+              </div>
+              <div className="flex justify-center mt-2">
+                <button className=" w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500  rounded-md hover:bg-opacity-70">
+                  <ClipboardList />
+                </button>
+                <button className="w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500 rounded-md ml-[10px] hover:bg-opacity-70">
+                  <MessageCircleMore />
+                </button>
+                <button className="w-6 h-6 p-[2px] text-white font-neo flex items-center justify-center bg-gray-500 rounded-md ml-[10px] hover:bg-opacity-70">
+                  <Users />
+                </button>
+              </div>
             </div>
           </div>
         </div>

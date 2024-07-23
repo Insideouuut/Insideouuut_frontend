@@ -8,11 +8,11 @@ import CreateMeeting from '@/pages/Create/CreateMeeting';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
+import ClubPage from '../pages/ClubPage/ClubPage';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
-import ClubPage from '../pages/ClubPage/ClubPage'
 
 const router = createBrowserRouter([
   {

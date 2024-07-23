@@ -2,11 +2,11 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import ClubHero from './ClubHero';
-import ClubSidebar from './ClubSidebar';
-import ClubMain from './ClubMain';
-import ClubPost from './ex';
 import React, { useRef, useState } from 'react';
+import ClubHero from './ClubHero';
+import ClubMain from './ClubMain';
+import ClubSidebar from './ClubSidebar';
+import ClubPost from './ex';
 
 interface ClubData {
   type: '동아리' | '모임';
@@ -87,7 +87,7 @@ const ClubPage: React.FC = () => {
     location: clubData.location,
     maxParticipants: 30,
     currentParticipants: 10,
-    contact: 'contact@example.com'
+    contact: 'contact@example.com',
   };
 
   return (
@@ -101,11 +101,11 @@ const ClubPage: React.FC = () => {
         hasNotifications={hasNotifications}
       />
       <ClubHero clubData={clubData} onColorChange={handleColorChange} />
-      <div className='flex mt-4 justify-center'>
-        <ClubSidebar/>
+      <div className="flex mt-4 justify-center">
+        <ClubSidebar />
         <div>
           <ClubMain clubData={clubInfo} />
-          <ClubPost/>
+          <ClubPost />
         </div>
       </div>
       <Footer />
