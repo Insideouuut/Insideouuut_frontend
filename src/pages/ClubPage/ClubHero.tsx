@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PaintbrushVertical, CalendarDays, MapPin, Users, ClipboardList, MessageCircleMore } from 'lucide-react';
 import profileImg from '@/assets/icons/profile.webp';
 
@@ -133,14 +133,12 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
             {clubData.description}
           </p>
         </div>
-        <div className='relative w-[30%] h-full items-center mt-24'>
-          <div>
-            <div className='flex mx-auto w-28 flex-col gap-y-[2px]'>
+        <div className='relative flex flex-col items-end w-[30%] h-full mt-24'>
+            <div className='flex w-28 flex-col gap-y-[2px]'>
               <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><CalendarDays className='w-[17px]' /><p className='w-[80%] text-center text-[11px]'>{clubData.schedule}</p></p>
               <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><MapPin className='w-[17px]'/><p className='w-[80%] text-center'>{clubData.location}</p></p>
               <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center"><Users className='w-[17px]'/><p className='w-[80%] text-center'>{clubData.members}</p></p>
             </div>
-          </div>
           <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
             <img
               src={profileData.profileImage}

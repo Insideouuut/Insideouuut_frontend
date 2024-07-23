@@ -5,6 +5,7 @@ import ProfileModal from '@/components/ui/profileModal';
 import ClubHero from './ClubHero';
 import ClubSidebar from './ClubSidebar';
 import ClubMain from './ClubMain';
+import ClubPost from './ex';
 import React, { useRef, useState } from 'react';
 
 interface ClubData {
@@ -67,7 +68,7 @@ const ClubPage: React.FC = () => {
   };
 
   const [clubData, setClubData] = useState<ClubData>({
-    type: '모임',
+    type: '동아리',
     category: '사교/취미',
     title: '한강 러닝 크루',
     description: '다같이 모여서 즐겁게 러닝해요!',
@@ -78,6 +79,16 @@ const ClubPage: React.FC = () => {
     backgroundColor: 'bg-green-100',
     backgroundImage: '',
   });
+
+  const clubInfo = {
+    name: clubData.title,
+    description: clubData.description,
+    meetingTimes: clubData.schedule,
+    location: clubData.location,
+    maxParticipants: 30,
+    currentParticipants: 10,
+    contact: 'contact@example.com'
+  };
 
   return (
     <div className="relative">
@@ -90,9 +101,12 @@ const ClubPage: React.FC = () => {
         hasNotifications={hasNotifications}
       />
       <ClubHero clubData={clubData} onColorChange={handleColorChange} />
-      <div className='flex justify-center'>
+      <div className='flex mt-4 justify-center'>
         <ClubSidebar/>
-        <ClubMain/>
+        <div>
+          <ClubMain clubData={clubInfo} />
+          <ClubPost/>
+        </div>
       </div>
       <Footer />
       {isProfileModalOpen && (
