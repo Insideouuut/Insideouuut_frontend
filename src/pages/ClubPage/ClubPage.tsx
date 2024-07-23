@@ -105,8 +105,8 @@ const ClubPage: React.FC = () => {
         <ClubSidebar />
         <div>
           <ClubMain clubData={clubInfo} />
-          <ClubPost /> 
-          {/*ex 페이지에서 컨텐츠 부분 추가*/}
+          <ClubPost />
+          {/* ex 페이지에서 컨텐츠 부분 추가 */}
         </div>
       </div>
       <Footer />
