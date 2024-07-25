@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-import ClubPost from './ex';
+import MeetingList from './MeetingList';
 
 interface ClubData {
   type: '동아리' | '모임';
@@ -101,11 +101,11 @@ const ClubPage: React.FC = () => {
         hasNotifications={hasNotifications}
       />
       <ClubHero clubData={clubData} onColorChange={handleColorChange} />
-      <div className="flex mt-4 justify-center">
+      <div className=" flex justify-center">
         <ClubSidebar />
         <div>
           <ClubMain clubData={clubInfo} />
-          <ClubPost />
+          <MeetingList />
           {/* ex 페이지에서 컨텐츠 부분 추가 */}
         </div>
       </div>

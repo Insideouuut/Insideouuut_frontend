@@ -48,9 +48,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   };
 
   return (
-    <div className="w-full bg-stone-200">
-      <div className="mx-auto py-5 px-8 flex-col  w-[1040px] bg-white">
-        <h2 className="font-neoBold text-lg mb-2">모임 목록</h2>
+    <div className="w-full bg-white">
+      <div className="mx-auto py-5 flex-col  w-[960px] bg-white">
+        <h2 className="font-neo text-2xl mb-2">모임 목록</h2>
         <ul className="w-full flex pr-16 space-x-5 justify-end text-[12px] font-neoBold mb-4">
           <li>인기순</li>
           <li>날짜순</li>
@@ -63,7 +63,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             </p>
           </div>
         ) : (
-          <div className="w-full mx-auto grid grid-cols-2 gap-4 pb-5">
+          <div className="w-[900px] mx-auto grid grid-cols-2 gap-4 pb-5">
             {currentItems.map((item, index) => (
               <GroupCard
                 key={index}
@@ -97,7 +97,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 }}
                 className={`mx-1 px-2 py-1 rounded ${
                   currentPage === index + 1
-                    ? 'bg-green-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'hover:bg-stone-200'
                 }`}
               >

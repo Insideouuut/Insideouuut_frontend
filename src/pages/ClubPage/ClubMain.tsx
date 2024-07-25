@@ -1,5 +1,6 @@
-import GroupCard from '@/components/GroupCard';
-import React from 'react';
+import React, { useState } from 'react';
+import { dummyData } from '@/components/dummyData';
+import ApplyModal from './ApplyModal'; // 신청 모달 컴포넌트 가져오기
 
 interface ClubInfo {
   name: string;
@@ -16,85 +17,116 @@ interface ClubMainProps {
 }
 
 const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
-  const recentMeetings = [
+  const [selectedMeeting, setSelectedMeeting] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const sortedMeetings = dummyData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const handleMeetingClick = (meeting: any) => {
+    setSelectedMeeting(meeting);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMeeting(null);
+  };
+
+  const noticeData = [
     {
-      clubTypes: ['동아리'],
-      meetingTypes: ['운동'],
-      imageUrl: 'https://via.placeholder.com/150',
-      title: '한강 러닝 크루',
-      description: '한강에서 러닝을 함께 즐겨요!',
+      title: '공지사항 1',
+      description: '첫 번째 공지사항입니다.',
       date: '2024-07-22',
-      location: '서울 한강공원',
-      members: { current: 8, total: 10 },
     },
     {
-      clubTypes: ['모임'],
-      meetingTypes: ['사교/취미'],
-      imageUrl: 'https://via.placeholder.com/150',
-      title: '요리 동아리',
-      description: '함께 요리하며 친목을 다져요!',
-      date: '2024-07-20',
-      location: '강남역 쿠킹 클래스',
-      members: { current: 5, total: 10 },
-    },
-    {
-      clubTypes: ['동아리'],
-      meetingTypes: ['스터디'],
-      imageUrl: 'https://via.placeholder.com/150',
-      title: '토익 스터디',
-      description: '토익 점수 올리기 함께해요!',
-      date: '2024-07-18',
-      location: '신촌 토익 학원',
-      members: { current: 15, total: 20 },
-    },
-    {
-      clubTypes: ['모임'],
-      meetingTypes: ['운동'],
-      imageUrl: 'https://via.placeholder.com/150',
-      title: '등산 모임',
-      description: '함께 산을 오르며 건강을 챙겨요!',
-      date: '2024-07-15',
-      location: '북한산 등산로 입구',
-      members: { current: 9, total: 10 },
+      title: '공지사항 2',
+      description: '두 번째 공지사항입니다.',
+      date: '2024-07-21',
     },
   ];
 
   return (
-    <div className="flex p-6 bg-gray-50 rounded-lg shadow-md w-[820px] border-2 border-gray-200 space-x-6">
-      <div className="w-[40%] p-4 bg-white rounded-lg shadow space-y-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">{clubData.name}</h2>
-          <p className="text-sm text-gray-600 mt-2">{clubData.description}</p>
+    <div className="border-2 rounded-lg min-h-screen">
+      <div className="mx-auto bg-white p-6 rounded-lg shadow-md space-y-8">
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="w-full md:w-[50%]">
+              <h2 className="text-2xl font-bold text-gray-900">{clubData.name}</h2>
+              <p className="text-md text-gray-700 mt-2">{clubData.description}</p>
+            </div>
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">모임 시간</h3>
+              <p className="text-md text-gray-700 mt-2">{clubData.meetingTimes}</p>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">위치</h3>
+              <p className="text-md text-gray-700 mt-2">{clubData.location}</p>
+            </div>
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">참가자 정원</h3>
+              <p className="text-md text-gray-700 mt-2">
+                현재 참가자 수: {clubData.currentParticipants} / {clubData.maxParticipants}
+              </p>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">모임 시간</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.meetingTimes}</p>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">공지사항</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-3 px-5 border-b">제목</th>
+                  <th className="py-3 px-5 border-b">설명</th>
+                  <th className="py-3 px-5 border-b">일시</th>
+                </tr>
+              </thead>
+              <tbody>
+                {noticeData.map((notice, index) => (
+                  <tr key={index} className="cursor-pointer hover:bg-gray-100">
+                    <td className="py-3 px-5 border-b text-gray-800">{notice.title}</td>
+                    <td className="py-3 px-5 border-b text-gray-600">{notice.description}</td>
+                    <td className="py-3 px-5 border-b text-gray-500">{notice.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">위치</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.location}</p>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">최근 생성된 모임 목록</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-3 px-5 border-b">제목</th>
+                  <th className="py-3 px-5 border-b">설명</th>
+                  <th className="py-3 px-5 border-b">장소</th>
+                  <th className="py-3 px-5 border-b">인원</th>
+                  <th className="py-3 px-5 border-b">일시</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedMeetings.slice(0, 4).map((meeting, index) => (
+                  <tr key={index} className="cursor-pointer hover:bg-gray-100" onClick={() => handleMeetingClick(meeting)}>
+                    <td className="py-3 px-5 border-b text-gray-800">{meeting.title}</td>
+                    <td className="py-3 px-5 border-b text-gray-600">{meeting.description}</td>
+                    <td className="py-3 px-5 border-b text-gray-500">{meeting.location}</td>
+                    <td className="py-3 px-5 border-b text-gray-500">
+                      {meeting.members.current}/{meeting.members.total}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-500">{meeting.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">참가자 정원</h3>
-          <p className="text-sm text-gray-600 mt-2">
-            현재 참가자 수: {clubData.currentParticipants} /{' '}
-            {clubData.maxParticipants}
-          </p>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">문의</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.contact}</p>
-        </div>
-      </div>
-      <div className="w-[60%] p-4 bg-white rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">
-          최근 생성된 모임 목록
-        </h3>
-        <div className="grid grid-cols-1 gap-4">
-          {recentMeetings.map((meeting, index) => (
-            <GroupCard key={index} {...meeting} />
-          ))}
-        </div>
+        {isModalOpen && selectedMeeting && (
+          <ApplyModal meeting={selectedMeeting} onClose={closeModal} />
+        )}
       </div>
     </div>
   );

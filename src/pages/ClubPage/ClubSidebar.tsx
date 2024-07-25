@@ -44,7 +44,7 @@ const ClubSidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-44 rounded-lg border-2 mr-4 p-3 h-full">
+    <div className="w-44 mr-4 p-3 h-full">
       <nav className="space-y-1">
         <div
           role="button"
@@ -176,9 +176,9 @@ const ClubSidebar: React.FC = () => {
             <div
               role="button"
               tabIndex={0}
-              onClick={() => handleMenuClick('meetingListSettings')}
-              onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
+              onClick={() => handleMenuClick('meetingList')}
+              onKeyDown={(event) => handleKeyDown(event, 'meetingList')}
+              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingList')}`}
             >
               모임 목록
             </div>

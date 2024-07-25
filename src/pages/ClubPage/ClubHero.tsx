@@ -153,7 +153,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
             {clubData.description}
           </p>
         </div>
-        <div className="relative flex flex-col items-end w-[30%] h-full mt-24">
+        <div className="relative flex flex-col items-end w-[30%] mt-12">
           <div className="flex w-28 flex-col gap-y-[2px]">
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <CalendarDays className="w-[17px]" />
