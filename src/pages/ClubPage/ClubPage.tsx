@@ -7,6 +7,7 @@ import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
 import ClubPost from './ex';
+import MemberList from './MemberList';
 
 interface ClubData {
   type: '동아리' | '모임';
@@ -22,6 +23,7 @@ interface ClubData {
 }
 
 const ClubPage: React.FC = () => {
+  const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -102,11 +104,73 @@ const ClubPage: React.FC = () => {
       />
       <ClubHero clubData={clubData} onColorChange={handleColorChange} />
       <div className="flex mt-4 justify-center">
-        <ClubSidebar />
+        <ClubSidebar
+          selectedMenu={selectedMenu}
+          setSelectedMenu={setSelectedMenu}
+        />
         <div>
-          <ClubMain clubData={clubInfo} />
-          <ClubPost />
-          {/* ex 페이지에서 컨텐츠 부분 추가 */}
+          {selectedMenu === 'home' && (
+            <div>
+              <ClubMain clubData={clubInfo} />
+              <ClubPost />
+            </div>
+          )}
+          {selectedMenu === 'meetingList' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              모임 목록 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'noticeBoard' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              공지 게시판 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'freeBoard' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              자유 게시판 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'reviewBoard' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              후기 게시판 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'questionBoard' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              질문 게시판 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'chat' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              채팅 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'members' && <MemberList />}
+          {selectedMenu === 'createMeeting' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              모임 생성 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'meetingListSettings' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              모임 목록 설정 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'manageClub' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              동아리 관리 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'memberRequests' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              멤버 신청 목록 컴포넌트
+            </div>
+          )}
+          {selectedMenu === 'manageMembers' && (
+            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              멤버 관리 컴포넌트
+            </div>
+          )}
         </div>
       </div>
       <Footer />
