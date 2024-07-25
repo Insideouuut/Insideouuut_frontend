@@ -11,11 +11,18 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 
-const ClubSidebar: React.FC = () => {
+interface ClubSidebarProps {
+  selectedMenu: string;
+  setSelectedMenu: (menu: string) => void;
+}
+
+const ClubSidebar: React.FC<ClubSidebarProps> = ({
+  selectedMenu,
+  setSelectedMenu,
+}) => {
   const [isBoardOpen, setIsBoardOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState<string | null>(null);
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
