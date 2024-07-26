@@ -10,7 +10,7 @@ import ModongCard from './ModongCard';
 interface Info {
   clubTypes: string[];
   meetingTypes: string[];
-  title: string;
+  name: string;
   description: string;
   date: string;
   location: string;

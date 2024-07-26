@@ -4,7 +4,7 @@ interface ModongCardProps {
   clubTypes: string[];
   meetingTypes: string[];
   imageUrl: string;
-  title: string;
+  name: string;
   description: string;
   createdAt: string;
   members: {
@@ -17,7 +17,7 @@ const ModongCard: React.FC<ModongCardProps> = ({
   clubTypes,
   meetingTypes,
   imageUrl,
-  title,
+  name,
   description,
 
   members,
@@ -53,13 +53,13 @@ const ModongCard: React.FC<ModongCardProps> = ({
       <div className="w-[100px] h-[100px] ">
         <img
           src={imageUrl}
-          alt={title}
+          alt={name}
           className="w-full h-full rounded-full object-cover "
         />
       </div>
       <div className="ml-6 flex flex-col justify-between w-[60%]">
         <div>
-          <h2 className="text-base font-neoBold mb-1">{title}</h2>
+          <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">{description}</p>
         </div>
 

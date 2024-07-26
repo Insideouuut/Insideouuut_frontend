@@ -5,7 +5,7 @@ interface GroupCardProps {
   clubTypes: string[];
   meetingTypes: string[];
   imageUrl: string;
-  title: string;
+  name: string;
   description: string;
   date: string;
   location: string;
@@ -19,7 +19,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   clubTypes,
   meetingTypes,
   imageUrl,
-  title,
+  name,
   description,
   date,
   location,
@@ -56,7 +56,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
       <div className="w-[140px] h-[135px]">
         <img
           src={imageUrl}
-          alt={title}
+          alt={name}
           className="w-full h-full rounded-lg object-cover"
         />
       </div>
@@ -85,7 +85,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
               </span>
             )}
           </div>
-          <h2 className="text-base font-neoBold mb-1">{title}</h2>
+          <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">{description}</p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
