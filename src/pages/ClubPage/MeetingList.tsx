@@ -3,11 +3,9 @@ import { dummyData } from '@/components/dummyData';
 
 const MeetingList: React.FC = () => {
   return (
-    <div className=" min-h-screen">
-      <div className=" mx-auto border-2 p-6 rounded-lg">
-        <div className=" p-4 rounded-lg ">
-          <div className="overflow-x-auto">
-          <h2 className="text-xl font-neobold mb-6 text-left">모임 목록</h2>
+    <div className=" min-h-screen mx-auto">
+          <div className=" overflow-x-auto">
+          <h2 className=" text-xl font-neobold mb-6 text-left">모임 목록</h2>
             <table className="min-w-full bg-white border-y-2">
               <thead>
                 <tr>
@@ -34,8 +32,6 @@ const MeetingList: React.FC = () => {
             </table>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 

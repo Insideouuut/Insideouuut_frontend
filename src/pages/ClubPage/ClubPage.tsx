@@ -6,9 +6,9 @@ import React, { useRef, useState } from 'react';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-import ClubPost from './ex';
 import MemberList from './MemberList';
-
+import MeetingList from './MeetingList';
+import MemberApproval from './MemberApproval';
 interface ClubData {
   type: '동아리' | '모임';
   category: '운동' | '사교/취미' | '공부';
@@ -112,12 +112,11 @@ const ClubPage: React.FC = () => {
           {selectedMenu === 'home' && (
             <div>
               <ClubMain clubData={clubInfo} />
-              <ClubPost />
             </div>
           )}
           {selectedMenu === 'meetingList' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              모임 목록 컴포넌트
+              <MeetingList/>
             </div>
           )}
           {selectedMenu === 'noticeBoard' && (
@@ -151,7 +150,7 @@ const ClubPage: React.FC = () => {
               모임 생성 컴포넌트
             </div>
           )}
-          {selectedMenu === 'meetingListSettings' && (
+          {selectedMenu === 'mymeetingList' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
               모임 목록 설정 컴포넌트
             </div>
@@ -163,12 +162,11 @@ const ClubPage: React.FC = () => {
           )}
           {selectedMenu === 'memberRequests' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              멤버 신청 목록 컴포넌트
+                <MemberApproval/>
             </div>
           )}
           {selectedMenu === 'manageMembers' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              멤버 관리 컴포넌트
             </div>
           )}
         </div>
