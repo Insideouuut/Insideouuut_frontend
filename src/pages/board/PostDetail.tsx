@@ -51,6 +51,13 @@ const PostDetail: React.FC = () => {
     setPost({ ...post!, comments: updatedComments });
   };
 
+  const handleDeletePost = () => {
+    // 글 삭제 API 호출
+    console.log(`Deleting post with id ${post!.id}`);
+    // 삭제 후 이전 페이지로 이동
+    navigate(-1);
+  };
+
   if (!post) {
     return <div>Loading...</div>;
   }
@@ -63,6 +70,7 @@ const PostDetail: React.FC = () => {
       >
         뒤로가기
       </button>
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <img
@@ -75,15 +83,24 @@ const PostDetail: React.FC = () => {
             <p className="text-sm text-gray-500">{post.createdAt}</p>
           </div>
         </div>
+
         {post.author === currentUser && (
-          <button
-            onClick={() =>
-              navigate(`/club/board/${post.category}/${post.id}/edit`)
-            }
-            className="text-primary font-neoBold text-sm"
-          >
-            수정
-          </button>
+          <div className="flex space-x-2  ">
+            <button
+              onClick={() =>
+                navigate(`/club/board/${post.category}/${post.id}/edit`)
+              }
+              className="text-primary font-neoBold text-sm"
+            >
+              수정
+            </button>
+            <button
+              onClick={handleDeletePost}
+              className="text-red-500 font-neoBold text-sm"
+            >
+              삭제
+            </button>
+          </div>
         )}
       </div>
       <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
@@ -102,7 +119,10 @@ const PostDetail: React.FC = () => {
         <h2 className="text-md font-bold mb-2">댓글</h2>
         <ul>
           {post.comments.map((comment, index) => (
-            <li key={index} className="mb-2 flex justify-between items-center">
+            <li
+              key={index}
+              className="mb-2 flex justify-between items-center border-b border-gray-200 pb-2"
+            >
               <div>
                 <p className="font-bold text-sm">{comment.author}</p>
                 <p className="text-sm">{comment.content}</p>
