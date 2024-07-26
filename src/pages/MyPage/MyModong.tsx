@@ -38,7 +38,7 @@ const MyModong: React.FC = () => {
                 <TableCell>{modong.name}</TableCell>
                 <TableCell>{modong.description}</TableCell>
                 <TableCell>
-                  {modong.members.current} / {modong.members.total}
+                  {modong.memberCount} / {modong.memberLimit}
                 </TableCell>
                 <TableCell className="text-right">잠실동</TableCell>
               </TableRow>
