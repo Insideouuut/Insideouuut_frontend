@@ -7,10 +7,8 @@ interface ModongCardProps {
   name: string;
   description: string;
   createdAt: string;
-  members: {
-    current: number;
-    total: number;
-  };
+  memberCount: number;
+  memberLimit: number;
 }
 
 const ModongCard: React.FC<ModongCardProps> = ({
@@ -20,9 +18,10 @@ const ModongCard: React.FC<ModongCardProps> = ({
   name,
   description,
 
-  members,
+  memberCount,
+  memberLimit,
 }) => {
-  const isAlmostFull = members.current / members.total >= 0.8;
+  const isAlmostFull = memberCount / memberLimit >= 0.8;
 
   const getColorByClubType = (type: string) => {
     switch (type) {
