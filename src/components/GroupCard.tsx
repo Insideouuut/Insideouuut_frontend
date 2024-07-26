@@ -9,10 +9,8 @@ interface GroupCardProps {
   description: string;
   date: string;
   location: string;
-  members: {
-    current: number;
-    total: number;
-  };
+  memberCount: number;
+  memberLimit: number;
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({
@@ -23,9 +21,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
   description,
   date,
   location,
-  members,
+  memberCount,
+  memberLimit,
 }) => {
-  const isAlmostFull = members.current / members.total >= 0.8;
+  const isAlmostFull = memberCount / memberLimit >= 0.8;
 
   const getColorByClubType = (type: string) => {
     switch (type) {
@@ -94,7 +93,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <MapPin />
             <p className="mr-4">{location}</p>
             <Users />
-            <p>{`${members.current}/${members.total}`}</p>
+            <p>{`${memberCount}/${memberLimit}`}</p>
           </div>
         </div>
       </div>

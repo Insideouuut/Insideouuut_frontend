@@ -74,7 +74,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 description={item.description}
                 date={item.date}
                 location={item.location}
-                members={item.members}
+                memberLimit={item.memberLimit}
+                memberCount={item.memberCount}
               />
             ))}
           </div>

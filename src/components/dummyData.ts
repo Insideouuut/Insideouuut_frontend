@@ -10,10 +10,8 @@ interface Info {
   description: string;
   date: string;
   location: string;
-  members: {
-    current: number;
-    total: number;
-  };
+  memberCount: number;
+  memberLimit: number;
   imageUrl: string;
   createdAt: string;
 }
@@ -27,10 +25,8 @@ export const dummyData: Info[] = [
     description: '20~30대 러닝크루입니다.',
     date: '7월 19일 오후 5시',
     location: '광진구',
-    members: {
-      current: 7,
-      total: 8,
-    },
+    memberCount: 7,
+    memberLimit: 8,
     imageUrl: runImg,
     createdAt: '2023-07-13T10:00:00Z',
   },
@@ -42,10 +38,8 @@ export const dummyData: Info[] = [
     description: '매주 독서 토론을 합니다.',
     date: '7월 20일 오후 3시',
     location: '강남구',
-    members: {
-      current: 5,
-      total: 8,
-    },
+    memberCount: 5,
+    memberLimit: 8,
     imageUrl: studyImg,
     createdAt: '2023-07-14T10:00:00Z',
   },
@@ -57,10 +51,8 @@ export const dummyData: Info[] = [
     description: '다양한 게임을 함께 즐겨요.',
     date: '7월 21일 오후 4시',
     location: '서초구',
-    members: {
-      current: 10,
-      total: 10,
-    },
+    memberCount: 10,
+    memberLimit: 10,
     imageUrl: gameImg,
     createdAt: '2023-07-15T10:00:00Z',
   },
@@ -72,10 +64,8 @@ export const dummyData: Info[] = [
     description: '조깅을 통해 건강을 챙겨요.',
     date: '7월 22일 오전 6시',
     location: '송파구',
-    members: {
-      current: 8,
-      total: 10,
-    },
+    memberCount: 8,
+    memberLimit: 10,
     imageUrl: runImg,
     createdAt: '2023-07-16T10:00:00Z',
   },
@@ -87,10 +77,8 @@ export const dummyData: Info[] = [
     description: '함께 공부하며 지식을 나눠요.',
     date: '7월 23일 오후 2시',
     location: '용산구',
-    members: {
-      current: 3,
-      total: 5,
-    },
+    memberCount: 3,
+    memberLimit: 5,
     imageUrl: studyImg,
     createdAt: '2023-07-17T10:00:00Z',
   },

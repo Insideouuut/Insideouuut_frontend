@@ -14,10 +14,8 @@ interface Info {
   description: string;
   date: string;
   location: string;
-  members: {
-    current: number;
-    total: number;
-  };
+  memberCount: number;
+  memberLimit: number;
   imageUrl: string;
   createdAt: string;
 }
