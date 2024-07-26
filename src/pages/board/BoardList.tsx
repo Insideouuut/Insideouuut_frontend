@@ -9,7 +9,7 @@ import {
 import { boardMapping } from '@/utils/boardMapping';
 import { SquarePen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { mockPosts } from './mockPosts';
 
 interface Post {
@@ -23,11 +23,8 @@ interface Post {
   images: { name: string; url: string }[];
 }
 
-interface BoardListProps {
-  type: string;
-}
-
-const BoardList: React.FC<BoardListProps> = ({ type }) => {
+const BoardList: React.FC = () => {
+  const { type } = useParams<{ type: string }>();
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const postsPerPage = 4;
@@ -35,7 +32,7 @@ const BoardList: React.FC<BoardListProps> = ({ type }) => {
   useEffect(() => {
     if (type === 'allBoard') {
       setPosts(mockPosts);
-    } else {
+    } else if (type) {
       setPosts(mockPosts.filter((post) => post.category === type));
     }
   }, [type]);
@@ -57,7 +54,9 @@ const BoardList: React.FC<BoardListProps> = ({ type }) => {
       </div>
       <section className="mt-8">
         <div className="w-full mb-8">
-          <h1 className="text-sm font-neoBold">{boardMapping[type]}</h1>
+          <h1 className="text-sm font-neoBold">
+            {type ? boardMapping[type] : '게시판'}
+          </h1>
           <span className="my-2 block w-full h-[1px] bg-gray-300"></span>
         </div>
         <ul>
@@ -111,7 +110,7 @@ const BoardList: React.FC<BoardListProps> = ({ type }) => {
               <PaginationLink
                 href="#"
                 onClick={() => paginate(i + 1)}
-                className={currentPage === i + 1 ? 'text-primary' : ''}
+                className={currentPage === i + 1 ? 'text-blue-500' : ''}
               >
                 {i + 1}
               </PaginationLink>

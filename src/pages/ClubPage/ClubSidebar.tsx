@@ -90,7 +90,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
           </div>
           <div
-            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-40' : 'max-h-0'}`}
+            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
           >
             <div
               role="button"
