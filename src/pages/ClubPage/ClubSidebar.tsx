@@ -95,6 +95,15 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <div
               role="button"
               tabIndex={0}
+              onClick={() => handleMenuClick('allBoard')}
+              onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
+              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+            >
+              전체 게시판
+            </div>
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => handleMenuClick('noticeBoard')}
               onKeyDown={(event) => handleKeyDown(event, 'noticeBoard')}
               className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('noticeBoard')}`}

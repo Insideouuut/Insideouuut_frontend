@@ -2,6 +2,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import BoardList from '@/pages/board/BoardList';
 import React, { useRef, useState } from 'react';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
@@ -120,25 +121,12 @@ const ClubPage: React.FC = () => {
               모임 목록 컴포넌트
             </div>
           )}
-          {selectedMenu === 'noticeBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              공지 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'freeBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              자유 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'reviewBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              후기 게시판 컴포넌트
-            </div>
-          )}
+          {selectedMenu === 'allBoard' && <BoardList type="allBoard" />}
+          {selectedMenu === 'noticeBoard' && <BoardList type="noticeBoard" />}
+          {selectedMenu === 'freeBoard' && <BoardList type="freeBoard" />}
+          {selectedMenu === 'reviewBoard' && <BoardList type="reviewBoard" />}
           {selectedMenu === 'questionBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              질문 게시판 컴포넌트
-            </div>
+            <BoardList type="questionBoard" />
           )}
           {selectedMenu === 'chat' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
