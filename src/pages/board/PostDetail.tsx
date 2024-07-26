@@ -63,16 +63,28 @@ const PostDetail: React.FC = () => {
       >
         뒤로가기
       </button>
-      <div className="flex items-center mb-4">
-        <img
-          src={post.profileImageUrl}
-          alt={post.author}
-          className="w-10 h-10 rounded-full mr-4"
-        />
-        <div>
-          <p className="font-bold">{post.author}</p>
-          <p className="text-sm text-gray-500">{post.createdAt}</p>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <img
+            src={post.profileImageUrl}
+            alt={post.author}
+            className="w-10 h-10 rounded-full mr-4"
+          />
+          <div>
+            <p className="font-bold">{post.author}</p>
+            <p className="text-sm text-gray-500">{post.createdAt}</p>
+          </div>
         </div>
+        {post.author === currentUser && (
+          <button
+            onClick={() =>
+              navigate(`/club/board/${post.category}/${post.id}/edit`)
+            }
+            className="text-primary font-neoBold text-sm"
+          >
+            수정
+          </button>
+        )}
       </div>
       <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
       <div className="mb-4">

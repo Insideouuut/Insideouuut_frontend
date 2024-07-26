@@ -6,27 +6,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { mockPosts } from './mockPosts';
 
 const PostForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (id) {
+      const post = mockPosts.find((post) => post.id === parseInt(id));
+      if (post) {
+        setCategory(post.category);
+        setTitle(post.title);
+        setDescription(post.description);
+        setImagePreviews(post.images.map((image) => image.url));
+      }
+    }
+  }, [id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!category) {
-      setError('게시판을 선택해주세요.');
+      alert('게시판을 선택해주세요.');
       return;
     }
 
-    // 여기에 API 호출 코드를 추가하여 글을 작성합니다.
+    // 여기에 API 호출 코드를 추가하여 글을 작성 또는 수정합니다.
     console.log({ category, title, description, images });
     navigate(`/club/board/${category}`);
   };
@@ -48,10 +61,12 @@ const PostForm: React.FC = () => {
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 bg-white">
-      <h1 className="text-2xl font-bold mb-4">새 글 작성</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        {id ? '글 수정' : '새 글 작성'}
+      </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <Select onValueChange={setCategory} required>
+          <Select onValueChange={setCategory} value={category} required>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="게시판" />
             </SelectTrigger>
@@ -62,7 +77,6 @@ const PostForm: React.FC = () => {
               <SelectItem value="questionBoard">질문 게시판</SelectItem>
             </SelectContent>
           </Select>
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </div>
         <div className="mb-4">
           <input
@@ -115,7 +129,7 @@ const PostForm: React.FC = () => {
         </div>
         <div className="flex justify-end">
           <Button type="submit" className="hover:bg-green-600">
-            작성 완료
+            {id ? '수정 완료' : '작성 완료'}
           </Button>
         </div>
       </form>
