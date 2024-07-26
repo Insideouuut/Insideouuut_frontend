@@ -6,7 +6,9 @@ import ProfileModal from '@/components/ui/profileModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/store/userStore';
 import React, { useRef, useState } from 'react';
+import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
+
 const MyPage: React.FC = () => {
   const { imageUrl, setUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -96,9 +98,9 @@ const MyPage: React.FC = () => {
           </div>
           <p className="font-neoLight text-xs">최대 ?MB까지 업로드 가능</p>
           <p className="font-neoLight text-xs">회원 이미지는 원형으로 출력</p>
-          <div className="shadow-md border border-gray-200 rounded-lg m-12 p-24 ">
-            <Tabs defaultValue="account" className="w-[600px] ">
-              <div className="w-[600px] flex  items-center justify-center mb-10">
+          <div className="shadow-md border w-full border-gray-200 rounded-lg m-12 p-24 max-w-full  md:w-[800px]">
+            <Tabs defaultValue="account" className="w-full">
+              <div className="w-full flex items-center justify-center mb-10">
                 <TabsList>
                   <TabsTrigger value="account">회원 정보 수정</TabsTrigger>
                   <TabsTrigger value="password">모임/동아리 목록</TabsTrigger>
@@ -109,7 +111,7 @@ const MyPage: React.FC = () => {
                 <UpdateUser />
               </TabsContent>
               <TabsContent value="password">
-                참여중인 모임 동아리 목록
+                <MyModong />
               </TabsContent>
             </Tabs>
           </div>
