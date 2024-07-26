@@ -1,8 +1,15 @@
 import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -13,10 +20,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
 import Lottie from 'lottie-react';
+import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -87,13 +97,12 @@ const signupSchema = z
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<SignupData>(defaultData);
   const [step, setStep] = useState(1);
   const {
-    register,
     handleSubmit,
-    setValue,
+    control,
     formState: { errors },
+    trigger,
   } = useForm<SignupData>({
     resolver: zodResolver(signupSchema),
     defaultValues: defaultData,
@@ -101,27 +110,26 @@ const Signup = () => {
 
   const onSubmit = (data: SignupData) => {
     console.log('회원가입 데이터:', data);
-    console.log('폼데이터:', formData);
-    // 서버로 데이터 전송 및 성공 처리 등을 수행
     alert('회원가입이 완료되었습니다.');
     navigate('/landing');
   };
 
-  const handleNextStep = () => {
-    setStep(step + 1);
+  const handleNextStep = async () => {
+    let isValid;
+    if (step === 1) {
+      isValid = await trigger(['email', 'password', 'confirmPassword']);
+    } else if (step === 2) {
+      isValid = await trigger(['name', 'nickname', 'phoneNumber', 'birth']);
+    } else if (step === 3) {
+      isValid = await trigger(['gender', 'interests', 'location', 'mbti']);
+    }
+
+    if (isValid) {
+      setStep(step + 1);
+    }
   };
   const handlePrevStep = () => {
     setStep(step - 1);
-  };
-
-  const handleInterestChange = (value: string) => {
-    setFormData((prevData) => {
-      const newInterests = prevData.interests.includes(value)
-        ? prevData.interests.filter((interest) => interest !== value)
-        : [...prevData.interests, value];
-      setValue('interests', newInterests);
-      return { ...prevData, interests: newInterests };
-    });
   };
 
   return (
@@ -155,7 +163,7 @@ const Signup = () => {
                   <h1 className="text-xl font-bold">회원가입</h1>
 
                   <div className="flex gap-2">
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
                     <span className="bg-gray-300 w-8 h-2 rounded-lg"></span>
                     <span className="bg-gray-300 w-8 h-2 rounded-lg"></span>
                   </div>
@@ -164,11 +172,17 @@ const Signup = () => {
                 <div className="flex flex-col h-full gap-8">
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="email">이메일</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="modong@example.com"
-                      {...register('email')}
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="modong@example.com"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.email && (
                       <span className="text-red-500 text-sm">
@@ -179,22 +193,34 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="password">비밀번호</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="비밀번호"
-                      {...register('password')}
+                    <Controller
+                      name="password"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="비밀번호"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.password && (
                       <span className="text-red-500 text-sm">
                         {errors.password.message}
                       </span>
                     )}
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      placeholder="비밀번호 확인"
-                      {...register('confirmPassword')}
+                    <Controller
+                      name="confirmPassword"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="비밀번호 확인"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.confirmPassword && (
                       <span className="text-red-500 text-sm">
@@ -205,7 +231,10 @@ const Signup = () => {
 
                   <div className="grow"></div>
 
-                  <Button onClick={handleNextStep} className="w-full">
+                  <Button
+                    onClick={handleNextStep}
+                    className="w-full hover:bg-green-600"
+                  >
                     다음 단계로
                   </Button>
 
@@ -225,8 +254,8 @@ const Signup = () => {
                 <div className="flex items-center gap-4">
                   <h1 className="text-xl font-bold">회원가입</h1>
                   <div className="flex gap-2">
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
                     <span className="bg-gray-300 w-8 h-2 rounded-lg"></span>
                   </div>
                 </div>
@@ -234,11 +263,17 @@ const Signup = () => {
                 <div className="flex flex-col h-full gap-8">
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="name">이름</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="이름"
-                      {...register('name')}
+                    <Controller
+                      name="name"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="이름"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.name && (
                       <span className="text-red-500 text-sm">
@@ -249,11 +284,17 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="nickname">닉네임</Label>
-                    <Input
-                      id="nickname"
-                      type="text"
-                      placeholder="닉네임"
-                      {...register('nickname')}
+                    <Controller
+                      name="nickname"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="nickname"
+                          type="text"
+                          placeholder="닉네임"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.nickname && (
                       <span className="text-red-500 text-sm">
@@ -264,11 +305,17 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="phoneNumber">전화번호</Label>
-                    <Input
-                      id="phoneNumber"
-                      type="text"
-                      placeholder="010-0000-0000"
-                      {...register('phoneNumber')}
+                    <Controller
+                      name="phoneNumber"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="phoneNumber"
+                          type="text"
+                          placeholder="010-0000-0000"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.phoneNumber && (
                       <span className="text-red-500 text-sm">
@@ -279,11 +326,48 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="birth">생년월일</Label>
-                    <Input
-                      id="birth"
-                      type="date"
-                      placeholder="생년월일"
-                      {...register('birth')}
+                    <Controller
+                      name="birth"
+                      control={control}
+                      render={({ field }) => (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant={'outline'}
+                              className={cn(
+                                'w-full pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), 'yyyy-MM-dd')
+                              ) : (
+                                <span>날짜 선택</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={
+                                field.value ? new Date(field.value) : undefined
+                              }
+                              onSelect={(date) => {
+                                const formattedDate = date
+                                  ? format(date, 'yyyy-MM-dd')
+                                  : '';
+                                field.onChange(formattedDate);
+                              }}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date('1900-01-01')
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      )}
                     />
                     {errors.birth && (
                       <span className="text-red-500 text-sm">
@@ -295,15 +379,18 @@ const Signup = () => {
                   <div className="grow"></div>
 
                   <div>
-                    <Button onClick={handleNextStep} className="w-full">
-                      다음 단계로
-                    </Button>
                     <Button
                       variant="outline"
                       onClick={handlePrevStep}
-                      className="w-full mt-2"
+                      className="w-full mb-2"
                     >
                       이전 단계로
+                    </Button>
+                    <Button
+                      onClick={handleNextStep}
+                      className="w-full hover:bg-green-600"
+                    >
+                      다음 단계로
                     </Button>
                   </div>
 
@@ -323,40 +410,36 @@ const Signup = () => {
                 <div className="flex items-center gap-4">
                   <h1 className="text-xl font-bold">회원가입</h1>
                   <div className="flex gap-2">
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
-                    <span className="bg-green-500 w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
+                    <span className="bg-primary w-8 h-2 rounded-lg"></span>
                   </div>
                 </div>
 
                 <div className="flex flex-col h-full gap-8">
                   <div className="grid gap-2 justify-items-start">
-                    <p>성별</p>
+                    <Label>성별</Label>
                     <div className="flex gap-4">
-                      <div className="flex items-center gap-1">
-                        <Input
-                          id="male"
-                          type="radio"
-                          value="male"
-                          {...register('gender')}
-                          className="w-4 accent-green-500"
-                          onChange={() => setValue('gender', 'male')}
-                        />
-                        <Label htmlFor="male" className="w-fit">
-                          남성
-                        </Label>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Input
-                          id="female"
-                          type="radio"
-                          value="female"
-                          {...register('gender')}
-                          className="w-4 accent-green-500"
-                          onChange={() => setValue('gender', 'female')}
-                        />
-                        <Label htmlFor="female">여성</Label>
-                      </div>
+                      <Controller
+                        name="gender"
+                        control={control}
+                        render={({ field }) => (
+                          <RadioGroup
+                            className="flex items-center gap-4"
+                            value={field.value}
+                            onValueChange={(value) => field.onChange(value)}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="male" id="male" />
+                              <Label htmlFor="male">남성</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="female" id="female" />
+                              <Label htmlFor="female">여성</Label>
+                            </div>
+                          </RadioGroup>
+                        )}
+                      />
                     </div>
                     {errors.gender && (
                       <span className="text-red-500 text-sm">
@@ -367,26 +450,27 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="interests">관심사</Label>
-                    <ToggleGroup type="multiple">
-                      <ToggleGroupItem
-                        value="사교/취미"
-                        onClick={() => handleInterestChange('사교/취미')}
-                      >
-                        사교/취미
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="운동"
-                        onClick={() => handleInterestChange('운동')}
-                      >
-                        운동
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="스터디"
-                        onClick={() => handleInterestChange('스터디')}
-                      >
-                        스터디
-                      </ToggleGroupItem>
-                    </ToggleGroup>
+                    <Controller
+                      name="interests"
+                      control={control}
+                      render={({ field }) => (
+                        <ToggleGroup
+                          type="multiple"
+                          value={field.value}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        >
+                          <ToggleGroupItem value="사교/취미">
+                            사교/취미
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="운동">운동</ToggleGroupItem>
+                          <ToggleGroupItem value="스터디">
+                            스터디
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      )}
+                    />
                     {errors.interests && (
                       <span className="text-red-500 text-sm">
                         {errors.interests.message}
@@ -396,11 +480,17 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="location">내 지역</Label>
-                    <Input
-                      id="location"
-                      type="text"
-                      placeholder="내 지역"
-                      {...register('location')}
+                    <Controller
+                      name="location"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          id="location"
+                          type="text"
+                          placeholder="내 지역"
+                          {...field}
+                        />
+                      )}
                     />
                     {errors.location && (
                       <span className="text-red-500 text-sm">
@@ -411,38 +501,46 @@ const Signup = () => {
 
                   <div className="grid gap-2 justify-items-start">
                     <Label htmlFor="mbti">MBTI/외향형 or 내향형</Label>
-                    <Select onValueChange={(value) => setValue('mbti', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="MBTI/외향형 or 내향형" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>EN</SelectLabel>
-                          <SelectItem value="ENFJ">ENFJ</SelectItem>
-                          <SelectItem value="ENFP">ENFP</SelectItem>
-                          <SelectItem value="ENTJ">ENTJ</SelectItem>
-                          <SelectItem value="ENTP">ENTP</SelectItem>
-                          <SelectLabel>ES</SelectLabel>
-                          <SelectItem value="ESFJ">ESFJ</SelectItem>
-                          <SelectItem value="ESFP">ESFP</SelectItem>
-                          <SelectItem value="ESTJ">ESTJ</SelectItem>
-                          <SelectItem value="ESTP">ESTP</SelectItem>
-                          <SelectLabel>IN</SelectLabel>
-                          <SelectItem value="INFJ">INFJ</SelectItem>
-                          <SelectItem value="INFP">INFP</SelectItem>
-                          <SelectItem value="INTJ">INTJ</SelectItem>
-                          <SelectItem value="INTP">INTP</SelectItem>
-                          <SelectLabel>IS</SelectLabel>
-                          <SelectItem value="ISFJ">ISFJ</SelectItem>
-                          <SelectItem value="ISFP">ISFP</SelectItem>
-                          <SelectItem value="ISTJ">ISTJ</SelectItem>
-                          <SelectItem value="ISTP">ISTP</SelectItem>
-                          <SelectLabel>외향/내향</SelectLabel>
-                          <SelectItem value="외향형">외향형</SelectItem>
-                          <SelectItem value="내향형">내향형</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="mbti"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={(value) => field.onChange(value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="MBTI/외향형 or 내향형" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>EN</SelectLabel>
+                              <SelectItem value="ENFJ">ENFJ</SelectItem>
+                              <SelectItem value="ENFP">ENFP</SelectItem>
+                              <SelectItem value="ENTJ">ENTJ</SelectItem>
+                              <SelectItem value="ENTP">ENTP</SelectItem>
+                              <SelectLabel>ES</SelectLabel>
+                              <SelectItem value="ESFJ">ESFJ</SelectItem>
+                              <SelectItem value="ESFP">ESFP</SelectItem>
+                              <SelectItem value="ESTJ">ESTJ</SelectItem>
+                              <SelectItem value="ESTP">ESTP</SelectItem>
+                              <SelectLabel>IN</SelectLabel>
+                              <SelectItem value="INFJ">INFJ</SelectItem>
+                              <SelectItem value="INFP">INFP</SelectItem>
+                              <SelectItem value="INTJ">INTJ</SelectItem>
+                              <SelectItem value="INTP">INTP</SelectItem>
+                              <SelectLabel>IS</SelectLabel>
+                              <SelectItem value="ISFJ">ISFJ</SelectItem>
+                              <SelectItem value="ISFP">ISFP</SelectItem>
+                              <SelectItem value="ISTJ">ISTJ</SelectItem>
+                              <SelectItem value="ISTP">ISTP</SelectItem>
+                              <SelectLabel>외향/내향</SelectLabel>
+                              <SelectItem value="외향형">외향형</SelectItem>
+                              <SelectItem value="내향형">내향형</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                     {errors.mbti && (
                       <span className="text-red-500 text-sm">
                         {errors.mbti.message}
@@ -453,15 +551,15 @@ const Signup = () => {
                   <div className="grow"></div>
 
                   <div>
-                    <Button type="submit" className="w-full">
-                      회원가입하기
-                    </Button>
                     <Button
                       variant="outline"
                       onClick={handlePrevStep}
-                      className="w-full mt-2"
+                      className="w-full mb-2"
                     >
                       이전 단계로
+                    </Button>
+                    <Button type="submit" className="w-full hover:bg-green-600">
+                      회원가입하기
                     </Button>
                   </div>
 
