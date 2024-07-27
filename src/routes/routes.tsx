@@ -2,6 +2,7 @@ import { default as Login, default as Signup } from '@/pages/Auth/Login';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
+import Chat from '@/pages/chat/Chat';
 import ChatRoomList from '@/pages/chat/ChatRoomList';
 import MemberList from '@/pages/ClubPage/MemberList';
 import CreateClub from '@/pages/Create/CreateClub';
@@ -124,6 +125,10 @@ const router = createBrowserRouter([
       {
         path: 'chatRooms/:clubId',
         element: <ChatRoomList />,
+      },
+      {
+        path: 'chatRooms/:clubId/:roomId',
+        element: <Chat />, // 채팅방 상세 컴포넌트 추가
       },
     ],
   },
