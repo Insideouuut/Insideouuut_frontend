@@ -68,3 +68,15 @@ declare namespace kakao.maps {
 interface Window {
   kakao: typeof kakao;
 }
+
+// 채팅 관련 응답 데이터 타입
+export interface ChatMessage {
+  sender: string;
+  content: string;
+  sendTime: string; // 기존 timestamp 대신 sendTime 사용
+}
+
+export interface ChatRoom {
+  id: string;
+  name: string;
+}
