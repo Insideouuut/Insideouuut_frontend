@@ -1,3 +1,4 @@
+import { MoveUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import Bubble from './Bubble';
@@ -67,20 +68,20 @@ const Chat = () => {
           />
         ))}
       </div>
-      <div className="flex mt-4">
+      <div className="flex mt-4 space-x-2">
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-grow p-2 border rounded-l"
+          className="flex-grow bg-gray-100 py-2 px-4 text-sm border rounded-2xl"
           placeholder="메시지를 입력하세요"
         />
         <button
           onClick={handleSendMessage}
-          className="p-2 bg-blue-500 text-white rounded-r"
+          className="p-2 bg-primary text-white rounded-full"
         >
-          전송
+          <MoveUp />
         </button>
       </div>
     </div>
