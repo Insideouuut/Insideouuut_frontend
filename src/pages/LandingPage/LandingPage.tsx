@@ -12,7 +12,7 @@ import ThirdSection from './ThirdSection';
 const LandingPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const { isLoggedIn, clearUser } = useUserStore();
+  const { isLoggedIn, clearUser, setUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -46,9 +46,13 @@ const LandingPage: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
-  const handleLogout = () => {
-    clearUser();
-    setIsProfileModalOpen(false);
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      clearUser();
+    } else {
+      // 로그인 로직 추가
+      setUser({ isLoggedIn: true });
+    }
   };
 
   return (
@@ -57,7 +61,7 @@ const LandingPage: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={handleLogout}
+        handleLoginLogout={handleLoginLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -69,7 +73,7 @@ const LandingPage: React.FC = () => {
       {isProfileModalOpen && (
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
-          handleLogout={handleLogout}
+          handleLogout={handleLoginLogout}
           coords={profileCoords}
         />
       )}
