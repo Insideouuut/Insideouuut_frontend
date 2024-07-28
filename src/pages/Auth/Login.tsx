@@ -49,7 +49,7 @@ const Login = () => {
     setUser(mockUserData);
 
     alert('로그인 성공');
-    navigate('/landing');
+    navigate('/main');
   };
 
   return (

@@ -53,15 +53,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
       <div className="bg-white rounded-lg shadow-lg p-6 w-32">
         <ul className="space-y-3">
           <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">
-            <Link to="/profile-edit" onClick={toggleProfileModal}>
+            <Link to="/mypage" onClick={toggleProfileModal}>
               프로필 수정
             </Link>
           </li>
-          <li className="text-[13px] font-neoBold border-b pb-2 cursor-pointer">
-            <Link to="/participation-list" onClick={toggleProfileModal}>
-              <p>모임/동아리</p>참여 목록
-            </Link>
-          </li>
+
           <div
             className="text-[13px] font-neoBold text-red-500 cursor-pointer"
             onClick={handleLogout}
