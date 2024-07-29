@@ -1,5 +1,9 @@
-import Login from '@/pages/Auth/Login';
-import Signup from '@/pages/Auth/Signup';
+import { default as Login, default as Signup } from '@/pages/Auth/Login';
+import BoardList from '@/pages/board/BoardList';
+import PostDetail from '@/pages/board/PostDetail';
+import PostForm from '@/pages/board/PostForm';
+import Chat from '@/pages/chat/Chat';
+import MemberList from '@/pages/ClubPage/MemberList';
 import CreateClub from '@/pages/Create/CreateClub';
 import CreateMeeting from '@/pages/Create/CreateMeeting';
 import Main from '@/pages/Main/Main';
@@ -17,7 +21,6 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
   },
-
   {
     path: '/landing',
     element: <Landing />,
@@ -49,6 +52,80 @@ const router = createBrowserRouter([
   {
     path: '/club',
     element: <ClubPage />,
+    children: [
+      {
+        path: 'board/:type',
+        element: <BoardList />,
+      },
+      {
+        path: 'board/:type/:id',
+        element: <PostDetail />,
+      },
+      {
+        path: 'board/:type/:id/edit',
+        element: <PostForm />,
+      },
+      {
+        path: 'board/new',
+        element: <PostForm />,
+      },
+      {
+        path: 'members',
+        element: <MemberList />,
+      },
+      {
+        path: 'meetingList',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            모임 목록 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'createMeeting',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            모임 생성 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'meetingListSettings',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            모임 목록 설정 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'manageClub',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            동아리 관리 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'memberRequests',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            멤버 신청 목록 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'manageMembers',
+        element: (
+          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+            멤버 관리 컴포넌트
+          </div>
+        ),
+      },
+      {
+        path: 'chatRooms/:clubId/:roomId',
+        element: <Chat />,
+      },
+    ],
   },
   {
     path: '/create-club',

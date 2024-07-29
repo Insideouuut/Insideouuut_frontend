@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { useUserStore } from '@/store/userStore';
 import React, { useRef, useState } from 'react';
 import CategoryContainer from './CategoryContainer';
 import MiddleSection from './MiddleSection';
@@ -11,7 +12,7 @@ import MiddleSection from './MiddleSection';
 const Main: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setUser, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -45,9 +46,13 @@ const Main: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsProfileModalOpen(false);
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      clearUser();
+    } else {
+      // 로그인 로직 추가
+      setUser({ isLoggedIn: true });
+    }
   };
 
   return (
@@ -56,7 +61,7 @@ const Main: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLoginLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -80,7 +85,7 @@ const Main: React.FC = () => {
       {isProfileModalOpen && (
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
-          handleLogout={handleLogout}
+          handleLogout={handleLoginLogout}
           coords={profileCoords}
         />
       )}

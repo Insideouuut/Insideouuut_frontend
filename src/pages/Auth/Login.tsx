@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { mockUserData } from '@/pages/MyPage/mockUserData'; // import mock user data
+import { useUserStore } from '@/store/userStore'; // import zustand store
 import { zodResolver } from '@hookform/resolvers/zod';
 import Lottie from 'lottie-react';
 import { useForm } from 'react-hook-form';
@@ -30,6 +32,8 @@ type LoginFormValues = {
 
 const Login = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+
   const {
     register,
     handleSubmit,
@@ -40,9 +44,12 @@ const Login = () => {
 
   const onSubmit = (data: LoginFormValues) => {
     console.log(data);
-    alert(JSON.stringify(data));
-    navigate('/landing');
-    // 여기에 폼 제출 로직 추가
+
+    // 로그인 성공 시 mockUserData를 zustand 스토어에 저장
+    setUser(mockUserData);
+
+    alert('로그인 성공');
+    navigate('/main');
   };
 
   return (

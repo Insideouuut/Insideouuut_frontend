@@ -12,11 +12,15 @@ import {
 import React, { useState } from 'react';
 
 interface ClubSidebarProps {
+  roomId: string;
+  clubId: number;
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
+  roomId,
+  clubId,
   selectedMenu,
   setSelectedMenu,
 }) => {
@@ -90,8 +94,17 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
           </div>
           <div
-            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-40' : 'max-h-0'}`}
+            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
           >
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => handleMenuClick('allBoard')}
+              onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
+              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+            >
+              전체 게시판
+            </div>
             <div
               role="button"
               tabIndex={0}
@@ -133,8 +146,10 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick('chat')}
-          onKeyDown={(event) => handleKeyDown(event, 'chat')}
+          onClick={() => handleMenuClick(`chatRooms/${clubId}/${roomId}`)}
+          onKeyDown={(event) =>
+            handleKeyDown(event, `chatRooms/${clubId}/${roomId}`)
+          }
           className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('chat')}`}
         >
           <MessageCircleMore className="w-5 h-5" />
