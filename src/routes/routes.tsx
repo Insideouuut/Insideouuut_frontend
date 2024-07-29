@@ -2,6 +2,8 @@ import { default as Login, default as Signup } from '@/pages/Auth/Login';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
+import Chat from '@/pages/chat/Chat';
+import ChatRoomList from '@/pages/chat/ChatRoomList';
 import MemberList from '@/pages/ClubPage/MemberList';
 import CreateClub from '@/pages/Create/CreateClub';
 import CreateMeeting from '@/pages/Create/CreateMeeting';
@@ -121,12 +123,12 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'chat',
-        element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            채팅 컴포넌트
-          </div>
-        ),
+        path: 'chatRooms/:clubId',
+        element: <ChatRoomList />,
+      },
+      {
+        path: 'chatRooms/:clubId/:roomId',
+        element: <Chat />, // 채팅방 상세 컴포넌트 추가
       },
     ],
   },

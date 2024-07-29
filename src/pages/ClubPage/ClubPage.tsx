@@ -9,6 +9,7 @@ import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
 import ClubPost from './ex';
 interface ClubData {
+  clubId: number;
   type: '동아리' | '모임';
   category: '운동' | '사교/취미' | '공부';
   title: string;
@@ -22,6 +23,7 @@ interface ClubData {
 }
 
 const clubInfo = {
+  clubId: 1,
   name: '한강 러닝 크루',
   description: '다같이 모여서 즐겁게 러닝해요!',
   meetingTimes: '24.07.17(화)',
@@ -91,6 +93,7 @@ const ClubPage: React.FC = () => {
   };
 
   const [clubData, setClubData] = useState<ClubData>({
+    clubId: 1,
     type: '동아리',
     category: '사교/취미',
     title: '한강 러닝 크루',
@@ -116,6 +119,7 @@ const ClubPage: React.FC = () => {
       <ClubHero clubData={clubData} onColorChange={handleColorChange} />
       <div className="flex mt-4 justify-center">
         <ClubSidebar
+          clubId={clubInfo.clubId}
           selectedMenu={selectedMenu}
           setSelectedMenu={handleMenuClick}
         />
