@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +10,7 @@ import {
 import { boardMapping } from '@/utils/boardMapping';
 import { SquarePen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { mockPosts } from './mockPosts';
 
 interface Post {
@@ -28,6 +29,7 @@ const BoardList: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const postsPerPage = 4;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (type === 'allBoard') {
@@ -44,13 +46,34 @@ const BoardList: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const handleNewPostClick = () => {
+    navigate(`/club/board/new`);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleNewPostClick();
+    }
+  };
+
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
-      <div className="flex items-center">
-        <div className="rounded-full w-9 h-9 bg-gray-200 hover:bg-gray-400 mr-4 items-center justify-center flex">
-          <SquarePen />
+      <div className="flex items-center justify-between">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={handleNewPostClick}
+          onKeyDown={handleKeyDown}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="rounded-full w-9 h-9 bg-gray-200 hover:bg-gray-400 mr-4 items-center justify-center flex">
+            <SquarePen />
+          </div>
+          <p className="text-sm"> 게시글을 작성해보세요</p>
         </div>
-        <p className="text-sm"> 게시글을 작성해보세요</p>
+        <Button className="hover:bg-green-600" onClick={handleNewPostClick}>
+          새 글 작성
+        </Button>
       </div>
       <section className="mt-8">
         <div className="w-full mb-8">

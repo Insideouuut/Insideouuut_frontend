@@ -92,5 +92,23 @@ export const mockPosts = [
       { author: '사용자2', content: '내용2' },
     ],
   },
+  {
+    id: 6,
+    title: '제목5',
+    author: 'CurrentUser',
+    profileImageUrl: 'https://via.placeholder.com/100',
+    description: '내용5',
+    createdAt: '18분 전',
+    views: 230,
+    category: 'noticeBoard',
+    images: [
+      { name: 'imageName1', url: 'https://via.placeholder.com/100' },
+      { name: 'imageName2', url: 'https://imageUrl2.com' },
+    ],
+    comments: [
+      { author: '사용자1', content: '내용1' },
+      { author: '사용자2', content: '내용2' },
+    ],
+  },
   // 추가 목업 데이터
 ];

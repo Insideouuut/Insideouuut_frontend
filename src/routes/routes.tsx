@@ -1,6 +1,7 @@
 import { default as Login, default as Signup } from '@/pages/Auth/Login';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
+import PostForm from '@/pages/board/PostForm';
 import MemberList from '@/pages/ClubPage/MemberList';
 import CreateClub from '@/pages/Create/CreateClub';
 import CreateMeeting from '@/pages/Create/CreateMeeting';
@@ -58,6 +59,14 @@ const router = createBrowserRouter([
       {
         path: 'board/:type/:id',
         element: <PostDetail />,
+      },
+      {
+        path: 'board/:type/:id/edit',
+        element: <PostForm />,
+      },
+      {
+        path: 'board/new',
+        element: <PostForm />,
       },
       {
         path: 'members',
