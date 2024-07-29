@@ -1,4 +1,5 @@
-import { default as Login, default as Signup } from '@/pages/Auth/Login';
+import Login from '@/pages/Auth/Login';
+import Signup from '@/pages/Auth/Signup';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
