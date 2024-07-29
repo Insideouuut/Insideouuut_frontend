@@ -12,14 +12,19 @@ interface UserState {
   location: string;
   mbti: string;
   interests: string[];
+  isLoggedIn: boolean;
   setUser: (user: Partial<UserState>) => void;
+  clearUser: () => void;
 }
 
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       ...mockUserData,
-      setUser: (user) => set((state) => ({ ...state, ...user })),
+      isLoggedIn: false,
+      setUser: (user) =>
+        set((state) => ({ ...state, ...user, isLoggedIn: true })),
+      clearUser: () => set({ ...mockUserData, isLoggedIn: false }),
     }),
     {
       name: 'user-storage', // localStorage key

@@ -12,13 +12,14 @@ import { Input } from '@/components/ui/input';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import MapComponent from '@/pages/SetLocation/MapComponent';
+import { useUserStore } from '@/store/userStore';
 import { CircleAlert, Map } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
 const SetLocation: React.FC = () => {
+  const { isLoggedIn, setUser, clearUser, location } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -29,7 +30,7 @@ const SetLocation: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
-  const [location, setLocation] = useState(''); // 위치 상태
+  const [myLocation, setMyLocation] = useState(''); // 위치 상태
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -47,14 +48,18 @@ const SetLocation: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsProfileModalOpen(false);
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      clearUser();
+    } else {
+      // 로그인 로직 추가
+      setUser({ isLoggedIn: true });
+    }
   };
 
   // 위치 데이터를 업데이트하는 함수
   const handleLocationSelect = (newLocation: string) => {
-    setLocation(newLocation);
+    setMyLocation(newLocation);
   };
 
   return (
@@ -63,7 +68,7 @@ const SetLocation: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLoginLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -81,12 +86,17 @@ const SetLocation: React.FC = () => {
               <Map className="text-primary " />
               <p className="font-neoBold whitespace-nowrap">우리 동네</p>
               <Input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={myLocation}
+                onChange={(e) => setMyLocation(e.target.value)}
                 placeholder="시, 구, 동 입력"
               />
             </div>
-
+            <div className="flex space-x-2 text-sm mb-4 items-center">
+              <p>내가 설정한 동네</p>
+              <p className=" text-white  p-2 rounded-xl px-4 bg-primary font-neoBold">
+                {location}
+              </p>
+            </div>
             <HoverCard>
               <HoverCardTrigger>
                 <div className="flex space-x-2 items-center mb-4">
@@ -101,6 +111,7 @@ const SetLocation: React.FC = () => {
               </HoverCardContent>
             </HoverCard>
 
+            {/* 만약 myLocation에 location이 동일? 일치하면 동네 인증성공하는 함수 추가하기*/}
             <Button className="bg-slate-100 hover:bg-slate-200 text-black font-neoBold">
               동네 인증하기
             </Button>
@@ -110,7 +121,7 @@ const SetLocation: React.FC = () => {
         {isProfileModalOpen && (
           <ProfileModal
             toggleProfileModal={toggleProfileModal}
-            handleLogout={handleLogout}
+            handleLogout={handleLoginLogout}
             coords={profileCoords}
           />
         )}

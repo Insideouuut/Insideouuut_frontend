@@ -12,12 +12,14 @@ import {
 import React, { useState } from 'react';
 
 interface ClubSidebarProps {
+  roomId: string;
   clubId: number;
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
+  roomId,
   clubId,
   selectedMenu,
   setSelectedMenu,
@@ -144,8 +146,10 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick(`chatRooms/${clubId}`)}
-          onKeyDown={(event) => handleKeyDown(event, `chatRooms/${clubId}`)}
+          onClick={() => handleMenuClick(`chatRooms/${clubId}/${roomId}`)}
+          onKeyDown={(event) =>
+            handleKeyDown(event, `chatRooms/${clubId}/${roomId}`)
+          }
           className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('chat')}`}
         >
           <MessageCircleMore className="w-5 h-5" />

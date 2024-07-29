@@ -1,16 +1,13 @@
+import { useUserStore } from '@/store/userStore'; // zustand store import
 import { MoveUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Bubble from './Bubble';
 import { mockMessages } from './chatMockData'; // 임시 채팅 내역 데이터
 
 const Chat = () => {
   const { clubId, roomId } = useParams<{ clubId: string; roomId: string }>();
-  const location = useLocation();
-  const { nickname, imageUrl } = location.state as {
-    nickname: string;
-    imageUrl: string;
-  };
+  const { nickname, imageUrl } = useUserStore(); // zustand에서 현재 사용자 정보 가져오기
 
   const [messages, setMessages] = useState(mockMessages);
   const [newMessage, setNewMessage] = useState('');
