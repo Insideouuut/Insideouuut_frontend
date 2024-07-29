@@ -90,8 +90,17 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
           </div>
           <div
-            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-40' : 'max-h-0'}`}
+            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
           >
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => handleMenuClick('allBoard')}
+              onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
+              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+            >
+              전체 게시판
+            </div>
             <div
               role="button"
               tabIndex={0}

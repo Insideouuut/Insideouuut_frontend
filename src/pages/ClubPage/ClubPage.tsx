@@ -3,12 +3,11 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
 import ClubPost from './ex';
-import MemberList from './MemberList';
-
 interface ClubData {
   type: '동아리' | '모임';
   category: '운동' | '사교/취미' | '공부';
@@ -21,6 +20,16 @@ interface ClubData {
   backgroundColor: string;
   backgroundImage: string;
 }
+
+const clubInfo = {
+  name: '한강 러닝 크루',
+  description: '다같이 모여서 즐겁게 러닝해요!',
+  meetingTimes: '24.07.17(화)',
+  location: '노원구',
+  maxParticipants: 30,
+  currentParticipants: 10,
+  contact: 'contact@example.com',
+};
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
@@ -43,6 +52,7 @@ const ClubPage: React.FC = () => {
     left: 0,
   });
   const profileRef = useRef<HTMLImageElement>(null);
+  const navigate = useNavigate();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -69,6 +79,17 @@ const ClubPage: React.FC = () => {
     setClubData((prevData) => ({ ...prevData, backgroundColor: newColor }));
   };
 
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+    if (menu.includes('Board')) {
+      navigate(`/club/board/${menu}`);
+    } else if (menu === 'home') {
+      navigate('/club');
+    } else {
+      navigate(`/club/${menu}`);
+    }
+  };
+
   const [clubData, setClubData] = useState<ClubData>({
     type: '동아리',
     category: '사교/취미',
@@ -81,16 +102,6 @@ const ClubPage: React.FC = () => {
     backgroundColor: 'bg-green-100',
     backgroundImage: '',
   });
-
-  const clubInfo = {
-    name: clubData.title,
-    description: clubData.description,
-    meetingTimes: clubData.schedule,
-    location: clubData.location,
-    maxParticipants: 30,
-    currentParticipants: 10,
-    contact: 'contact@example.com',
-  };
 
   return (
     <div className="relative">
@@ -106,7 +117,7 @@ const ClubPage: React.FC = () => {
       <div className="flex mt-4 justify-center">
         <ClubSidebar
           selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
+          setSelectedMenu={handleMenuClick}
         />
         <div>
           {selectedMenu === 'home' && (
@@ -115,62 +126,7 @@ const ClubPage: React.FC = () => {
               <ClubPost />
             </div>
           )}
-          {selectedMenu === 'meetingList' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              모임 목록 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'noticeBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              공지 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'freeBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              자유 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'reviewBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              후기 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'questionBoard' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              질문 게시판 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'chat' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              채팅 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'members' && <MemberList />}
-          {selectedMenu === 'createMeeting' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              모임 생성 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'meetingListSettings' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              모임 목록 설정 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'manageClub' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              동아리 관리 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'memberRequests' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              멤버 신청 목록 컴포넌트
-            </div>
-          )}
-          {selectedMenu === 'manageMembers' && (
-            <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-              멤버 관리 컴포넌트
-            </div>
-          )}
+          <Outlet />
         </div>
       </div>
       <Footer />
