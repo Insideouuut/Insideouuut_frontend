@@ -122,7 +122,7 @@ const Login = () => {
 
               <div className="grow"></div>
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full hover:bg-green-600">
                 이메일로 로그인하기
               </Button>
             </div>

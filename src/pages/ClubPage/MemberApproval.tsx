@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Separator } from '@/components/ui/separator';
+import { EllipsisVertical } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 
 interface Member {
@@ -107,7 +113,7 @@ const MemberApproval: React.FC = () => {
   return (
     <div className=" w-full ">
       <h2 className="text-2xl font-bold mb-6 text-center">멤버 승인</h2>
-      <div className="bg-white rounded-lg shadow-lg p-4 h-[700px] overflow-x-auto">
+      <div className="bg-white rounded-lg shadow-lg p-4 max-h-[700px] overflow-x-auto">
         {MEMBERS.map((member, index) => (
           <div key={member.id}>
             <div className="flex items-center justify-between my-2">
@@ -115,12 +121,28 @@ const MemberApproval: React.FC = () => {
                 <img src={member.profileImage} alt="avatar" className="w-10 h-10 rounded-full mr-4" />
                 <span>{member.nickname}</span>
               </div>
-              <Button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={() => openApplicationModal(member)}
-              >
-                신청서 확인
-              </Button>
+                <div className='flex items-center'>
+                <Button
+                  className="bg-primary px-4 py-2 mr-2 rounded hover:bg-green-700"
+                  onClick={() => openApplicationModal(member)}
+                >
+                  신청서 확인
+                </Button>
+                <Popover>
+                      <PopoverTrigger asChild className="cursor-pointer">
+                        <EllipsisVertical size={24} />
+                      </PopoverTrigger>
+                      <PopoverContent className="flex flex-col items-start w-auto absolute -right-2">
+                        <Button variant="link" className="text-slate-900 p-1">
+                          프로필 보기
+                        </Button>
+                        <Separator />
+                        <Button variant="link" className="text-rose-500 p-1">
+                          신고하기
+                        </Button>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
             </div>
             {index < MEMBERS.length - 1 && <Separator />}
           </div>

@@ -111,11 +111,11 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
               <tbody>
                 {sortedMeetings.slice(0, 4).map((meeting, index) => (
                   <tr key={index} className="cursor-pointer hover:bg-gray-100" onClick={() => handleMeetingClick(meeting)}>
-                    <td className="py-3 px-5 border-b text-gray-800">{meeting.title}</td>
+                    <td className="py-3 px-5 border-b text-gray-800">{meeting.name}</td>
                     <td className="py-3 px-5 border-b text-gray-600">{meeting.description}</td>
                     <td className="py-3 px-5 border-b text-gray-500">{meeting.location}</td>
                     <td className="py-3 px-5 border-b text-gray-500">
-                      {meeting.members.current}/{meeting.members.total}
+                      {meeting.memberCount}/{meeting.memberLimit}
                     </td>
                     <td className="py-3 px-5 border-b text-gray-500">{meeting.date}</td>
                   </tr>

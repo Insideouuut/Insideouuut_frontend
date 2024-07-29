@@ -9,4 +9,5 @@ export const mockUserData = {
   location: '송파구',
   mbti: 'INTJ',
   interests: ['사교/취미'],
+  clubIds: [1, 3, 5], // 유저가 참여 중인 모임/동아리의 ID 목록
 };

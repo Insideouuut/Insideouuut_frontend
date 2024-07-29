@@ -21,7 +21,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       (activeTopTab === '전체' || item.clubTypes.includes(activeTopTab)) &&
       (activeBottomTab === '전체' ||
         item.meetingTypes.includes(activeBottomTab)) &&
-      (item.title.includes(searchQuery) ||
+      (item.name.includes(searchQuery) ||
         item.description.includes(searchQuery)),
   );
 
@@ -70,11 +70,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 clubTypes={item.clubTypes}
                 meetingTypes={item.meetingTypes}
                 imageUrl={item.imageUrl}
-                title={item.title}
+                name={item.name}
                 description={item.description}
                 date={item.date}
                 location={item.location}
-                members={item.members}
+                memberLimit={item.memberLimit}
+                memberCount={item.memberCount}
               />
             ))}
           </div>

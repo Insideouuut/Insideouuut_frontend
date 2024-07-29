@@ -9,6 +9,7 @@ import ClubSidebar from './ClubSidebar';
 import MemberList from './MemberList';
 import MeetingList from './MeetingList';
 import MemberApproval from './MemberApproval';
+import MemberManagement from './MemberManagement';
 interface ClubData {
   type: '동아리' | '모임';
   category: '운동' | '사교/취미' | '공부';
@@ -167,6 +168,7 @@ const ClubPage: React.FC = () => {
           )}
           {selectedMenu === 'manageMembers' && (
             <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
+              <MemberManagement/>
             </div>
           )}
         </div>
