@@ -10,12 +10,15 @@ import Main from '@/pages/Main/Main';
 import MyPage from '@/pages/MyPage/MyPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
+import ClubManagement from '../pages/ClubPage/ClubManagement';
 import ClubPage from '../pages/ClubPage/ClubPage';
+import MeetingList from '../pages/ClubPage/MeetingList';
+import MemberApproval from '../pages/ClubPage/MemberApproval';
+import MemberManagement from '../pages/ClubPage/MemberManagement';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -75,11 +78,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'meetingList',
-        element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            모임 목록 컴포넌트
-          </div>
-        ),
+        element: <MeetingList />,
       },
       {
         path: 'createMeeting',
@@ -99,27 +98,15 @@ const router = createBrowserRouter([
       },
       {
         path: 'manageClub',
-        element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            동아리 관리 컴포넌트
-          </div>
-        ),
+        element: <ClubManagement />,
       },
       {
         path: 'memberRequests',
-        element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            멤버 신청 목록 컴포넌트
-          </div>
-        ),
+        element: <MemberApproval />,
       },
       {
         path: 'manageMembers',
-        element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            멤버 관리 컴포넌트
-          </div>
-        ),
+        element: <MemberManagement />,
       },
       {
         path: 'chatRooms/:clubId/:roomId',

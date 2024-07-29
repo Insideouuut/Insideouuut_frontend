@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Separator } from '@/components/ui/separator';
-import Member from './Member';
 import { Button } from '@/components/ui/button';
-import { EllipsisVertical } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 import { Dialog } from '@headlessui/react';
+import { EllipsisVertical } from 'lucide-react';
+import React, { useState } from 'react';
+import Member from './Member';
 
 interface Member {
   id: number;
@@ -97,23 +97,27 @@ const MemberManagement: React.FC = () => {
 
   const handleRemoveMember = () => {
     if (memberToRemove) {
-      setMembers(members.filter(member => member.id !== memberToRemove.id));
+      setMembers(members.filter((member) => member.id !== memberToRemove.id));
       closeModal();
     }
   };
 
   return (
-    <div className="w-full">
+    <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
       <h2 className="text-2xl font-bold mb-6 text-center">멤버 관리</h2>
       <div className="bg-white rounded-lg shadow-lg p-4 min-h-[500px] max-h-[700px] overflow-x-auto">
         {members.map((member, index) => (
           <div key={member.id}>
             <div className="flex items-center justify-between my-2">
               <div className="flex items-center">
-                <img src={member.profileImage} alt="avatar" className="w-10 h-10 rounded-full mr-4" />
+                <img
+                  src={member.profileImage}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full mr-4"
+                />
                 <span>{member.nickname}</span>
               </div>
-              <div className='flex items-center'>
+              <div className="flex items-center">
                 <Button
                   className="bg-red-500 px-4 py-2 mr-2 rounded hover:bg-red-700"
                   onClick={() => openModal(member)}
@@ -141,18 +145,30 @@ const MemberManagement: React.FC = () => {
         ))}
       </div>
 
-      <Dialog open={isModalOpen} onClose={closeModal} className="fixed z-10 inset-0 overflow-y-auto">
+      <Dialog
+        open={isModalOpen}
+        onClose={closeModal}
+        className="fixed z-10 inset-0 overflow-y-auto"
+      >
         <div className="flex items-center justify-center min-h-screen">
-          <div className="fixed inset-0 bg-black opacity-30" aria-hidden="true"></div>
+          <div
+            className="fixed inset-0 bg-black opacity-30"
+            aria-hidden="true"
+          ></div>
           <div className="bg-white rounded-lg max-w-sm mx-auto p-6 relative z-20">
-            <Dialog.Title className="text-xl font-bold mb-4">강퇴 확인</Dialog.Title>
+            <Dialog.Title className="text-xl font-bold mb-4">
+              강퇴 확인
+            </Dialog.Title>
             <Dialog.Description>
               {memberToRemove && (
                 <p>정말로 {memberToRemove.nickname}님을 강퇴하시겠습니까?</p>
               )}
             </Dialog.Description>
             <div className="mt-4 flex space-x-4">
-              <Button className="bg-red-500 text-white" onClick={handleRemoveMember}>
+              <Button
+                className="bg-red-500 text-white"
+                onClick={handleRemoveMember}
+              >
                 강퇴
               </Button>
               <Button className="bg-gray-500 text-white" onClick={closeModal}>

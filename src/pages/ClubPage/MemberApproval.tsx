@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Dialog } from '@headlessui/react';
-import { Separator } from '@/components/ui/separator';
-import { EllipsisVertical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Dialog } from '@headlessui/react';
+import { EllipsisVertical } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Member {
   id: number;
@@ -92,7 +92,9 @@ const MEMBERS: Member[] = [
 ];
 
 const MemberApproval: React.FC = () => {
-  const [selectedApplication, setSelectedApplication] = useState<Member | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<Member | null>(
+    null,
+  );
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   const openApplicationModal = (member: Member) => {
@@ -111,17 +113,21 @@ const MemberApproval: React.FC = () => {
   };
 
   return (
-    <div className=" w-full ">
+    <div className=" flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 ">
       <h2 className="text-2xl font-bold mb-6 text-center">멤버 승인</h2>
       <div className="bg-white rounded-lg shadow-lg p-4 max-h-[700px] overflow-x-auto">
         {MEMBERS.map((member, index) => (
           <div key={member.id}>
             <div className="flex items-center justify-between my-2">
               <div className="flex items-center">
-                <img src={member.profileImage} alt="avatar" className="w-10 h-10 rounded-full mr-4" />
+                <img
+                  src={member.profileImage}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full mr-4"
+                />
                 <span>{member.nickname}</span>
               </div>
-                <div className='flex items-center'>
+              <div className="flex items-center">
                 <Button
                   className="bg-primary px-4 py-2 mr-2 rounded hover:bg-green-700"
                   onClick={() => openApplicationModal(member)}
@@ -129,35 +135,48 @@ const MemberApproval: React.FC = () => {
                   신청서 확인
                 </Button>
                 <Popover>
-                      <PopoverTrigger asChild className="cursor-pointer">
-                        <EllipsisVertical size={24} />
-                      </PopoverTrigger>
-                      <PopoverContent className="flex flex-col items-start w-auto absolute -right-2">
-                        <Button variant="link" className="text-slate-900 p-1">
-                          프로필 보기
-                        </Button>
-                        <Separator />
-                        <Button variant="link" className="text-rose-500 p-1">
-                          신고하기
-                        </Button>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <PopoverTrigger asChild className="cursor-pointer">
+                    <EllipsisVertical size={24} />
+                  </PopoverTrigger>
+                  <PopoverContent className="flex flex-col items-start w-auto absolute -right-2">
+                    <Button variant="link" className="text-slate-900 p-1">
+                      프로필 보기
+                    </Button>
+                    <Separator />
+                    <Button variant="link" className="text-rose-500 p-1">
+                      신고하기
+                    </Button>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             {index < MEMBERS.length - 1 && <Separator />}
           </div>
         ))}
       </div>
 
-      <Dialog open={isApplicationModalOpen} onClose={closeApplicationModal} className="fixed z-10 inset-0 overflow-y-auto">
+      <Dialog
+        open={isApplicationModalOpen}
+        onClose={closeApplicationModal}
+        className="fixed z-10 inset-0 overflow-y-auto"
+      >
         <div className="flex items-center justify-center min-h-screen">
-          <div className="fixed inset-0 bg-black opacity-30" aria-hidden="true"></div>
+          <div
+            className="fixed inset-0 bg-black opacity-30"
+            aria-hidden="true"
+          ></div>
           <div className="bg-white rounded-lg max-w-sm mx-auto p-6 relative z-20">
-            <Dialog.Title className="text-xl font-bold mb-4">신청서 확인</Dialog.Title>
+            <Dialog.Title className="text-xl font-bold mb-4">
+              신청서 확인
+            </Dialog.Title>
             <Dialog.Description>
               {selectedApplication && (
                 <div>
-                  <img src={selectedApplication.profileImage} alt="avatar" className="w-10 h-10 rounded-full mr-4" />
+                  <img
+                    src={selectedApplication.profileImage}
+                    alt="avatar"
+                    className="w-10 h-10 rounded-full mr-4"
+                  />
                   <span>{selectedApplication.nickname}</span>
                   <p className="mt-4">{selectedApplication.application}</p>
                 </div>
@@ -177,7 +196,10 @@ const MemberApproval: React.FC = () => {
                 거절
               </Button>
             </div>
-            <Button className="mt-4 text-gray-500" onClick={closeApplicationModal}>
+            <Button
+              className="mt-4 text-gray-500"
+              onClick={closeApplicationModal}
+            >
               닫기
             </Button>
           </div>

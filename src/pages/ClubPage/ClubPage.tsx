@@ -7,7 +7,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-import ClubPost from './ex';
+
 interface ClubData {
   roomId: string;
   clubId: number;
