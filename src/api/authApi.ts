@@ -1,13 +1,24 @@
-import { AuthResponse, LoginRequest, SignupRequest } from '../types/Auth';
+import { AxiosResponseHeaders } from 'axios';
+import {
+  AuthResponse,
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+} from '../types/Auth';
 import axiosInstance from './axiosConfig';
 
 // 로그인 함수
-export const login = async (loginData: LoginRequest): Promise<AuthResponse> => {
+export const login = async (
+  loginData: LoginRequest,
+): Promise<LoginResponse> => {
   const response = await axiosInstance.post<AuthResponse>(
     '/api/login',
     loginData,
   );
-  return response.data;
+  return {
+    data: response.data,
+    headers: response.headers as AxiosResponseHeaders,
+  };
 };
 
 // 소셜 로그인 함수
