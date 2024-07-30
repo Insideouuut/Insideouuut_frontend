@@ -1,4 +1,5 @@
-// src/types/Auth.ts
+import { AxiosResponseHeaders } from 'axios';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -9,7 +10,7 @@ export interface LoginRequest {
 //   token: string; // 소셜 로그인 액세스 토큰
 // }
 
-export interface SignupRequest {
+export interface SignupForm {
   email: string;
   password: string;
   confirmPassword: string;
@@ -17,10 +18,26 @@ export interface SignupRequest {
   nickname: string;
   phoneNumber: string;
   birth: string;
-  gender: string;
+  gender: 'MALE' | 'FEMALE';
   interests: string[];
   location: string;
-  mbti: string;
+}
+
+export interface SignupRequest {
+  email: string;
+  password: string;
+  name: string;
+  nickName: string;
+  phoneNumber: string;
+  birthDate: string;
+  gender: 'MALE' | 'FEMALE';
+  category: string[];
+  location: string;
+}
+
+export interface LoginResponse {
+  data: AuthResponse;
+  headers: AxiosResponseHeaders;
 }
 
 export interface AuthResponse {
@@ -28,10 +45,4 @@ export interface AuthResponse {
     code: number;
     message: string;
   };
-  //   token?: string;
-  //   user?: {
-  //     id: number;
-  //     name: string;
-  //     email: string;
-  //   };
 }

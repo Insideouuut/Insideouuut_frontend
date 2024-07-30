@@ -1,3 +1,4 @@
+import { signup } from '@/api/authApi';
 import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -10,17 +11,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
+import { SignupForm, SignupRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import Lottie from 'lottie-react';
@@ -30,21 +23,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-interface SignupData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  name: string;
-  nickname: string;
-  phoneNumber: string;
-  birth: string;
-  gender: string;
-  interests: string[];
-  location: string;
-  mbti: string;
-}
-
-const defaultData: SignupData = {
+const defaultData: SignupForm = {
   email: '',
   password: '',
   confirmPassword: '',
@@ -52,10 +31,9 @@ const defaultData: SignupData = {
   nickname: '',
   phoneNumber: '',
   birth: '',
-  gender: 'male',
+  gender: 'MALE',
   interests: [],
   location: '',
-  mbti: '',
 };
 
 const signupSchema = z
@@ -83,12 +61,11 @@ const signupSchema = z
       .min(10, '전화번호를 입력해주세요.')
       .max(13, '전화번호를 확인해주세요.'),
     birth: z.string().min(1, '생년월일을 입력해주세요.'),
-    gender: z.enum(['male', 'female']),
+    gender: z.enum(['MALE', 'FEMALE']),
     interests: z
       .array(z.string())
       .min(1, '관심사를 최소 하나 이상 선택해주세요.'),
     location: z.string().min(1, '내 지역을 입력해주세요.'),
-    mbti: z.string().min(1, 'MBTI를 선택해주세요.'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: '비밀번호가 일치하지 않습니다.',
@@ -103,15 +80,36 @@ const Signup = () => {
     control,
     formState: { errors },
     trigger,
-  } = useForm<SignupData>({
+  } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
     defaultValues: defaultData,
   });
 
-  const onSubmit = (data: SignupData) => {
-    console.log('회원가입 데이터:', data);
-    alert('회원가입이 완료되었습니다.');
-    navigate('/landing');
+  const onSubmit = async (data: SignupForm) => {
+    const signupData: SignupRequest = {
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      nickName: data.nickname,
+      phoneNumber: data.phoneNumber,
+      birthDate: data.birth,
+      gender: data.gender,
+      category: data.interests,
+      location: data.location,
+    };
+
+    try {
+      const response = await signup(signupData);
+      if (response.status.code === 200) {
+        alert('회원가입에 성공했습니다.');
+        navigate('/login');
+      } else {
+        alert(response.status.message);
+      }
+    } catch (error) {
+      console.error('회원가입 중 오류 발생:', error);
+      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleNextStep = async () => {
@@ -121,7 +119,7 @@ const Signup = () => {
     } else if (step === 2) {
       isValid = await trigger(['name', 'nickname', 'phoneNumber', 'birth']);
     } else if (step === 3) {
-      isValid = await trigger(['gender', 'interests', 'location', 'mbti']);
+      isValid = await trigger(['gender', 'interests', 'location']);
     }
 
     if (isValid) {
@@ -430,11 +428,11 @@ const Signup = () => {
                             onValueChange={(value) => field.onChange(value)}
                           >
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="male" id="male" />
+                              <RadioGroupItem value="MALE" id="male" />
                               <Label htmlFor="male">남성</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="female" id="female" />
+                              <RadioGroupItem value="FEMALE" id="female" />
                               <Label htmlFor="female">여성</Label>
                             </div>
                           </RadioGroup>
@@ -495,55 +493,6 @@ const Signup = () => {
                     {errors.location && (
                       <span className="text-red-500 text-sm">
                         {errors.location.message}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="grid gap-2 justify-items-start">
-                    <Label htmlFor="mbti">MBTI/외향형 or 내향형</Label>
-                    <Controller
-                      name="mbti"
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={(value) => field.onChange(value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="MBTI/외향형 or 내향형" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>EN</SelectLabel>
-                              <SelectItem value="ENFJ">ENFJ</SelectItem>
-                              <SelectItem value="ENFP">ENFP</SelectItem>
-                              <SelectItem value="ENTJ">ENTJ</SelectItem>
-                              <SelectItem value="ENTP">ENTP</SelectItem>
-                              <SelectLabel>ES</SelectLabel>
-                              <SelectItem value="ESFJ">ESFJ</SelectItem>
-                              <SelectItem value="ESFP">ESFP</SelectItem>
-                              <SelectItem value="ESTJ">ESTJ</SelectItem>
-                              <SelectItem value="ESTP">ESTP</SelectItem>
-                              <SelectLabel>IN</SelectLabel>
-                              <SelectItem value="INFJ">INFJ</SelectItem>
-                              <SelectItem value="INFP">INFP</SelectItem>
-                              <SelectItem value="INTJ">INTJ</SelectItem>
-                              <SelectItem value="INTP">INTP</SelectItem>
-                              <SelectLabel>IS</SelectLabel>
-                              <SelectItem value="ISFJ">ISFJ</SelectItem>
-                              <SelectItem value="ISFP">ISFP</SelectItem>
-                              <SelectItem value="ISTJ">ISTJ</SelectItem>
-                              <SelectItem value="ISTP">ISTP</SelectItem>
-                              <SelectLabel>외향/내향</SelectLabel>
-                              <SelectItem value="외향형">외향형</SelectItem>
-                              <SelectItem value="내향형">내향형</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.mbti && (
-                      <span className="text-red-500 text-sm">
-                        {errors.mbti.message}
                       </span>
                     )}
                   </div>
