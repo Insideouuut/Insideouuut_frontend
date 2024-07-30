@@ -51,7 +51,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   };
 
   return (
-    <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[160px]">
+    <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px]">
       <div className="w-[140px] h-[135px]">
         <img
           src={imageUrl}

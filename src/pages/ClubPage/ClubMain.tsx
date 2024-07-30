@@ -1,6 +1,6 @@
-import GroupCard from '@/components/GroupCard';
-import { dummyData } from '@/components/dummyData'; // dummyData를 가져오는 경로를 맞게 설정하세요
-import React from 'react';
+import { dummyData } from '@/components/dummyData';
+import React, { useState } from 'react';
+import ApplyModal from './ApplyModal';
 
 interface ClubInfo {
   name: string;
@@ -16,43 +16,162 @@ interface ClubMainProps {
   clubData: ClubInfo;
 }
 
+interface Meeting {
+  id: number;
+  clubTypes: string[];
+  meetingTypes: string[];
+  name: string;
+  description: string;
+  date: string;
+  location: string;
+  memberCount: number;
+  memberLimit: number;
+  imageUrl: string;
+  createdAt: string;
+}
+
 const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
+  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const sortedMeetings = dummyData.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  const handleMeetingClick = (meeting: Meeting) => {
+    setSelectedMeeting(meeting);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMeeting(null);
+  };
+
+  const noticeData = [
+    {
+      title: '공지사항 1',
+      description: '첫 번째 공지사항입니다.',
+      date: '2024-07-22',
+    },
+    {
+      title: '공지사항 2',
+      description: '두 번째 공지사항입니다.',
+      date: '2024-07-21',
+    },
+  ];
+
   return (
-    <div className="flex p-6 bg-gray-50 rounded-lg shadow-md w-[820px] border-2 border-gray-200 space-x-6">
-      <div className="w-[40%] p-4 bg-white rounded-lg shadow space-y-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">{clubData.name}</h2>
-          <p className="text-sm text-gray-600 mt-2">{clubData.description}</p>
+    <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
+      <div className="">
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="w-full md:w-[50%]">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {clubData.name}
+              </h2>
+              <p className="text-md text-gray-700 mt-2">
+                {clubData.description}
+              </p>
+            </div>
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">모임 시간</h3>
+              <p className="text-md text-gray-700 mt-2">
+                {clubData.meetingTimes}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">위치</h3>
+              <p className="text-md text-gray-700 mt-2">{clubData.location}</p>
+            </div>
+            <div className="w-full md:w-[50%] mt-4 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">
+                참가자 정원
+              </h3>
+              <p className="text-md text-gray-700 mt-2">
+                현재 참가자 수: {clubData.currentParticipants} /{' '}
+                {clubData.maxParticipants}
+              </p>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">모임 시간</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.meetingTimes}</p>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">공지사항</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-3 px-5 border-b">제목</th>
+                  <th className="py-3 px-5 border-b">설명</th>
+                  <th className="py-3 px-5 border-b">일시</th>
+                </tr>
+              </thead>
+              <tbody>
+                {noticeData.map((notice, index) => (
+                  <tr key={index} className="cursor-pointer hover:bg-gray-100">
+                    <td className="py-3 px-5 border-b text-gray-800">
+                      {notice.title}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-600">
+                      {notice.description}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-500">
+                      {notice.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">위치</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.location}</p>
+        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            최근 생성된 모임 목록
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-3 px-5 border-b">제목</th>
+                  <th className="py-3 px-5 border-b">설명</th>
+                  <th className="py-3 px-5 border-b">장소</th>
+                  <th className="py-3 px-5 border-b">인원</th>
+                  <th className="py-3 px-5 border-b">일시</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedMeetings.slice(0, 4).map((meeting, index) => (
+                  <tr
+                    key={index}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleMeetingClick(meeting)}
+                  >
+                    <td className="py-3 px-5 border-b text-gray-800">
+                      {meeting.name}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-600">
+                      {meeting.description}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-500">
+                      {meeting.location}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-500">
+                      {meeting.memberCount}/{meeting.memberLimit}
+                    </td>
+                    <td className="py-3 px-5 border-b text-gray-500">
+                      {meeting.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">참가자 정원</h3>
-          <p className="text-sm text-gray-600 mt-2">
-            현재 참가자 수: {clubData.currentParticipants} /{' '}
-            {clubData.maxParticipants}
-          </p>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-gray-700">문의</h3>
-          <p className="text-sm text-gray-600 mt-2">{clubData.contact}</p>
-        </div>
-      </div>
-      <div className="w-[60%] p-4 bg-white rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">
-          최근 생성된 모임 목록
-        </h3>
-        <div className="grid grid-cols-1 gap-4">
-          {dummyData.map((meeting) => (
-            <GroupCard key={meeting.id} {...meeting} />
-          ))}
-        </div>
+        {isModalOpen && selectedMeeting && (
+          <ApplyModal meeting={selectedMeeting} onClose={closeModal} />
+        )}
       </div>
     </div>
   );

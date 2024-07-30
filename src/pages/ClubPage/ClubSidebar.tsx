@@ -55,7 +55,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   };
 
   return (
-    <div className="w-44 rounded-lg border-2 mr-4 p-3 h-full">
+    <div className="w-44 mr-4 p-3 h-full">
       <nav className="space-y-1">
         <div
           role="button"
@@ -198,18 +198,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <div
               role="button"
               tabIndex={0}
-              onClick={() => handleMenuClick('meetingListSettings')}
-              onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
-            >
-              모임 목록
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('meetingListSettings')}
-              onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
+              onClick={() => handleMenuClick('mymeetingList')}
+              onKeyDown={(event) => handleKeyDown(event, 'mymeetingList')}
+              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('mymeetingList')}`}
             >
               모임 관리
             </div>
