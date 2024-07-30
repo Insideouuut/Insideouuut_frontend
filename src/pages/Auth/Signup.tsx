@@ -130,6 +130,20 @@ const Signup = () => {
     setStep(step - 1);
   };
 
+  const formatPhoneNumber = (value: string) => {
+    value = value.replace(/[^0-9]/g, '');
+
+    if (value.length < 4) {
+      return value;
+    } else if (value.length < 7) {
+      return `${value.slice(0, 3)}-${value.slice(3)}`;
+    } else if (value.length < 11) {
+      return `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
+    } else {
+      return `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
+    }
+  };
+
   return (
     <div className="max-h-screen">
       <Header
@@ -312,6 +326,9 @@ const Signup = () => {
                           type="text"
                           placeholder="010-0000-0000"
                           {...field}
+                          onChange={(e) =>
+                            field.onChange(formatPhoneNumber(e.target.value))
+                          }
                         />
                       )}
                     />
