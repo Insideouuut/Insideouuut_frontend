@@ -1,5 +1,6 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
+import UserInfo from '@/pages/Auth/UserInfo';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
@@ -20,6 +21,7 @@ import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -44,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/userinfo',
+    element: <UserInfo />,
   },
   {
     path: '/main',

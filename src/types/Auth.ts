@@ -46,3 +46,12 @@ export interface AuthResponse {
     message: string;
   };
 }
+
+export interface UserInfoRequest {
+  nickname: string;
+  phoneNumber: string;
+  birth: string;
+  gender: 'MALE' | 'FEMALE';
+  interests: string[];
+  location: string;
+}
