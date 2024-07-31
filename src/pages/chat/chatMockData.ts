@@ -14,6 +14,39 @@ export const mockMessages = [
 ];
 
 export const mockChatRooms = [
-  { id: '1', name: '모동 채팅방!' },
-  { id: '2', name: '금요일 런닝' },
+  {
+    title: 'FIRST',
+    type: 'CLUB',
+    lastMessageContent: 'hihi',
+    lastMessageTime: '2024-07-27T16:20:29.60538',
+    userCount: 3,
+  },
+  {
+    title: 'SECOND',
+    type: 'CLUB',
+    lastMessageContent: null,
+    lastMessageTime: null,
+    userCount: 2,
+  },
+  {
+    title: 'THREE',
+    type: 'CLUB',
+    lastMessageContent: null,
+    lastMessageTime: null,
+    userCount: 1,
+  },
+  {
+    title: 'FOUR',
+    type: 'MEETING',
+    lastMessageContent: null,
+    lastMessageTime: null,
+    userCount: 1,
+  },
+  {
+    title: 'FIVE',
+    type: 'MEETING',
+    lastMessageContent: null,
+    lastMessageTime: null,
+    userCount: 1,
+  },
 ];
