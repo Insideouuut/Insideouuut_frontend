@@ -476,11 +476,11 @@ const Signup = () => {
                             field.onChange(value);
                           }}
                         >
-                          <ToggleGroupItem value="사교/취미">
+                          <ToggleGroupItem value="SOCIAL">
                             사교/취미
                           </ToggleGroupItem>
-                          <ToggleGroupItem value="운동">운동</ToggleGroupItem>
-                          <ToggleGroupItem value="스터디">
+                          <ToggleGroupItem value="SPORTS">운동</ToggleGroupItem>
+                          <ToggleGroupItem value="STUDY">
                             스터디
                           </ToggleGroupItem>
                         </ToggleGroup>
