@@ -1,3 +1,4 @@
+import { enterUserInfo } from '@/api/authApi';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
-import { UserInfoRequest } from '@/types/Auth';
+import { UserInfoFormInput, UserInfoRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
@@ -18,7 +19,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-const defaultData: UserInfoRequest = {
+const defaultData: UserInfoFormInput = {
   nickname: '',
   phoneNumber: '',
   birth: '',
@@ -50,15 +51,33 @@ const UserInfoForm = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<UserInfoRequest>({
+  } = useForm<UserInfoFormInput>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: defaultData,
   });
 
-  const onSubmit = async (data: UserInfoRequest) => {
-    console.log('사용자 정보:', data);
-    alert('사용자 정보 입력에 성공했습니다.');
-    navigate('/main');
+  const onSubmit = async (data: UserInfoFormInput) => {
+    const userInfoData: UserInfoRequest = {
+      nickName: data.nickname,
+      phoneNumber: data.phoneNumber,
+      birthDate: data.birth,
+      gender: data.gender,
+      category: data.interests,
+      location: data.location,
+    };
+
+    try {
+      const response = await enterUserInfo(userInfoData);
+      if (response.status.code === 200) {
+        alert('사용자 정보 입력에 성공했습니다.');
+        navigate('/main');
+      } else {
+        alert(response.status.message);
+      }
+    } catch (error) {
+      console.error('사용자 정보 입력 중 오류 발생:', error);
+      alert('사용자 정보 입력 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   const formatPhoneNumber = (value: string) => {

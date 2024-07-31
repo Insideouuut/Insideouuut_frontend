@@ -5,11 +5,6 @@ export interface LoginRequest {
   password: string;
 }
 
-// export interface SocialLoginRequest {
-//   provider: string; // 예: 'google', 'facebook'
-//   token: string; // 소셜 로그인 액세스 토큰
-// }
-
 export interface SignupForm {
   email: string;
   password: string;
@@ -47,11 +42,20 @@ export interface AuthResponse {
   };
 }
 
-export interface UserInfoRequest {
+export interface UserInfoFormInput {
   nickname: string;
   phoneNumber: string;
   birth: string;
   gender: 'MALE' | 'FEMALE';
   interests: string[];
+  location: string;
+}
+
+export interface UserInfoRequest {
+  nickName: string;
+  phoneNumber: string;
+  birthDate: string;
+  gender: 'MALE' | 'FEMALE';
+  category: string[];
   location: string;
 }

@@ -4,7 +4,9 @@ import {
   LoginRequest,
   LoginResponse,
   SignupRequest,
+  UserInfoRequest,
 } from '../types/Auth';
+import { postData } from './api';
 import axiosInstance from './axiosConfig';
 
 // 로그인 함수
@@ -21,12 +23,6 @@ export const login = async (
   };
 };
 
-// 소셜 로그인 함수
-// export const socialLogin = async (socialLoginData: SocialLoginRequest): Promise<AuthResponse> => {
-//   const response = await axiosInstance.post<AuthResponse>('/oauth2/authorization/kakao', socialLoginData);
-//   return response.data;
-// };
-
 // 회원가입 함수
 export const signup = async (
   signupData: SignupRequest,
@@ -36,4 +32,15 @@ export const signup = async (
     signupData,
   );
   return response.data;
+};
+
+// 사용자 정보 입력 함수
+export const enterUserInfo = async (
+  userInfoData: UserInfoRequest,
+): Promise<AuthResponse> => {
+  const response = await postData<UserInfoRequest, AuthResponse>(
+    '/api/oauth2/userInfo',
+    userInfoData,
+  );
+  return response;
 };
