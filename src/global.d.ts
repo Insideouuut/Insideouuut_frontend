@@ -63,6 +63,18 @@ declare namespace kakao.maps {
 
     type Status = 'OK' | 'ERROR'; // 필요한 모든 상태 값을 여기에 추가합니다.
   }
+
+  class Polygon {
+    constructor(options: PolygonOptions);
+    setMap(map: Map | null): void;
+  }
+
+  interface PolygonOptions {
+    path: LatLng[];
+    strokeColor: string;
+    fillColor: string;
+    fillOpacity: number;
+  }
 }
 
 interface Window {
