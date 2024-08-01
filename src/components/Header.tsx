@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({
                 </Link>
               </li>
               <li>
-                <Link to="/chat" className="font-neoExtraBold">
+                <Link to="/chatroom" className="font-neoExtraBold">
                   채팅
                 </Link>
               </li>

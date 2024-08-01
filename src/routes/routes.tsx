@@ -4,6 +4,7 @@ import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
 import Chat from '@/pages/chat/Chat';
+import ChatRoom from '@/pages/chat/ChatRoom';
 import MemberList from '@/pages/ClubPage/MemberList';
 import CreateClub from '@/pages/Create/CreateClub';
 import CreateMeeting from '@/pages/Create/CreateMeeting';
@@ -20,6 +21,7 @@ import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -126,6 +128,10 @@ const router = createBrowserRouter([
   {
     path: '/mypage',
     element: <MyPage />,
+  },
+  {
+    path: '/chatroom',
+    element: <ChatRoom />,
   },
 ]);
 
