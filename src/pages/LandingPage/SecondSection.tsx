@@ -29,7 +29,9 @@ const SecondSection: React.FC = () => {
             <p>하고싶은 취미를 즐겨보세요.</p>
           </p>
           <Link to="/login">
-            <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+            <Button className="font-neoBold hover:bg-green-700">
+              모임 참여하기 &gt;
+            </Button>
           </Link>
         </div>
       </div>

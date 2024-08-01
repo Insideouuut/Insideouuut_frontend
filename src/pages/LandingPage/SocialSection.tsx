@@ -27,7 +27,9 @@ const SocialSection: React.FC = () => {
             <p>같이 즐겨보세요.</p>
           </p>
           <Link to="/login">
-            <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+            <Button className="font-neoBold hover:bg-green-700">
+              모임 참여하기 &gt;
+            </Button>
           </Link>
         </div>
       </div>

@@ -49,8 +49,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   return (
     <div className="w-full bg-white">
-      <div className="mx-auto py-5 flex-col  w-[960px] bg-white">
-        <h2 className="font-neo text-2xl mb-2">모임 목록</h2>
+      <div className="mx-auto py-5 flex-col  w-[960px] ">
+        <h2 className="font-neo text-2xl mb-2 ml-5">모임 목록</h2>
         <ul className="w-full flex pr-16 space-x-5 justify-end text-[12px] font-neoBold mb-4">
           <li>인기순</li>
           <li>날짜순</li>

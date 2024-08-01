@@ -50,8 +50,25 @@ const GroupCard: React.FC<GroupCardProps> = ({
     }
   };
 
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    onClickHandler: () => void,
+  ) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      onClickHandler();
+    }
+  };
+
   return (
-    <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px]">
+    <div
+      className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
+      onClick={() => console.log(`Clicked on ${name}`)}
+      onKeyDown={(event) =>
+        handleKeyDown(event, () => console.log(`Clicked on ${name}`))
+      }
+      role="button"
+      tabIndex={0}
+    >
       <div className="w-[140px] h-[135px]">
         <img
           src={imageUrl}
@@ -65,7 +82,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             {clubTypes.map((tag, index) => (
               <span
                 key={index}
-                className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByClubType(tag)}`}
+                className={`flex  px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByClubType(tag)}`}
               >
                 {tag}
               </span>
@@ -73,26 +90,30 @@ const GroupCard: React.FC<GroupCardProps> = ({
             {meetingTypes.map((tag, index) => (
               <span
                 key={index}
-                className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(tag)}`}
+                className={`flex  px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(tag)}`}
               >
                 {tag}
               </span>
             ))}
             {isAlmostFull && (
-              <span className="flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
+              <span className="flex items-center justify-center h-5 px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
                 마감임박
               </span>
             )}
           </div>
           <h2 className="text-base font-neoBold mb-1">{name}</h2>
-          <p className="text-gray-500 text-[12px]">{description}</p>
+          <p className="text-gray-500 text-[12px]">
+            {description.length > 10
+              ? `${description.slice(0, 10)}...`
+              : description}
+          </p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
           <p>{date}</p>
           <div className="flex mt-1 items-center">
-            <MapPin />
+            <MapPin className="w-4 mr-1" />
             <p className="mr-4">{location}</p>
-            <Users />
+            <Users className="w-4 mr-1" />
             <p>{`${memberCount}/${memberLimit}`}</p>
           </div>
         </div>

@@ -2,28 +2,40 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
 
 interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
+  roomId: string;
+  clubId: number;
+  type: '동아리' | '모임';
+  category: '운동' | '사교/취미' | '공부';
+  title: string;
   description: string;
-  date: string;
+  schedule: string;
   location: string;
-  memberCount: number;
-  memberLimit: number;
+  members: string;
   role: '관리자' | '일반 회원';
   backgroundColor: string;
   backgroundImage: string;
 }
 
-const ClubPage: React.FC = () => {
+const clubInfo = {
+  roomId: '1',
+  clubId: 1,
+  name: '한강 러닝 크루',
+  description: '다같이 모여서 즐겁게 러닝해요!',
+  meetingTimes: '24.07.17(화)',
+  location: '노원구',
+  maxParticipants: 30,
+  currentParticipants: 10,
+  contact: 'contact@example.com',
+};
+
+const MeetingPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
@@ -45,7 +57,6 @@ const ClubPage: React.FC = () => {
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -69,23 +80,7 @@ const ClubPage: React.FC = () => {
   };
 
   const handleColorChange = (newColor: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: newColor,
-        backgroundImage: '',
-      });
-    }
-  };
-
-  const handleImageChange = (newImage: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: 'bg-gray-100',
-        backgroundImage: newImage,
-      });
-    }
+    setClubData((prevData) => ({ ...prevData, backgroundColor: newColor }));
   };
 
   const handleMenuClick = (menu: string) => {
@@ -99,14 +94,20 @@ const ClubPage: React.FC = () => {
     }
   };
 
-  const [clubData, setClubData] = useState<ClubData | null>(null);
-
-  useEffect(() => {
-    if (location.state) {
-      const state = location.state as ClubData;
-      setClubData(state);
-    }
-  }, [location.state]);
+  const [clubData, setClubData] = useState<ClubData>({
+    roomId: '1',
+    clubId: 1,
+    type: '동아리',
+    category: '사교/취미',
+    title: '한강 러닝 크루',
+    description: '다같이 모여서 즐겁게 러닝해요!',
+    schedule: '24.07.17(화)',
+    location: '노원구',
+    members: '10/30',
+    role: '관리자',
+    backgroundColor: 'bg-green-100',
+    backgroundImage: '',
+  });
 
   return (
     <div className="relative">
@@ -118,24 +119,18 @@ const ClubPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      {clubData && (
-        <ClubHero
-          clubData={clubData}
-          onColorChange={handleColorChange}
-          onImageChange={handleImageChange}
-        />
-      )}
+      <ClubHero clubData={clubData} onColorChange={handleColorChange} />
       <div className="flex mt-4 justify-center">
         <ClubSidebar
-          roomId="1"
-          clubId={1}
+          roomId={clubInfo.roomId}
+          clubId={clubInfo.clubId}
           selectedMenu={selectedMenu}
           setSelectedMenu={handleMenuClick}
         />
         <div>
-          {selectedMenu === 'home' && clubData && (
+          {selectedMenu === 'home' && (
             <div>
-              <ClubMain clubData={clubData} />
+              <ClubMain clubData={clubInfo} />
             </div>
           )}
           <Outlet />
@@ -160,4 +155,4 @@ const ClubPage: React.FC = () => {
   );
 };
 
-export default ClubPage;
+export default MeetingPage;

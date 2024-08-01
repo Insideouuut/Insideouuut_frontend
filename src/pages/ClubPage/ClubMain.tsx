@@ -1,44 +1,28 @@
-import { dummyData } from '@/components/dummyData';
 import React, { useState } from 'react';
 import ApplyModal from './ApplyModal';
+import joggingData, { Info } from './joggingdata';
 
 interface ClubInfo {
-  name: string;
-  description: string;
-  meetingTimes: string;
-  location: string;
-  maxParticipants: number;
-  currentParticipants: number;
-  contact: string;
-}
-
-interface ClubMainProps {
-  clubData: ClubInfo;
-}
-
-interface Meeting {
-  id: number;
   clubTypes: string[];
   meetingTypes: string[];
+  imageUrl: string;
   name: string;
   description: string;
   date: string;
   location: string;
   memberCount: number;
   memberLimit: number;
-  imageUrl: string;
-  createdAt: string;
+}
+
+interface ClubMainProps {
+  clubData: ClubInfo;
 }
 
 const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
-  const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+  const [selectedMeeting, setSelectedMeeting] = useState<Info | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const sortedMeetings = dummyData.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-
-  const handleMeetingClick = (meeting: Meeting) => {
+  const handleMeetingClick = (meeting: Info) => {
     setSelectedMeeting(meeting);
     setIsModalOpen(true);
   };
@@ -48,18 +32,11 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
     setSelectedMeeting(null);
   };
 
-  const noticeData = [
-    {
-      title: '공지사항 1',
-      description: '첫 번째 공지사항입니다.',
-      date: '2024-07-22',
-    },
-    {
-      title: '공지사항 2',
-      description: '두 번째 공지사항입니다.',
-      date: '2024-07-21',
-    },
-  ];
+  const truncateDescription = (description: string) => {
+    return description.length > 10
+      ? `${description.slice(0, 10)}...`
+      : description;
+  };
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
@@ -76,9 +53,7 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
             </div>
             <div className="w-full md:w-[50%] mt-4 md:mt-0">
               <h3 className="text-lg font-semibold text-gray-800">모임 시간</h3>
-              <p className="text-md text-gray-700 mt-2">
-                {clubData.meetingTimes}
-              </p>
+              <p className="text-md text-gray-700 mt-2">{clubData.date}</p>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -91,82 +66,52 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
                 참가자 정원
               </h3>
               <p className="text-md text-gray-700 mt-2">
-                현재 참가자 수: {clubData.currentParticipants} /{' '}
-                {clubData.maxParticipants}
+                현재 참가자 수: {clubData.memberCount} / {clubData.memberLimit}
               </p>
             </div>
           </div>
-        </div>
-        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">공지사항</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr>
-                  <th className="py-3 px-5 border-b">제목</th>
-                  <th className="py-3 px-5 border-b">설명</th>
-                  <th className="py-3 px-5 border-b">일시</th>
-                </tr>
-              </thead>
-              <tbody>
-                {noticeData.map((notice, index) => (
-                  <tr key={index} className="cursor-pointer hover:bg-gray-100">
-                    <td className="py-3 px-5 border-b text-gray-800">
-                      {notice.title}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-600">
-                      {notice.description}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-500">
-                      {notice.date}
-                    </td>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              최근 생성된 모임 목록
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr>
+                    <th className="py-3 px-5 border-b">제목</th>
+                    <th className="py-3 px-5 border-b">설명</th>
+                    <th className="py-3 px-5 border-b">장소</th>
+                    <th className="py-3 px-5 border-b">인원</th>
+                    <th className="py-3 px-5 border-b">일시</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            최근 생성된 모임 목록
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr>
-                  <th className="py-3 px-5 border-b">제목</th>
-                  <th className="py-3 px-5 border-b">설명</th>
-                  <th className="py-3 px-5 border-b">장소</th>
-                  <th className="py-3 px-5 border-b">인원</th>
-                  <th className="py-3 px-5 border-b">일시</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedMeetings.slice(0, 4).map((meeting, index) => (
-                  <tr
-                    key={index}
-                    className="cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleMeetingClick(meeting)}
-                  >
-                    <td className="py-3 px-5 border-b text-gray-800">
-                      {meeting.name}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-600">
-                      {meeting.description}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-500">
-                      {meeting.location}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-500">
-                      {meeting.memberCount}/{meeting.memberLimit}
-                    </td>
-                    <td className="py-3 px-5 border-b text-gray-500">
-                      {meeting.date}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {joggingData.slice(0, 5).map((meeting, index) => (
+                    <tr
+                      key={index}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleMeetingClick(meeting)}
+                    >
+                      <td className="py-3 px-5 text-sm border-b text-gray-800">
+                        {meeting.title}
+                      </td>
+                      <td className="py-3 px-5 text-sm border-b text-gray-600">
+                        {truncateDescription(meeting.description)}
+                      </td>
+                      <td className="py-3 px-5 text-sm border-b text-gray-500">
+                        {meeting.location}
+                      </td>
+                      <td className="py-3 px-5  text-sm border-b text-gray-500">
+                        {meeting.currentMembers}/{meeting.memberLimit}
+                      </td>
+                      <td className="py-3 px-5 border-b text-gray-500">
+                        {meeting.date}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         {isModalOpen && selectedMeeting && (

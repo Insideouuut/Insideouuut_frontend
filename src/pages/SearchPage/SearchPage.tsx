@@ -17,6 +17,7 @@ const SearchPage: React.FC = () => {
     top: 0,
     left: 0,
   });
+
   const [notificationCoords, setNotificationCoords] = useState<{
     top: number;
     left: number;
@@ -24,6 +25,7 @@ const SearchPage: React.FC = () => {
     top: 0,
     left: 0,
   });
+
   const profileRef = useRef<HTMLImageElement>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
