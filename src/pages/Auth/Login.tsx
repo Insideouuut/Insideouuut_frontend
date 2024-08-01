@@ -1,3 +1,4 @@
+import { login } from '@/api/authApi';
 import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { mockUserData } from '@/pages/MyPage/mockUserData'; // import mock user data
 import { useUserStore } from '@/store/userStore'; // import zustand store
+import { LoginRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Lottie from 'lottie-react';
 import { useForm } from 'react-hook-form';
@@ -25,11 +27,6 @@ const loginSchema = z.object({
     ),
 });
 
-type LoginFormValues = {
-  email: string;
-  password: string;
-};
-
 const Login = () => {
   const navigate = useNavigate();
   const setUser = useUserStore((state) => state.setUser);
@@ -38,18 +35,32 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: LoginRequest) => {
+    try {
+      const { data: responseData, headers } = await login(data);
+      const token = headers['access-token'];
 
-    // 로그인 성공 시 mockUserData를 zustand 스토어에 저장
-    setUser(mockUserData);
-
-    alert('로그인 성공');
-    navigate('/main');
+      if (responseData.status.code === 200) {
+        alert('로그인에 성공했습니다.');
+        // Access 토큰을 로컬 스토리지에 저장
+        if (typeof token === 'string') {
+          localStorage.setItem('accessToken', token);
+        }
+        // 로그인 성공 시 mockUserData를 zustand 스토어에 저장
+        setUser(mockUserData);
+        navigate('/main');
+      } else {
+        console.error(responseData.status.message);
+        alert(responseData.status.message);
+      }
+    } catch (error) {
+      console.error('로그인 중 오류 발생:', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
