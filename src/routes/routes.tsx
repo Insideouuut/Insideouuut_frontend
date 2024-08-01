@@ -19,6 +19,7 @@ import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+import MeetingPage from '../pages/MeetingPage/MeetingPage'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -51,6 +52,13 @@ const router = createBrowserRouter([
   {
     path: '/search',
     element: <SearchPage />,
+  },
+  {
+    path: '/meetingpage',
+    element: <MeetingPage />,
+    children: [
+      
+    ]
   },
   {
     path: '/club',

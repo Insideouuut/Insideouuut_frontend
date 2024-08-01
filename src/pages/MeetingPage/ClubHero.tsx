@@ -10,15 +10,13 @@ import {
 import React, { useState } from 'react';
 
 interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
+  type: '동아리' | '모임';
+  category: '운동' | '사교/취미' | '공부';
+  title: string;
   description: string;
-  date: string;
+  schedule: string;
   location: string;
-  memberCount: number;
-  memberLimit: number;
+  members: string;
   role: '관리자' | '일반 회원';
   backgroundColor: string;
   backgroundImage: string;
@@ -32,23 +30,15 @@ interface ProfileData {
 interface ClubHeroProps {
   clubData: ClubData;
   onColorChange: (newColor: string) => void;
-  onImageChange: (newImage: string) => void;
 }
 
-const ClubHero: React.FC<ClubHeroProps> = ({
-  clubData,
-  onColorChange,
-  onImageChange,
-}) => {
+const ClubHero: React.FC<ClubHeroProps> = ({ clubData, onColorChange }) => {
   const profileData: ProfileData = {
     profileImage: profileImg,
     nickname: '모동이',
   };
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedTab, setSelectedTab] = useState<string>('color');
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
   const pastelColors = [
     'bg-red-100',
     'bg-yellow-100',
@@ -90,8 +80,6 @@ const ClubHero: React.FC<ClubHeroProps> = ({
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedTab('color');
-    setUploadedImage(null);
   };
 
   const handleColorSelect = (color: string) => {
@@ -99,28 +87,9 @@ const ClubHero: React.FC<ClubHeroProps> = ({
     closeModal();
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleImageSave = () => {
-    if (uploadedImage) {
-      onImageChange(uploadedImage);
-      closeModal();
-    }
-  };
-
   return (
     <section
       className={`relative w-full h-72 py-8 px-4 flex justify-center text-left ${clubData.backgroundColor}`}
-      style={{ backgroundImage: `url(${clubData.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="flex items-center mx-auto w-[920px] justify-between">
         <div className="flex flex-col h-[80%]">
@@ -128,7 +97,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             <button
               onClick={openModal}
               className="mb-5 p-1 bg-black bg-opacity-10 rounded hover:bg-opacity-25"
-              aria-label="Change Background"
+              aria-label="Change Background Color"
             >
               <PaintbrushVertical className="w-4 h-4" />
             </button>
@@ -136,62 +105,22 @@ const ClubHero: React.FC<ClubHeroProps> = ({
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
               <div className="bg-white p-6 rounded">
-                <h2 className="text-l mb-4">배경 변경하기</h2>
-                <div className="flex space-x-4 mb-4">
-                  <button
-                    className={`p-2 rounded ${selectedTab === 'color' ? 'bg-gray-300' : 'bg-gray-200'}`}
-                    onClick={() => setSelectedTab('color')}
-                  >
-                    색상 선택
-                  </button>
-                  <button
-                    className={`p-2 rounded ${selectedTab === 'image' ? 'bg-gray-300' : 'bg-gray-200'}`}
-                    onClick={() => setSelectedTab('image')}
-                  >
-                    이미지 업로드
-                  </button>
-                </div>
-                {selectedTab === 'color' && (
-                  <div className="grid grid-cols-4 gap-4">
-                    {pastelColors.map((color) => (
-                      <div
-                        key={color}
-                        className={`w-10 h-10 ${color} rounded cursor-pointer`}
-                        onClick={() => handleColorSelect(color)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleColorSelect(color);
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`Select ${color}`}
-                      />
-                    ))}
-                  </div>
-                )}
-                {selectedTab === 'image' && (
-                  <div className="flex flex-col items-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
+                <h2 className="text-l mb-4">배경색 선택하기</h2>
+                <div className="grid grid-cols-4 gap-4">
+                  {pastelColors.map((color) => (
+                    <div
+                      key={color}
+                      className={`w-10 h-10 ${color} rounded cursor-pointer`}
+                      onClick={() => handleColorSelect(color)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleColorSelect(color);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Select ${color}`}
                     />
-                    {uploadedImage && (
-                      <div className="mt-4">
-                        <img
-                          src={uploadedImage}
-                          alt="Uploaded Preview"
-                          className="w-40 h-40 object-cover rounded"
-                        />
-                        <button
-                          onClick={handleImageSave}
-                          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  ))}
+                </div>
                 <button
                   onClick={closeModal}
                   className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
@@ -202,29 +131,23 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             </div>
           )}
           <div className="flex items-center space-x-2 mb-2">
-            {clubData.clubTypes.map((type) => (
-              <span
-                key={type}
-                className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByType(
-                  type,
-                )}`}
-              >
-                {type}
-              </span>
-            ))}
-            {clubData.meetingTypes.map((type) => (
-              <span
-                key={type}
-                className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByCategory(
-                  type,
-                )}`}
-              >
-                {type}
-              </span>
-            ))}
+            <span
+              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByType(
+                clubData.type,
+              )}`}
+            >
+              {clubData.type}
+            </span>
+            <span
+              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByCategory(
+                clubData.category,
+              )}`}
+            >
+              {clubData.category}
+            </span>
           </div>
           <h1 className="text-[30px] font-neoExtraBold text-black mb-3">
-            {clubData.name}
+            {clubData.title}
           </h1>
           <p className="text-[17px] text-black font-neoBold mt-2">
             {clubData.description}
@@ -235,7 +158,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <CalendarDays className="w-[17px]" />
               <p className="w-[80%] text-center text-[11px]">
-                {clubData.date}
+                {clubData.schedule}
               </p>
             </p>
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
@@ -244,7 +167,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             </p>
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <Users className="w-[17px]" />
-              <p className="w-[80%] text-center">{`${clubData.memberCount}/${clubData.memberLimit}`}</p>
+              <p className="w-[80%] text-center">{clubData.members}</p>
             </p>
           </div>
           <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">

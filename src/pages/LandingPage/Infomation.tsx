@@ -28,7 +28,7 @@ const Infomation: React.FC = () => {
             <p>모동과 함께 친구를 만들어가요.</p>
           </p>
           <Link to="/login">
-            <Button className="font-neoBold">모임 참여하기 &gt;</Button>
+            <Button className="font-neoBold hover:bg-green-700">모임 참여하기 &gt;</Button>
           </Link>
         </div>
         <div>

@@ -3,9 +3,40 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Search from './searchHero';
+import { Outlet, useNavigate } from 'react-router-dom';
+import ClubHero from './ClubHero';
+import ClubMain from './ClubMain';
+import ClubSidebar from './ClubSidebar';
 
-const SearchPage: React.FC = () => {
+interface ClubData {
+  roomId: string;
+  clubId: number;
+  type: '동아리' | '모임';
+  category: '운동' | '사교/취미' | '공부';
+  title: string;
+  description: string;
+  schedule: string;
+  location: string;
+  members: string;
+  role: '관리자' | '일반 회원';
+  backgroundColor: string;
+  backgroundImage: string;
+}
+
+const clubInfo = {
+  roomId: '1',
+  clubId: 1,
+  name: '한강 러닝 크루',
+  description: '다같이 모여서 즐겁게 러닝해요!',
+  meetingTimes: '24.07.17(화)',
+  location: '노원구',
+  maxParticipants: 30,
+  currentParticipants: 10,
+  contact: 'contact@example.com',
+};
+
+const MeetingPage: React.FC = () => {
+  const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,7 +48,6 @@ const SearchPage: React.FC = () => {
     top: 0,
     left: 0,
   });
-
   const [notificationCoords, setNotificationCoords] = useState<{
     top: number;
     left: number;
@@ -25,8 +55,8 @@ const SearchPage: React.FC = () => {
     top: 0,
     left: 0,
   });
-
   const profileRef = useRef<HTMLImageElement>(null);
+  const navigate = useNavigate();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -49,6 +79,36 @@ const SearchPage: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
+  const handleColorChange = (newColor: string) => {
+    setClubData((prevData) => ({ ...prevData, backgroundColor: newColor }));
+  };
+
+  const handleMenuClick = (menu: string) => {
+    setSelectedMenu(menu);
+    if (menu.includes('Board')) {
+      navigate(`/club/board/${menu}`);
+    } else if (menu === 'home') {
+      navigate('/club');
+    } else {
+      navigate(`/club/${menu}`);
+    }
+  };
+
+  const [clubData, setClubData] = useState<ClubData>({
+    roomId: '1',
+    clubId: 1,
+    type: '동아리',
+    category: '사교/취미',
+    title: '한강 러닝 크루',
+    description: '다같이 모여서 즐겁게 러닝해요!',
+    schedule: '24.07.17(화)',
+    location: '노원구',
+    members: '10/30',
+    role: '관리자',
+    backgroundColor: 'bg-green-100',
+    backgroundImage: '',
+  });
+
   return (
     <div className="relative">
       <Header
@@ -59,7 +119,23 @@ const SearchPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Search />
+      <ClubHero clubData={clubData} onColorChange={handleColorChange} />
+      <div className="flex mt-4 justify-center">
+        <ClubSidebar
+          roomId={clubInfo.roomId}
+          clubId={clubInfo.clubId}
+          selectedMenu={selectedMenu}
+          setSelectedMenu={handleMenuClick}
+        />
+        <div>
+          {selectedMenu === 'home' && (
+            <div>
+              <ClubMain clubData={clubInfo} />
+            </div>
+          )}
+          <Outlet />
+        </div>
+      </div>
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
@@ -79,4 +155,4 @@ const SearchPage: React.FC = () => {
   );
 };
 
-export default SearchPage;
+export default MeetingPage;

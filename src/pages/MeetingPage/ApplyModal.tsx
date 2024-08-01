@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-
 interface Meeting {
-  title: string;
-  description: string;
-  location: string;
-  currentMembers: number;
-  memberLimit: number;
-  date: string;
+  name: string;
 }
 
 interface ApplyModalProps {
@@ -21,6 +15,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // 여기서 신청 로직을 추가할 수 있습니다.
     alert(`신청 완료: ${name}, ${contact}`);
     onClose();
   };
@@ -29,13 +24,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">모임 신청</h2>
-        <p className="mb-4">{meeting.title}</p>
-        <p className="mb-4">{meeting.description}</p>
-        <p className="mb-4">{meeting.location}</p>
-        <p className="mb-4">
-          {meeting.currentMembers}/{meeting.memberLimit}
-        </p>
-        <p className="mb-4">{meeting.date}</p>
+        <p className="mb-4">{meeting.name}</p>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
