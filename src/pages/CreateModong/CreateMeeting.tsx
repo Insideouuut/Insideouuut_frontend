@@ -4,8 +4,8 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import CreateMeetingForm from '@/pages/Create/CreateMeetingForm';
 import { useRef, useState } from 'react';
+import CreateMeetingForm from './CreateMeetingForm';
 
 const CreateMeeting = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
