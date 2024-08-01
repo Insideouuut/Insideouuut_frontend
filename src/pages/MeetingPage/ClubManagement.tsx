@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+
 interface ClubData {
   description: string;
   schedule: string[];
@@ -8,7 +9,13 @@ interface ClubData {
 }
 
 const daysOfWeek = [
-  '일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'
+  '일요일',
+  '월요일',
+  '화요일',
+  '수요일',
+  '목요일',
+  '금요일',
+  '토요일',
 ];
 
 const ClubManagement: React.FC = () => {
@@ -27,7 +34,9 @@ const ClubManagement: React.FC = () => {
   const [disbandError, setDisbandError] = useState('');
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -37,8 +46,8 @@ const ClubManagement: React.FC = () => {
     setFormData((prevData) => ({
       ...prevData,
       schedule: prevData.schedule.includes(day)
-        ? prevData.schedule.filter(d => d !== day)
-        : [...prevData.schedule, day]
+        ? prevData.schedule.filter((d) => d !== day)
+        : [...prevData.schedule, day],
     }));
   };
 
@@ -59,13 +68,18 @@ const ClubManagement: React.FC = () => {
       setDisbandText('');
       setDisbandError('');
     } else {
-      setDisbandError('해체하려면 "해체하기"를 입력하세요.');
+      setDisbandError('해체하려면 &apos;해체하기&apos;를 입력하세요.');
     }
   };
 
-  const handleMembershipFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMembershipFeeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const value = e.target.value.replace(/\D/g, ''); // 숫자가 아닌 문자 제거
-    setFormData({ ...formData, membershipFee: new Intl.NumberFormat().format(Number(value)) });
+    setFormData({
+      ...formData,
+      membershipFee: new Intl.NumberFormat().format(Number(value)),
+    });
   };
 
   return (
@@ -96,30 +110,32 @@ const ClubManagement: React.FC = () => {
             ))}
           </div>
         </div>
-        <div className='flex justify-between items-center w-[70%]'>
-        <label className="flex h-10 w-full mb-2">
-          <p className='w-[25%] my-auto'>정원 수:</p>
-          <select
-            name="currentParticipants"
-            value={formData.currentParticipants}
-            onChange={handleChange}
-            className="block w-[30%] mt-1 mr-10 p-2 border rounded"
-          >
-            {Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map((num) => (
-              <option key={num} value={num}>{num}</option>
-            ))}
-          </select>
-        </label>
-        <label className="flex h-10 w-full mb-2">
-          <p className='w-[30%] my-auto'>회비 (원):</p>
-          <input
-            type="text"
-            name="membershipFee"
-            value={formData.membershipFee}
-            onChange={handleMembershipFeeChange}
-            className="block w-[50%] h-[32px] my-auto mr-10 p-2 border rounded"
-          />
-        </label>
+        <div className="flex justify-between items-center w-[70%]">
+          <label className="flex h-10 w-full mb-2">
+            <p className="w-[25%] my-auto">정원 수:</p>
+            <select
+              name="currentParticipants"
+              value={formData.currentParticipants}
+              onChange={handleChange}
+              className="block w-[30%] mt-1 mr-10 p-2 border rounded"
+            >
+              {Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex h-10 w-full mb-2">
+            <p className="w-[30%] my-auto">회비 (원):</p>
+            <input
+              type="text"
+              name="membershipFee"
+              value={formData.membershipFee}
+              onChange={handleMembershipFeeChange}
+              className="block w-[50%] h-[32px] my-auto mr-10 p-2 border rounded"
+            />
+          </label>
         </div>
         <Button
           type="submit"
@@ -155,7 +171,7 @@ const ClubManagement: React.FC = () => {
           <div className="bg-white p-6 rounded-lg">
             <h2 className="text-lg font-bold mb-4">경고</h2>
             <p>정말로 동아리를 해체하시겠습니까?</p>
-            <p>'해체하기'를 입력하여 확인하세요:</p>
+            <p>&apos;해체하기&apos;를 입력하여 확인하세요:</p>
             <input
               type="text"
               value={disbandText}

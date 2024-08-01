@@ -33,7 +33,9 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
   };
 
   const truncateDescription = (description: string) => {
-    return description.length > 10 ? `${description.slice(0, 10)}...` : description;
+    return description.length > 10
+      ? `${description.slice(0, 10)}...`
+      : description;
   };
 
   return (
@@ -60,7 +62,9 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
               <p className="text-md text-gray-700 mt-2">{clubData.location}</p>
             </div>
             <div className="w-full md:w-[50%] mt-4 md:mt-0">
-              <h3 className="text-lg font-semibold text-gray-800">참가자 정원</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                참가자 정원
+              </h3>
               <p className="text-md text-gray-700 mt-2">
                 현재 참가자 수: {clubData.memberCount} / {clubData.memberLimit}
               </p>

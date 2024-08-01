@@ -19,9 +19,9 @@ import MemberApproval from '../pages/ClubPage/MemberApproval';
 import MemberManagement from '../pages/ClubPage/MemberManagement';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
+import MeetingPage from '../pages/MeetingPage/MeetingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
-import MeetingPage from '../pages/MeetingPage/MeetingPage'
 
 const router = createBrowserRouter([
   {
@@ -59,9 +59,7 @@ const router = createBrowserRouter([
   {
     path: '/meetingpage',
     element: <MeetingPage />,
-    children: [
-      
-    ]
+    children: [],
   },
   {
     path: '/club',

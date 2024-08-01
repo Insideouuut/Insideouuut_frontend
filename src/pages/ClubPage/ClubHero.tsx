@@ -120,7 +120,11 @@ const ClubHero: React.FC<ClubHeroProps> = ({
   return (
     <section
       className={`relative w-full h-72 py-8 px-4 flex justify-center text-left ${clubData.backgroundColor}`}
-      style={{ backgroundImage: `url(${clubData.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{
+        backgroundImage: `url(${clubData.backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
       <div className="flex items-center mx-auto w-[920px] justify-between">
         <div className="flex flex-col h-[80%]">
@@ -234,9 +238,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
           <div className="flex w-28 flex-col gap-y-[2px]">
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <CalendarDays className="w-[17px]" />
-              <p className="w-[80%] text-center text-[11px]">
-                {clubData.date}
-              </p>
+              <p className="w-[80%] text-center text-[11px]">{clubData.date}</p>
             </p>
             <p className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <MapPin className="w-[17px]" />

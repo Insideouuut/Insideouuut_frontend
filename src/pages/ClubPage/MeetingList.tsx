@@ -1,5 +1,5 @@
-import Data, { Info } from './joggingdata';
 import React from 'react';
+import Data, { Info } from './joggingdata';
 
 const MeetingList: React.FC = () => {
   return (
