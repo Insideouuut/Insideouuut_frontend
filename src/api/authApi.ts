@@ -1,8 +1,6 @@
-import { AxiosResponseHeaders } from 'axios';
 import {
   AuthResponse,
   LoginRequest,
-  LoginResponse,
   SignupRequest,
   UserInfoRequest,
 } from '../types/Auth';
@@ -10,17 +8,9 @@ import { postData } from './api';
 import axiosInstance from './axiosConfig';
 
 // 로그인 함수
-export const login = async (
-  loginData: LoginRequest,
-): Promise<LoginResponse> => {
-  const response = await axiosInstance.post<AuthResponse>(
-    '/api/login',
-    loginData,
-  );
-  return {
-    data: response.data,
-    headers: response.headers as AxiosResponseHeaders,
-  };
+export const login = async (loginData: LoginRequest) => {
+  const response = await axiosInstance.post('/api/login', loginData);
+  return response;
 };
 
 // 회원가입 함수
