@@ -1,3 +1,5 @@
+import axiosInstance from '@/api/axiosConfig';
+import { getUser } from '@/api/userApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -5,10 +7,10 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/store/userStore';
-import React, { useRef, useState } from 'react';
+import { MyProfileResponse } from '@/types/User';
+import React, { useEffect, useRef, useState } from 'react';
 import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
-
 const MyPage: React.FC = () => {
   const { imageUrl, setUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -24,6 +26,7 @@ const MyPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
+  const [profile, setProfile] = useState<MyProfileResponse | null>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -60,6 +63,27 @@ const MyPage: React.FC = () => {
     setUser({ imageUrl: 'https://via.placeholder.com/100' });
   };
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        console.log(token); // 토큰 확인
+        if (token) {
+          axiosInstance.defaults.headers.common['Authorization'] = `${token}`;
+          console.log(axiosInstance.defaults.headers.common['Authorization']);
+          const profileData = await getUser();
+          setProfile(profileData);
+        } else {
+          console.error('No token found');
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   return (
     <div className="relative">
       <Header
@@ -73,7 +97,7 @@ const MyPage: React.FC = () => {
       <div className="bg-gray-200 w-full max-h-full p-10">
         <div className="container flex flex-col shadow-md border border-gray-200 rounded-lg p-10 items-center justify-center bg-white relative">
           <img
-            src={imageUrl}
+            src={profile?.results.profileImage || imageUrl}
             alt="Profile"
             className="w-40 h-40 rounded-full mb-3"
           />
