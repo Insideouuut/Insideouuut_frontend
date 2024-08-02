@@ -198,7 +198,7 @@ const Header: React.FC<HeaderProps> = ({
                   동아리 생성
                 </Link>
                 <Link
-                  to="/chat"
+                  to="/chatroom"
                   className="font-neoExtraBold w-full text-center"
                   onClick={toggleMenu}
                 >
