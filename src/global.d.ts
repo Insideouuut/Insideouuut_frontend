@@ -80,3 +80,19 @@ declare namespace kakao.maps {
 interface Window {
   kakao: typeof kakao;
 }
+
+interface GeoJsonFeature {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: number[][][];
+  };
+  properties: {
+    EMD_KOR_NM: string;
+  };
+}
+
+interface GeoJsonData {
+  type: string;
+  features: GeoJsonFeature[];
+}
