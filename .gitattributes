@@ -1,3 +1,2 @@
 *.geojson filter=lfs diff=lfs merge=lfs -text
-s
 *.zip filter=lfs diff=lfs merge=lfs -text
