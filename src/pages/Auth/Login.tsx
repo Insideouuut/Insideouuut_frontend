@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { mockUserData } from '@/pages/MyPage/mockUserData'; // import mock user data
-import { useUserStore } from '@/store/userStore'; // import zustand store
+import { useUserStore } from '@/store/userStore';
 import { LoginRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Lottie from 'lottie-react';
@@ -41,21 +40,21 @@ const Login = () => {
 
   const onSubmit = async (data: LoginRequest) => {
     try {
-      const { data: responseData, headers } = await login(data);
-      const token = headers['access-token'];
+      const response = await login(data);
+      const statusCode = response.data.status.code;
+      const statusMessage = response.data.status.message;
+      const token = response.headers['access-token'];
 
-      if (responseData.status.code === 200) {
+      if (statusCode === 200) {
         alert('로그인에 성공했습니다.');
-        // Access 토큰을 로컬 스토리지에 저장
         if (typeof token === 'string') {
           localStorage.setItem('accessToken', token);
         }
-        // 로그인 성공 시 mockUserData를 zustand 스토어에 저장
-        setUser(mockUserData);
+        setUser(data);
         navigate('/main');
       } else {
-        console.error(responseData.status.message);
-        alert(responseData.status.message);
+        console.error(statusMessage);
+        alert(statusMessage);
       }
     } catch (error) {
       console.error('로그인 중 오류 발생:', error);
@@ -83,15 +82,17 @@ const Login = () => {
               <h1 className="text-xl font-bold">로그인</h1>
             </div>
 
-            <Link to="/auth/kakao">
-              <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
-                카카오로 로그인하기
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              onClick={() => null}
+              className="w-full bg-yellow-400 text-black hover:bg-yellow-500"
+            >
+              카카오로 로그인하기
+            </Button>
 
             <div className="flex items-center">
               <Separator className="flex-1" />
-              <span className="text-gray-300 text-xs w-8">또는</span>
+              <span className="text-gray-300 text-xs mx-3">또는</span>
               <Separator className="flex-1" />
             </div>
 
