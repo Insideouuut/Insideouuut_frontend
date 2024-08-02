@@ -179,10 +179,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }, [onLocationSelect, radius, addNeighborhoodPolygonsWithinRadius]);
 
   return (
-    <div>
-      <div id="map" style={{ width: '800px', height: '500px' }} />
-      <div className="text-center mt-5 items-center justify-center flex space-x-2">
-        <label htmlFor="radius" className="text-sm">
+    <div className="flex flex-col items-center space-y-4 w-full max-w-screen-lg mx-auto">
+      <div id="map" className="w-full h-96 sm:h-[500px] rounded-md shadow-md" />
+      <div className="text-center flex flex-col items-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
+        <label htmlFor="radius" className="text-sm whitespace-nowrap">
           반경 선택 (km):
         </label>
         <input
@@ -192,14 +192,14 @@ const MapComponent: React.FC<MapComponentProps> = ({
           max="5"
           step="1"
           value={radius}
-          className="h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+          className="h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary w-full sm:w-auto"
           onChange={(e) => setRadius(Number(e.target.value))}
         />
         <span className="text-sm ml-2">{radius}km</span>
       </div>
-      <div className="mt-4">
-        <h3 className="text-center text-xs font-semibold mb-1">내 주변 동네</h3>
-        <ul className="flex flex-wrap gap-2 p-2 rounded-md border border-gray-200">
+      <div className="w-full p-4 rounded-md border border-gray-200 shadow-sm">
+        <h3 className="text-center text-sm font-semibold mb-2">내 주변 동네</h3>
+        <ul className="flex flex-wrap gap-2 justify-center">
           {neighborhoods.map((neighborhood, index) => (
             <li
               key={index}
