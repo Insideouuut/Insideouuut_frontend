@@ -1,4 +1,4 @@
-import { signup } from '@/api/authApi';
+import { checkEmail, checkNickname, signup } from '@/api/authApi';
 import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -84,6 +84,8 @@ const Signup = () => {
     resolver: zodResolver(signupSchema),
     defaultValues: defaultData,
   });
+  const [checkedEmail, setCheckedEmail] = useState(false);
+  const [checkedNickname, setCheckedNickname] = useState(false);
 
   const onSubmit = async (data: SignupForm) => {
     const signupData: SignupRequest = {
@@ -116,8 +118,16 @@ const Signup = () => {
     let isValid;
     if (step === 1) {
       isValid = await trigger(['email', 'password', 'confirmPassword']);
+      if (!checkedEmail) {
+        isValid = false;
+        alert('이메일 중복 확인을 해주세요.');
+      }
     } else if (step === 2) {
       isValid = await trigger(['name', 'nickname', 'phoneNumber', 'birth']);
+      if (!checkedNickname) {
+        isValid = false;
+        alert('닉네임 중복 확인을 해주세요.');
+      }
     } else if (step === 3) {
       isValid = await trigger(['gender', 'interests', 'location']);
     }
@@ -126,6 +136,7 @@ const Signup = () => {
       setStep(step + 1);
     }
   };
+
   const handlePrevStep = () => {
     setStep(step - 1);
   };
@@ -141,6 +152,43 @@ const Signup = () => {
       return `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
     } else {
       return `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
+    }
+  };
+
+  const clickCheckEmail = async (email: string) => {
+    try {
+      const response = await checkEmail(email);
+      const statusCode = response.data.status.code;
+      console.log('email response:', response);
+      if (statusCode === 200) {
+        alert('사용가능한 이메일입니다.');
+        setCheckedEmail(true);
+      } else if (statusCode === 400 || statusCode === 409) {
+        alert(response.data.status.message);
+        setCheckedEmail(false);
+      }
+    } catch (error) {
+      alert('이메일 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
+      console.error('Email checked Error:', error);
+    }
+  };
+
+  const clickCheckNickname = async (nickname: string) => {
+    try {
+      const response = await checkNickname(nickname);
+      const statusCode = response.data.status.code;
+      console.log('nickname response:', response);
+
+      if (statusCode === 200) {
+        alert('사용가능한 닉네임입니다.');
+        setCheckedNickname(true);
+      } else if (statusCode === 400 || statusCode === 409) {
+        alert(response.data.status.message);
+        setCheckedNickname(false);
+      }
+    } catch (error) {
+      alert('닉네임 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
+      console.error('Nickname checked Error:', error);
     }
   };
 
@@ -188,12 +236,21 @@ const Signup = () => {
                       name="email"
                       control={control}
                       render={({ field }) => (
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="modong@example.com"
-                          {...field}
-                        />
+                        <div className="flex w-full gap-2">
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="modong@example.com"
+                            {...field}
+                            className="w-full"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => clickCheckEmail(field.value)}
+                          >
+                            중복확인
+                          </Button>
+                        </div>
                       )}
                     />
                     {errors.email && (
@@ -300,12 +357,20 @@ const Signup = () => {
                       name="nickname"
                       control={control}
                       render={({ field }) => (
-                        <Input
-                          id="nickname"
-                          type="text"
-                          placeholder="닉네임"
-                          {...field}
-                        />
+                        <div className="flex w-full gap-2">
+                          <Input
+                            id="nickname"
+                            type="text"
+                            placeholder="닉네임"
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => clickCheckNickname(field.value)}
+                          >
+                            중복확인
+                          </Button>
+                        </div>
                       )}
                     />
                     {errors.nickname && (
