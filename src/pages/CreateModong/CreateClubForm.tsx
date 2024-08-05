@@ -20,7 +20,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { Camera, Info } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,25 +33,25 @@ const LEVEL_DETAIL = [
 const ClubSchema = z.object({
   category: z.enum(['사교/취미', '운동', '스터디']),
   categoryDetail: z.string(),
-  level: z.enum(['상', '중', '하']).optional(), // 레벨 (운동, 스터디)
+  level: z.enum(['상', '중', '하']).optional(),
   hasMembershipFee: z.union([z.literal('있음'), z.literal('없음')]),
   membershipFeeAmount: z.preprocess(
     (val) => Number(val),
     z.number().optional(),
-  ), // 기본 값을 설정하고 숫자로 변환
-  activityRegion: z.string(), // 주로 활동하는 지역
-  frequency: z.string(), // 주기
-  weekDay: z.string().optional(), // 요일 (매주 선택 시)
-  monthDate: z.number().optional(), // 날짜 (매달 선택 시)
-  participantLimit: z.preprocess((val) => Number(val), z.number().positive()), // 양수 설정
-  hasGenderRatio: z.string(), // 성비
-  ratio: z.preprocess((val) => Number(val), z.number()), // 기본 값을 설정하고 숫자로 변환
-  ageRange: z.array(z.number()), // 연령대
-  name: z.string(), // 동아리 이름
-  introduction: z.string(), // 동아리 소개
-  rules: z.string(), // 동아리 규칙
-  images: z.string().optional(), // 이미지 추가 (선택)
-  joinQuestions: z.string(), // 가입 질문을 문자열로 변경
+  ),
+  activityRegion: z.string(),
+  frequency: z.string(),
+  weekDay: z.string().optional(),
+  monthDate: z.number().optional(),
+  participantLimit: z.preprocess((val) => Number(val), z.number().positive()),
+  hasGenderRatio: z.string(),
+  ratio: z.preprocess((val) => Number(val), z.number()),
+  ageRange: z.array(z.number()),
+  name: z.string(),
+  introduction: z.string(),
+  rules: z.string(),
+  images: z.union([z.instanceof(File), z.null()]),
+  joinQuestions: z.string(),
 });
 
 type ClubFormData = z.infer<typeof ClubSchema>;
@@ -73,16 +73,16 @@ const initialValues: ClubFormData = {
   name: '',
   introduction: '',
   rules: '',
-  images: '',
+  images: null,
   joinQuestions: '',
 };
 
 const CreateClubForm = () => {
   const {
-    register,
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ClubFormData>({
     resolver: zodResolver(ClubSchema),
@@ -98,9 +98,49 @@ const CreateClubForm = () => {
   const frequency = watch('frequency');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const onSubmit = (values: ClubFormData) => {
-    console.log('values:', values);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+    setValue('images', file);
+  };
+
+  useEffect(() => {
+    switch (category) {
+      case '사교/취미':
+        setCategoryDetail(CATEGORY_DETAIL[0]);
+        break;
+      case '운동':
+        setCategoryDetail(CATEGORY_DETAIL[1]);
+        setLevelDetail(LEVEL_DETAIL[0]);
+        break;
+      case '스터디':
+        setCategoryDetail(CATEGORY_DETAIL[2]);
+        setLevelDetail(LEVEL_DETAIL[1]);
+        break;
+    }
+  }, [category]);
+
+  const onSubmit = (data: ClubFormData) => {
+    // const createClubData: Club = {
+    //   category: data.category,
+    //   categoryDetail: data.categoryDetail,
+    //   level: data.level,
+    //   hasMembershipFee: data.hasMembershipFee,
+    //   membershipFeeAmount: data.membershipFeeAmount,
+    //   date: data.date,
+    //   participantLimit: data.participantLimit,
+    //   hasGenderRatio: data.hasGenderRatio,
+    //   ratio: data.ratio,
+    //   ageRange: data.ageRange,
+    //   name: data.name,
+    //   introduction: data.introduction,
+    //   rules: data.rules,
+    //   images: data.images,
+    //   joinQuestions: data.joinQuestions,
+    // };
+    console.log('data:', data);
     alert('동아리 생성이 완료되었습니다!');
   };
 
@@ -120,19 +160,6 @@ const CreateClubForm = () => {
               value={field.value}
               onValueChange={(value) => {
                 field.onChange(value as '사교/취미' | '운동' | '스터디');
-                switch (value) {
-                  case '사교/취미':
-                    setCategoryDetail(CATEGORY_DETAIL[0]);
-                    break;
-                  case '운동':
-                    setCategoryDetail(CATEGORY_DETAIL[1]);
-                    setLevelDetail(LEVEL_DETAIL[0]);
-                    break;
-                  case '스터디':
-                    setCategoryDetail(CATEGORY_DETAIL[2]);
-                    setLevelDetail(LEVEL_DETAIL[1]);
-                    break;
-                }
               }}
             >
               <ToggleGroupItem value="사교/취미">사교/취미</ToggleGroupItem>
@@ -546,14 +573,22 @@ const CreateClubForm = () => {
 
       <div className="flex flex-col gap-4 items-start">
         <Label htmlFor="images">이미지 추가 (선택)</Label>
-        <Input
-          id="images"
-          type="file"
-          placeholder="images"
-          {...register('images')}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          accept="image/*"
+        <Controller
+          name="images"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="images"
+              type="file"
+              ref={fileInputRef}
+              onChange={(e) => {
+                handleFileChange(e);
+                field.onChange(e.target.files?.[0] ?? null);
+              }}
+              style={{ display: 'none' }}
+              accept="image/*"
+            />
+          )}
         />
         <button
           type="button"
@@ -566,8 +601,11 @@ const CreateClubForm = () => {
         >
           <Camera strokeWidth={0.75} size={48} color="#cccccc" />
         </button>
+        {selectedFile && (
+          <div className="text-sm text-gray-500">{selectedFile.name}</div>
+        )}
         {errors.images && (
-          <span className="text-red-500 text-sm">{errors.images?.message}</span>
+          <span className="text-red-500 text-sm">{errors.images.message}</span>
         )}
       </div>
 

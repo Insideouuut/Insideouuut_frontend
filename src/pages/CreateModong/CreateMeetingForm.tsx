@@ -23,7 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { format } from 'date-fns';
 import { CalendarIcon, Camera, Clock4, Info } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -36,24 +36,24 @@ const LEVEL_DETAIL = [
 const MeetingSchema = z.object({
   category: z.enum(['사교/취미', '운동', '스터디']),
   categoryDetail: z.string(),
-  level: z.enum(['상', '중', '하']).optional(), // 레벨 (운동, 스터디)
+  level: z.enum(['상', '중', '하']).optional(),
   hasMembershipFee: z.union([z.literal('있음'), z.literal('없음')]),
   membershipFeeAmount: z.preprocess(
     (val) => Number(val),
     z.number().optional(),
-  ), // 기본 값을 설정하고 숫자로 변환
-  meetingPlace: z.string(), // 모임 장소
-  meetingDate: z.union([z.date(), z.undefined()]), // 모임 날짜
-  meetingTime: z.string(), // 모임 시간
-  participantLimit: z.preprocess((val) => Number(val), z.number().positive()), // 양수 설정
-  hasGenderRatio: z.string(), // 성비
-  ratio: z.preprocess((val) => Number(val), z.number()), // 기본 값을 설정하고 숫자로 변환
-  ageRange: z.array(z.number()), // 연령대
-  name: z.string(), // 모임 이름
-  introduction: z.string(), // 모임 소개
-  rules: z.string(), // 모임 규칙
-  images: z.string().optional(), // 이미지 추가 (선택)
-  joinQuestions: z.string(), // 가입 질문을 문자열로 변경
+  ),
+  meetingPlace: z.string(),
+  meetingDate: z.union([z.date(), z.undefined()]),
+  meetingTime: z.string(),
+  participantLimit: z.preprocess((val) => Number(val), z.number().positive()),
+  hasGenderRatio: z.string(),
+  ratio: z.preprocess((val) => Number(val), z.number()),
+  ageRange: z.array(z.number()),
+  name: z.string(),
+  introduction: z.string(),
+  rules: z.string(),
+  images: z.union([z.instanceof(File), z.null()]),
+  joinQuestions: z.string(),
 });
 
 type MeetingFormData = z.infer<typeof MeetingSchema>;
@@ -74,13 +74,12 @@ const initialValues: MeetingFormData = {
   name: '',
   introduction: '',
   rules: '',
-  images: '',
+  images: null,
   joinQuestions: '',
 };
 
 const CreateMeetingForm = () => {
   const {
-    register,
     handleSubmit,
     setValue,
     control,
@@ -99,6 +98,29 @@ const CreateMeetingForm = () => {
   const ratio = watch('ratio', 5);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+    setValue('images', file);
+  };
+
+  useEffect(() => {
+    switch (category) {
+      case '사교/취미':
+        setCategoryDetail(CATEGORY_DETAIL[0]);
+        break;
+      case '운동':
+        setCategoryDetail(CATEGORY_DETAIL[1]);
+        setLevelDetail(LEVEL_DETAIL[0]);
+        break;
+      case '스터디':
+        setCategoryDetail(CATEGORY_DETAIL[2]);
+        setLevelDetail(LEVEL_DETAIL[1]);
+        break;
+    }
+  }, [category]);
 
   const onSubmit = (values: MeetingFormData) => {
     console.log('values:', values);
@@ -126,19 +148,6 @@ const CreateMeetingForm = () => {
               value={field.value}
               onValueChange={(value) => {
                 field.onChange(value as '사교/취미' | '운동' | '스터디');
-                switch (value) {
-                  case '사교/취미':
-                    setCategoryDetail(CATEGORY_DETAIL[0]);
-                    break;
-                  case '운동':
-                    setCategoryDetail(CATEGORY_DETAIL[1]);
-                    setLevelDetail(LEVEL_DETAIL[0]);
-                    break;
-                  case '스터디':
-                    setCategoryDetail(CATEGORY_DETAIL[2]);
-                    setLevelDetail(LEVEL_DETAIL[1]);
-                    break;
-                }
               }}
             >
               <ToggleGroupItem value="사교/취미">사교/취미</ToggleGroupItem>
@@ -605,14 +614,22 @@ const CreateMeetingForm = () => {
 
       <div className="flex flex-col gap-4 items-start">
         <Label htmlFor="images">이미지 추가 (선택)</Label>
-        <Input
-          id="images"
-          type="file"
-          placeholder="images"
-          {...register('images')}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          accept="image/*"
+        <Controller
+          name="images"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="images"
+              type="file"
+              ref={fileInputRef}
+              onChange={(e) => {
+                handleFileChange(e);
+                field.onChange(e.target.files?.[0] ?? null);
+              }}
+              style={{ display: 'none' }}
+              accept="image/*"
+            />
+          )}
         />
         <button
           type="button"
@@ -625,8 +642,11 @@ const CreateMeetingForm = () => {
         >
           <Camera strokeWidth={0.75} size={48} color="#cccccc" />
         </button>
+        {selectedFile && (
+          <div className="text-sm text-gray-500">{selectedFile.name}</div>
+        )}
         {errors.images && (
-          <span className="text-red-500 text-sm">{errors.images?.message}</span>
+          <span className="text-red-500 text-sm">{errors.images.message}</span>
         )}
       </div>
 
