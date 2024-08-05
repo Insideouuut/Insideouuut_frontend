@@ -6,7 +6,7 @@ export interface Group {
   membershipFeeAmount: number;
   date: string;
   participantLimit: number;
-  genderRatio: string;
+  hasGenderRatio: string;
   ratio: string;
   ageRange: number[];
   name: string;
