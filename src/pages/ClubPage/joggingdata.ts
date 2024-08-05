@@ -5,6 +5,7 @@ export interface Info {
   currentMembers: number;
   memberLimit: number;
   date: string;
+  fee: number; // fee 필드를 추가합니다.
 }
 
 const joggingData: Info[] = [
@@ -15,6 +16,7 @@ const joggingData: Info[] = [
     currentMembers: 10,
     memberLimit: 15,
     date: '2024-08-01 오후 6:00',
+    fee: 0,
   },
   {
     title: '조깅 모임 2',
@@ -23,6 +25,7 @@ const joggingData: Info[] = [
     currentMembers: 8,
     memberLimit: 12,
     date: '2024-08-03 오전 7:00',
+    fee: 5000,
   },
   {
     title: '조깅 모임 3',
@@ -31,6 +34,7 @@ const joggingData: Info[] = [
     currentMembers: 15,
     memberLimit: 20,
     date: '2024-08-05 오전 6:00',
+    fee: 0,
   },
   {
     title: '조깅 모임 4',
@@ -39,6 +43,7 @@ const joggingData: Info[] = [
     currentMembers: 12,
     memberLimit: 15,
     date: '2024-08-07 오후 8:00',
+    fee: 5000,
   },
   {
     title: '조깅 모임 5',
@@ -47,6 +52,7 @@ const joggingData: Info[] = [
     currentMembers: 7,
     memberLimit: 10,
     date: '2024-08-10 오전 8:00',
+    fee: 0,
   },
   {
     title: '조깅 모임 6',
@@ -55,6 +61,7 @@ const joggingData: Info[] = [
     currentMembers: 9,
     memberLimit: 12,
     date: '2024-08-12 오후 7:30',
+    fee: 5000,
   },
   {
     title: '조깅 모임 7',
@@ -63,6 +70,7 @@ const joggingData: Info[] = [
     currentMembers: 10,
     memberLimit: 15,
     date: '2024-08-14 오후 5:30',
+    fee: 0,
   },
   {
     title: '조깅 모임 8',
@@ -71,6 +79,7 @@ const joggingData: Info[] = [
     currentMembers: 5,
     memberLimit: 10,
     date: '2024-08-16 오전 6:00',
+    fee: 5000,
   },
   {
     title: '조깅 모임 9',
@@ -79,6 +88,7 @@ const joggingData: Info[] = [
     currentMembers: 12,
     memberLimit: 18,
     date: '2024-08-18 오후 7:00',
+    fee: 0,
   },
   {
     title: '조깅 모임 10',
@@ -87,6 +97,7 @@ const joggingData: Info[] = [
     currentMembers: 11,
     memberLimit: 14,
     date: '2024-08-20 오후 6:30',
+    fee: 5000,
   },
 ];
 

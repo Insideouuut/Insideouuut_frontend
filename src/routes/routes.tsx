@@ -19,9 +19,10 @@ import MemberApproval from '../pages/ClubPage/MemberApproval';
 import MemberManagement from '../pages/ClubPage/MemberManagement';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
-import MeetingPage from '../pages/MeetingPage/MeetingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+import CreateMeetinginClub from '../pages/ClubPage/CreateMeetinginClub';
+import Mymeeting from '../pages/ClubPage/MyMeeting';
 
 const router = createBrowserRouter([
   {
@@ -57,11 +58,6 @@ const router = createBrowserRouter([
     element: <SearchPage />,
   },
   {
-    path: '/meetingpage',
-    element: <MeetingPage />,
-    children: [],
-  },
-  {
     path: '/club',
     element: <ClubPage />,
     children: [
@@ -92,17 +88,13 @@ const router = createBrowserRouter([
       {
         path: 'createMeeting',
         element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            모임 생성 컴포넌트
-          </div>
+          <CreateMeetinginClub/>
         ),
       },
       {
         path: 'meetingListSettings',
         element: (
-          <div className="flex p-6 bg-gray-50 rounded-lg w-[820px] border-2 border-gray-200">
-            모임 목록 설정 컴포넌트
-          </div>
+          <Mymeeting/>
         ),
       },
       {

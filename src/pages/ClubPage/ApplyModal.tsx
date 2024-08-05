@@ -8,6 +8,7 @@ interface Meeting {
   currentMembers: number;
   memberLimit: number;
   date: string;
+  fee: number; // fee 필드를 추가합니다.
 }
 
 interface ApplyModalProps {
@@ -29,13 +30,30 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">모임 신청</h2>
-        <p className="mb-4">{meeting.title}</p>
-        <p className="mb-4">{meeting.description}</p>
-        <p className="mb-4">{meeting.location}</p>
-        <p className="mb-4">
-          {meeting.currentMembers}/{meeting.memberLimit}
-        </p>
-        <p className="mb-4">{meeting.date}</p>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">제목</label>
+          <p className="mt-1">{meeting.title}</p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">설명</label>
+          <p className="mt-1">{meeting.description}</p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">장소</label>
+          <p className="mt-1">{meeting.location}</p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">인원</label>
+          <p className="mt-1">{meeting.currentMembers}/{meeting.memberLimit}</p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">일시</label>
+          <p className="mt-1">{meeting.date}</p>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">회비</label>
+          <p className="mt-1">회비: {meeting.fee.toLocaleString()}원</p> {/* 회비 정보 추가 */}
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label

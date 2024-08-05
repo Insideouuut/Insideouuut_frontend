@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Data, { Info } from './joggingdata';
+import ApplyModal from './ApplyModal';
 
 const MeetingList: React.FC = () => {
+  const [selectedMeeting, setSelectedMeeting] = useState<Info | null>(null);
+
+  const handleRowClick = (meeting: Info) => {
+    setSelectedMeeting(meeting);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMeeting(null);
+  };
+
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
       <div className="overflow-x-auto">
@@ -18,7 +29,11 @@ const MeetingList: React.FC = () => {
           </thead>
           <tbody>
             {Data.map((meeting: Info, index: number) => (
-              <tr key={index} className="cursor-pointer hover:bg-gray-100">
+              <tr
+                key={index}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => handleRowClick(meeting)}
+              >
                 <td className="py-3 px-5 border-b text-sm text-gray-800">
                   {meeting.title}
                 </td>
@@ -41,6 +56,9 @@ const MeetingList: React.FC = () => {
           </tbody>
         </table>
       </div>
+      {selectedMeeting && (
+        <ApplyModal meeting={selectedMeeting} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
