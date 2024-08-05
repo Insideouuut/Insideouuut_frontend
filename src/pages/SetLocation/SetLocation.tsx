@@ -13,6 +13,7 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import MapComponent from '@/pages/SetLocation/MapComponent';
 import { useUserStore } from '@/store/userStore';
+import axios from 'axios';
 import { CircleAlert, Map } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
@@ -31,6 +32,7 @@ const SetLocation: React.FC = () => {
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
   const [myLocation, setMyLocation] = useState(''); // 위치 상태
+  const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -62,6 +64,24 @@ const SetLocation: React.FC = () => {
     setMyLocation(newLocation);
   };
 
+  const handleNeighborhoodsUpdate = (neighborhoods: string[]) => {
+    setNeighborhoods(neighborhoods);
+  };
+
+  const handleVerification = async () => {
+    const isVerified = neighborhoods.includes(location);
+    try {
+      await axios.post('api주소', {
+        location: location,
+        isVerified,
+        neighborhoods,
+      });
+      alert(isVerified ? '동네 인증 성공!' : '동네 인증 실패.');
+    } catch (error) {
+      console.error('Error verifying location:', error);
+    }
+  };
+
   return (
     <div>
       <Header
@@ -81,22 +101,19 @@ const SetLocation: React.FC = () => {
         />
         <main className="flex-grow container mx-auto py-4 px-4 flex flex-col items-center">
           <section className="bg-white p-8 w-full mt-8 rounded shadow-md flex flex-col items-center">
-            <MapComponent onLocationSelect={handleLocationSelect} />
+            <MapComponent
+              onLocationSelect={handleLocationSelect}
+              onNeighborhoodsUpdate={handleNeighborhoodsUpdate}
+            />
             <div className="flex space-x-4 p-8 items-center justify-center">
               <Map className="text-primary " />
-              <p className="font-neoBold whitespace-nowrap">우리 동네</p>
+              <p className="font-neoBold whitespace-nowrap">현재 내 위치</p>
               <Input
                 value={myLocation}
                 onChange={(e) => setMyLocation(e.target.value)}
-                placeholder="시, 구, 동 입력"
               />
             </div>
-            <div className="flex space-x-2 text-sm mb-4 items-center">
-              <p>내가 설정한 동네</p>
-              <p className=" text-white  p-2 rounded-xl px-4 bg-primary font-neoBold">
-                {location}
-              </p>
-            </div>
+
             <HoverCard>
               <HoverCardTrigger>
                 <div className="flex space-x-2 items-center mb-4">
@@ -111,8 +128,10 @@ const SetLocation: React.FC = () => {
               </HoverCardContent>
             </HoverCard>
 
-            {/* 만약 myLocation에 location이 동일? 일치하면 동네 인증성공하는 함수 추가하기*/}
-            <Button className="bg-slate-100 hover:bg-slate-200 text-black font-neoBold">
+            <Button
+              onClick={handleVerification}
+              className="bg-slate-100 hover:bg-slate-200 text-black font-neoBold"
+            >
               동네 인증하기
             </Button>
           </section>
