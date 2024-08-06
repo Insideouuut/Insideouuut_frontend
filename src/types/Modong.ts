@@ -12,22 +12,23 @@ export interface Group {
   name: string;
   introduction: string;
   rules: string[];
-  images?: File;
+  images?: File | null;
   joinQuestions: string[];
 }
 
-export interface Club extends Group {
-  meetingPlace: {
-    name: string;
-    placeUrl: string;
-    kakaoMapId: number;
-    addressName: string;
-    roadAddressName: string;
-    latitude: string;
-    longitude: string;
-  };
+export interface Meeting extends Group {
+  meetingPlace: string;
+  // meetingPlace: {
+  //   name: string;
+  //   placeUrl: string;
+  //   kakaoMapId: number;
+  //   addressName: string;
+  //   roadAddressName: string;
+  //   latitude: string;
+  //   longitude: string;
+  // };
 }
 
-export interface Meeting extends Group {
+export interface Club extends Group {
   activityRegion: string;
 }

@@ -17,6 +17,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Club } from '@/types/Modong';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { Camera, Info } from 'lucide-react';
@@ -32,26 +33,29 @@ const LEVEL_DETAIL = [
 
 const ClubSchema = z.object({
   category: z.enum(['사교/취미', '운동', '스터디']),
-  categoryDetail: z.string(),
+  categoryDetail: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   level: z.enum(['상', '중', '하']).optional(),
-  hasMembershipFee: z.union([z.literal('있음'), z.literal('없음')]),
+  hasMembershipFee: z.boolean(),
   membershipFeeAmount: z.preprocess(
     (val) => Number(val),
     z.number().optional(),
   ),
-  activityRegion: z.string(),
-  frequency: z.string(),
+  activityRegion: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  frequency: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   weekDay: z.string().optional(),
-  monthDate: z.number().optional(),
-  participantLimit: z.preprocess((val) => Number(val), z.number().positive()),
-  hasGenderRatio: z.string(),
+  monthDate: z.string().optional(),
+  participantLimit: z.preprocess(
+    (val) => Number(val),
+    z.number().positive().min(1, { message: '필수 입력 항목입니다.' }),
+  ),
+  hasGenderRatio: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   ratio: z.preprocess((val) => Number(val), z.number()),
   ageRange: z.array(z.number()),
-  name: z.string(),
-  introduction: z.string(),
-  rules: z.string(),
+  name: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  introduction: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  rules: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   images: z.union([z.instanceof(File), z.null()]),
-  joinQuestions: z.string(),
+  joinQuestions: z.string().min(1, { message: '필수 입력 항목입니다.' }),
 });
 
 type ClubFormData = z.infer<typeof ClubSchema>;
@@ -60,12 +64,12 @@ const initialValues: ClubFormData = {
   category: '사교/취미',
   categoryDetail: '',
   level: '중',
-  hasMembershipFee: '없음',
+  hasMembershipFee: false,
   membershipFeeAmount: 0,
   activityRegion: '',
   frequency: '',
   weekDay: '월요일',
-  monthDate: 1,
+  monthDate: '1',
   participantLimit: 1,
   hasGenderRatio: '무관',
   ratio: 5,
@@ -123,24 +127,41 @@ const CreateClubForm = () => {
   }, [category]);
 
   const onSubmit = (data: ClubFormData) => {
-    // const createClubData: Club = {
-    //   category: data.category,
-    //   categoryDetail: data.categoryDetail,
-    //   level: data.level,
-    //   hasMembershipFee: data.hasMembershipFee,
-    //   membershipFeeAmount: data.membershipFeeAmount,
-    //   date: data.date,
-    //   participantLimit: data.participantLimit,
-    //   hasGenderRatio: data.hasGenderRatio,
-    //   ratio: data.ratio,
-    //   ageRange: data.ageRange,
-    //   name: data.name,
-    //   introduction: data.introduction,
-    //   rules: data.rules,
-    //   images: data.images,
-    //   joinQuestions: data.joinQuestions,
-    // };
-    console.log('data:', data);
+    let levelData = data.level || '';
+    if (data.category === '사교/취미') {
+      levelData = '';
+    }
+    const membershipFeeAmountData = data.membershipFeeAmount || 0;
+    let dateData = data.frequency + ' ';
+    if (data.frequency === '매주') {
+      dateData += data?.weekDay;
+    } else if (data.frequency === '매달') {
+      dateData += data?.monthDate + '일';
+    }
+    let ratioData = '';
+    if (data.ratio) {
+      ratioData = `${ratio} : ${10 - ratio}`;
+    }
+
+    const createClubData: Club = {
+      category: data.category,
+      categoryDetail: data.categoryDetail,
+      level: levelData,
+      hasMembershipFee: data.hasMembershipFee,
+      membershipFeeAmount: membershipFeeAmountData,
+      activityRegion: data.activityRegion,
+      date: dateData,
+      participantLimit: data.participantLimit,
+      hasGenderRatio: data.hasGenderRatio,
+      ratio: ratioData,
+      ageRange: data.ageRange,
+      name: data.name,
+      introduction: data.introduction,
+      rules: [data.rules],
+      images: data.images,
+      joinQuestions: [data.joinQuestions],
+    };
+    console.log('data:', createClubData);
     alert('동아리 생성이 완료되었습니다!');
   };
 
@@ -150,7 +171,9 @@ const CreateClubForm = () => {
       className="flex flex-col gap-12 min-h-full w-full max-w-[700px] p-8"
     >
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="category">동아리 카테고리</Label>
+        <Label htmlFor="category">
+          동아리 카테고리 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="category"
           control={control}
@@ -176,7 +199,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="categoryDetail">{categoryDetail}</Label>
+        <Label htmlFor="categoryDetail">
+          {categoryDetail} <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="categoryDetail"
           control={control}
@@ -198,7 +223,9 @@ const CreateClubForm = () => {
       {(category === '운동' || category == '스터디') && (
         <div className="flex flex-col gap-4 items-start">
           <div className="flex items-center justify-between w-full">
-            <Label htmlFor="level">레벨</Label>
+            <Label htmlFor="level">
+              레벨 <span className="text-primary font-neoBold">*</span>
+            </Label>
             <Popover>
               <PopoverTrigger>
                 <Info color="#ccc" />
@@ -260,7 +287,9 @@ const CreateClubForm = () => {
       )}
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="hasMembershipFee">회비</Label>
+        <Label htmlFor="hasMembershipFee">
+          회비 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="hasMembershipFee"
           control={control}
@@ -271,20 +300,19 @@ const CreateClubForm = () => {
               onValueChange={(value) => field.onChange(value)}
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="없음" id="없음" />
+                <RadioGroupItem value={false} id="없음" />
                 <Label htmlFor="없음">없음</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="있음" id="있음" />
+                <RadioGroupItem value={true} id="있음" />
                 <Label htmlFor="있음">있음</Label>
               </div>
             </RadioGroup>
           )}
         />
-        {hasMembershipFee === '있음' && (
+        {hasMembershipFee === true && (
           <>
             <div className="flex flex-col gap-4 items-start">
-              <Label htmlFor="membershipFeeAmount">회비</Label>
               <Controller
                 name="membershipFeeAmount"
                 control={control}
@@ -308,7 +336,10 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="activityRegion">주로 활동하는 지역</Label>
+        <Label htmlFor="activityRegion">
+          주로 활동하는 지역{' '}
+          <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="activityRegion"
           control={control}
@@ -328,7 +359,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="frequency">정기 모임 주기</Label>
+        <Label htmlFor="frequency">
+          정기 모임 주기 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <div className="flex gap-4 w-full">
           <Controller
             name="frequency"
@@ -381,8 +414,8 @@ const CreateClubForm = () => {
                 <Input
                   {...field}
                   type="number"
-                  min="1"
-                  max="31"
+                  min={1}
+                  max={31}
                   placeholder="일"
                   className="w-full md:w-[80px]"
                 />
@@ -408,7 +441,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="participantLimit">최대 참여 인원</Label>
+        <Label htmlFor="participantLimit">
+          최대 참여 인원 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="participantLimit"
           control={control}
@@ -429,7 +464,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="hasGenderRatio">성비</Label>
+        <Label htmlFor="hasGenderRatio">
+          성비 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="hasGenderRatio"
           control={control}
@@ -489,7 +526,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="ageRange">연령대</Label>
+        <Label htmlFor="ageRange">
+          연령대 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="ageRange"
           control={control}
@@ -528,7 +567,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="name">동아리 이름</Label>
+        <Label htmlFor="name">
+          동아리 이름 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="name"
           control={control}
@@ -542,7 +583,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="introduction">동아리 소개</Label>
+        <Label htmlFor="introduction">
+          동아리 소개 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="introduction"
           control={control}
@@ -558,7 +601,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="rules">동아리 규칙</Label>
+        <Label htmlFor="rules">
+          동아리 규칙 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="rules"
           control={control}
@@ -610,7 +655,9 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="joinQuestions">가입 질문</Label>
+        <Label htmlFor="joinQuestions">
+          가입 질문 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="joinQuestions"
           control={control}
