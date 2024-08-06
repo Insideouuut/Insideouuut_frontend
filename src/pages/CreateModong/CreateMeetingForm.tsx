@@ -19,66 +19,71 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
+import { Meeting } from '@/types/Modong';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { format } from 'date-fns';
 import { CalendarIcon, Camera, Clock4, Info } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+const CATEGORY_DETAIL = ['사교/취미 종류', '운동 종류', '스터디 목표'];
+const LEVEL_DETAIL = [
+  ['운동 상 실력', '운동 중 실력', '운동 하 실력'],
+  ['스터디 상 실력', '스터디 중 실력', '스터디 하 실력'],
+];
+
 const MeetingSchema = z.object({
-  meetingCategory: z.enum(['사교/취미', '운동', '스터디']),
-  membershipFee: z.union([z.literal('있음'), z.literal('없음')]),
+  category: z.enum(['사교/취미', '운동', '스터디']),
+  categoryDetail: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  level: z.enum(['상', '중', '하']).optional(),
+  hasMembershipFee: z.boolean(),
   membershipFeeAmount: z.preprocess(
     (val) => Number(val),
     z.number().optional(),
-  ), // 기본 값을 설정하고 숫자로 변환
-  region: z.string(), // 주로 활동하는 지역
-  meetingDate: z.union([z.date(), z.undefined()]), // 모임 날짜
-  meetingTime: z.string(), // 모임 시간
-  participantCount: z.preprocess((val) => Number(val), z.number().positive()), // 양수 설정
-  genderRatio: z.string(), // 성비
-  ratio: z.preprocess((val) => Number(val), z.number()), // 기본 값을 설정하고 숫자로 변환
-  ageRange: z.array(z.number()), // 연령대
-  meetingName: z.string(), // 모임 이름
-  meetingIntroduction: z.string(), // 모임 소개
-  meetingRules: z.string(), // 모임 규칙
-  meetingImage: z.string().optional(), // 이미지 추가 (선택)
-  joinQuestions: z.string(), // 가입 질문을 문자열로 변경
-  hobbyType: z.string().optional(), // 취미
-  sportsType: z.string().optional(), // 운동 종류
-  level: z.enum(['상', '중', '하']).optional(), // 레벨 (운동, 스터디)
-  studyGoal: z.string().optional(), // 스터디 목표
+  ),
+  meetingPlace: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  meetingDate: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  meetingTime: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  participantLimit: z.preprocess(
+    (val) => Number(val),
+    z.number().positive().min(1, { message: '필수 입력 항목입니다.' }),
+  ),
+  hasGenderRatio: z.string(),
+  ratio: z.preprocess((val) => Number(val), z.number()),
+  ageRange: z.array(z.number()),
+  name: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  introduction: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  rules: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  images: z.union([z.instanceof(File), z.null()]),
+  joinQuestions: z.string().min(1, { message: '필수 입력 항목입니다.' }),
 });
 
 type MeetingFormData = z.infer<typeof MeetingSchema>;
 
 const initialValues: MeetingFormData = {
-  meetingCategory: '사교/취미',
-  membershipFee: '없음',
+  category: '사교/취미',
+  categoryDetail: '',
+  level: '중',
+  hasMembershipFee: false,
   membershipFeeAmount: 0,
-  region: '',
-  meetingDate: undefined,
+  meetingPlace: '',
+  meetingDate: '',
   meetingTime: '',
-  participantCount: 1,
-  genderRatio: '무관',
+  participantLimit: 1,
+  hasGenderRatio: '무관',
   ratio: 5,
   ageRange: [20, 50],
-  meetingName: '',
-  meetingIntroduction: '',
-  meetingRules: '',
-  meetingImage: '',
+  name: '',
+  introduction: '',
+  rules: '',
+  images: null,
   joinQuestions: '',
-  hobbyType: '',
-  sportsType: '',
-  level: '중',
-  studyGoal: '',
 };
 
 const CreateMeetingForm = () => {
   const {
-    register,
     handleSubmit,
     setValue,
     control,
@@ -88,16 +93,76 @@ const CreateMeetingForm = () => {
     resolver: zodResolver(MeetingSchema),
     defaultValues: initialValues,
   });
+  const [categoryDetail, setCategoryDetail] = useState(CATEGORY_DETAIL[0]);
+  const [levelDetail, setLevelDetail] = useState(LEVEL_DETAIL[0]);
 
-  const meetingCategory = watch('meetingCategory');
-  const membershipFee = watch('membershipFee');
-  const genderRatio = watch('genderRatio');
+  const category = watch('category');
+  const hasMembershipFee = watch('hasMembershipFee');
+  const hasGenderRatio = watch('hasGenderRatio');
   const ratio = watch('ratio', 5);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const onSubmit = (values: MeetingFormData) => {
-    console.log('values:', values);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+    setValue('images', file);
+  };
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    switch (category) {
+      case '사교/취미':
+        setCategoryDetail(CATEGORY_DETAIL[0]);
+        break;
+      case '운동':
+        setCategoryDetail(CATEGORY_DETAIL[1]);
+        setLevelDetail(LEVEL_DETAIL[0]);
+        break;
+      case '스터디':
+        setCategoryDetail(CATEGORY_DETAIL[2]);
+        setLevelDetail(LEVEL_DETAIL[1]);
+        break;
+    }
+  }, [category]);
+
+  const onSubmit = (data: MeetingFormData) => {
+    let levelData = data.level || '';
+    if (data.category === '사교/취미') {
+      levelData = '';
+    }
+    const membershipFeeAmountData = data.membershipFeeAmount || 0;
+    let ratioData = '';
+    if (data.ratio) {
+      ratioData = `${ratio} : ${10 - ratio}`;
+    }
+
+    const createMeetingData: Meeting = {
+      category: data.category,
+      categoryDetail: data.categoryDetail,
+      level: levelData,
+      hasMembershipFee: data.hasMembershipFee,
+      membershipFeeAmount: membershipFeeAmountData,
+      meetingPlace: data.meetingPlace,
+      date: data.meetingDate + ' ' + data.meetingTime,
+      participantLimit: data.participantLimit,
+      hasGenderRatio: data.hasGenderRatio,
+      ratio: ratioData,
+      ageRange: data.ageRange,
+      name: data.name,
+      introduction: data.introduction,
+      rules: [data.rules],
+      images: data.images,
+      joinQuestions: [data.joinQuestions],
+    };
+    console.log('data:', createMeetingData);
     alert('모임 생성이 완료되었습니다!');
   };
 
@@ -112,17 +177,19 @@ const CreateMeetingForm = () => {
       className="flex flex-col gap-12 min-h-full w-full max-w-[700px] p-8"
     >
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingCategory">모임 카테고리</Label>
+        <Label htmlFor="category">
+          모임 카테고리 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="meetingCategory"
+          name="category"
           control={control}
           render={({ field }) => (
             <ToggleGroup
               type="single"
               value={field.value}
-              onValueChange={(value) =>
-                field.onChange(value as '사교/취미' | '운동' | '스터디')
-              }
+              onValueChange={(value) => {
+                field.onChange(value as '사교/취미' | '운동' | '스터디');
+              }}
             >
               <ToggleGroupItem value="사교/취미">사교/취미</ToggleGroupItem>
               <ToggleGroupItem value="운동">운동</ToggleGroupItem>
@@ -130,197 +197,107 @@ const CreateMeetingForm = () => {
             </ToggleGroup>
           )}
         />
-        {errors.meetingCategory && (
+        {errors.category && (
           <span className="text-red-500 text-sm">
-            {errors.meetingCategory.message}
+            {errors.category.message}
           </span>
         )}
       </div>
 
-      {meetingCategory === '사교/취미' && (
+      <div className="flex flex-col gap-4 items-start">
+        <Label htmlFor="categoryDetail">
+          {categoryDetail} <span className="text-primary font-neoBold">*</span>
+        </Label>
+        <Controller
+          name="categoryDetail"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="categoryDetail"
+              placeholder={categoryDetail}
+              {...field}
+            />
+          )}
+        />
+        {errors.categoryDetail && (
+          <span className="text-red-500 text-sm">
+            {errors.categoryDetail?.message}
+          </span>
+        )}
+      </div>
+
+      {(category === '운동' || category == '스터디') && (
         <div className="flex flex-col gap-4 items-start">
-          <Label htmlFor="hobbyType">취미</Label>
+          <div className="flex items-center justify-between w-full">
+            <Label htmlFor="level">
+              레벨 <span className="text-primary font-neoBold">*</span>
+            </Label>
+            <Popover>
+              <PopoverTrigger>
+                <Info color="#ccc" />
+              </PopoverTrigger>
+              <PopoverContent className="m-4">
+                <p className="text-sm md:text-base font-neoBold mb-2">상</p>
+                <p className="text-sm md:text-base">{levelDetail[0]}</p>
+                <Separator className="my-4" />
+                <p className="text-sm md:text-base font-neoBold mb-2">중</p>
+                <p className="text-sm md:text-base">{levelDetail[1]}</p>
+                <Separator className="my-4" />
+                <p className="text-sm md:text-base font-neoBold mb-2">하</p>
+                <p className="text-sm md:text-base">{levelDetail[2]}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Controller
-            name="hobbyType"
+            name="level"
             control={control}
             render={({ field }) => (
-              <Input id="hobbyType" placeholder="취미" {...field} />
+              <ToggleGroup
+                type="single"
+                value={field.value}
+                onValueChange={(value) =>
+                  field.onChange(value as '상' | '중' | '하')
+                }
+                className="flex w-full"
+              >
+                <ToggleGroupItem
+                  value="상"
+                  className="flex-1"
+                  variant="outline"
+                >
+                  상
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="중"
+                  className="flex-1"
+                  variant="outline"
+                >
+                  중
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="하"
+                  className="flex-1"
+                  variant="outline"
+                >
+                  하
+                </ToggleGroupItem>
+              </ToggleGroup>
             )}
           />
-          {errors.hobbyType && (
+          {errors.level && (
             <span className="text-red-500 text-sm">
-              {errors.hobbyType?.message}
+              {errors.level?.message}
             </span>
           )}
         </div>
       )}
 
-      {meetingCategory === '운동' && (
-        <>
-          <div className="flex flex-col gap-4 items-start">
-            <Label htmlFor="sportsType">운동 종류</Label>
-            <Controller
-              name="sportsType"
-              control={control}
-              render={({ field }) => (
-                <Input id="sportsType" placeholder="운동 종류" {...field} />
-              )}
-            />
-            {errors.sportsType && (
-              <span className="text-red-500 text-sm">
-                {errors.sportsType?.message}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-4 items-start">
-            <div className="flex items-center justify-between w-full">
-              <Label htmlFor="level">레벨</Label>
-              <Popover>
-                <PopoverTrigger>
-                  <Info color="#ccc" />
-                </PopoverTrigger>
-                <PopoverContent className="m-4">
-                  <p className="text-sm md:text-base font-neoBold mb-2">상</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                  <Separator className="my-4" />
-                  <p className="text-sm md:text-base font-neoBold mb-2">중</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                  <Separator className="my-4" />
-                  <p className="text-sm md:text-base font-neoBold mb-2">하</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <Controller
-              name="level"
-              control={control}
-              render={({ field }) => (
-                <ToggleGroup
-                  type="single"
-                  value={field.value}
-                  onValueChange={(value) =>
-                    field.onChange(value as '상' | '중' | '하')
-                  }
-                  className="flex w-full"
-                >
-                  <ToggleGroupItem
-                    value="상"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    상
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="중"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    중
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="하"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    하
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              )}
-            />
-            {errors.level && (
-              <span className="text-red-500 text-sm">
-                {errors.level?.message}
-              </span>
-            )}
-          </div>
-        </>
-      )}
-
-      {meetingCategory === '스터디' && (
-        <>
-          <div className="flex flex-col gap-4 items-start">
-            <Label htmlFor="studyGoal">스터디 목표</Label>
-            <Controller
-              name="studyGoal"
-              control={control}
-              render={({ field }) => (
-                <Input id="studyGoal" placeholder="스터디 목표" {...field} />
-              )}
-            />
-            {errors.studyGoal && (
-              <span className="text-red-500 text-sm">
-                {errors.studyGoal?.message}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-4 items-start">
-            <div className="flex items-center justify-between w-full">
-              <Label htmlFor="level">레벨</Label>
-              <Popover>
-                <PopoverTrigger>
-                  <Info color="#ccc" />
-                </PopoverTrigger>
-                <PopoverContent className="m-4">
-                  <p className="text-sm md:text-base font-neoBold mb-2">상</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                  <Separator className="my-4" />
-                  <p className="text-sm md:text-base font-neoBold mb-2">중</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                  <Separator className="my-4" />
-                  <p className="text-sm md:text-base font-neoBold mb-2">하</p>
-                  <p className="text-sm md:text-base">이러 저러한 실력</p>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <Controller
-              name="level"
-              control={control}
-              render={({ field }) => (
-                <ToggleGroup
-                  type="single"
-                  value={field.value}
-                  onValueChange={(value) =>
-                    field.onChange(value as '상' | '중' | '하')
-                  }
-                  className="flex w-full"
-                >
-                  <ToggleGroupItem
-                    value="상"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    상
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="중"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    중
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="하"
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    하
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              )}
-            />
-            {errors.level && (
-              <span className="text-red-500 text-sm">
-                {errors.level?.message}
-              </span>
-            )}
-          </div>
-        </>
-      )}
-
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="membershipFee">회비</Label>
+        <Label htmlFor="hasMembershipFee">
+          회비 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="membershipFee"
+          name="hasMembershipFee"
           control={control}
           render={({ field }) => (
             <RadioGroup
@@ -329,20 +306,19 @@ const CreateMeetingForm = () => {
               onValueChange={(value) => field.onChange(value)}
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="없음" id="없음" />
+                <RadioGroupItem value={false} id="없음" />
                 <Label htmlFor="없음">없음</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="있음" id="있음" />
+                <RadioGroupItem value={true} id="있음" />
                 <Label htmlFor="있음">있음</Label>
               </div>
             </RadioGroup>
           )}
         />
-        {membershipFee === '있음' && (
+        {hasMembershipFee === true && (
           <>
             <div className="flex flex-col gap-4 items-start">
-              <Label htmlFor="membershipFeeAmount">회비</Label>
               <Controller
                 name="membershipFeeAmount"
                 control={control}
@@ -366,21 +342,27 @@ const CreateMeetingForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="region">장소</Label>
+        <Label htmlFor="meetingPlace">
+          모임 장소 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="region"
+          name="meetingPlace"
           control={control}
           render={({ field }) => (
-            <Input id="region" placeholder="장소" {...field} />
+            <Input id="meetingPlace" placeholder="장소" {...field} />
           )}
         />
-        {errors.region && (
-          <span className="text-red-500 text-sm">{errors.region?.message}</span>
+        {errors.meetingPlace && (
+          <span className="text-red-500 text-sm">
+            {errors.meetingPlace?.message}
+          </span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingDate">모임 날짜 및 시간</Label>
+        <Label htmlFor="meetingDate">
+          모임 날짜 및 시간 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <div className="flex gap-4 w-full">
           <Controller
             name="meetingDate"
@@ -407,7 +389,9 @@ const CreateMeetingForm = () => {
                   <Calendar
                     mode="single"
                     selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={(date) => field.onChange(date || new Date())}
+                    onSelect={(date) =>
+                      field.onChange(formatDate(date || new Date()))
+                    }
                     disabled={(date) =>
                       date < new Date() || date < new Date('1900-01-01')
                     }
@@ -517,30 +501,34 @@ const CreateMeetingForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="participantCount">참여 인원</Label>
+        <Label htmlFor="participantLimit">
+          최대 참여 인원 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="participantCount"
+          name="participantLimit"
           control={control}
           render={({ field }) => (
             <Input
-              id="participantCount"
+              id="participantLimit"
               type="number"
-              placeholder="참여 인원"
+              placeholder="최대 참여 인원"
               {...field}
             />
           )}
         />
-        {errors.participantCount && (
+        {errors.participantLimit && (
           <span className="text-red-500 text-sm">
-            {errors.participantCount?.message}
+            {errors.participantLimit?.message}
           </span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="genderRatio">성비</Label>
+        <Label htmlFor="hasGenderRatio">
+          성비 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="genderRatio"
+          name="hasGenderRatio"
           control={control}
           render={({ field }) => (
             <RadioGroup
@@ -559,7 +547,7 @@ const CreateMeetingForm = () => {
             </RadioGroup>
           )}
         />
-        {genderRatio === '지정' && (
+        {hasGenderRatio === '지정' && (
           <>
             <div className="flex items-center justify-between w-full">
               <span>남성</span>
@@ -590,15 +578,17 @@ const CreateMeetingForm = () => {
             <div className="text-center mt-2">{`${ratio} : ${10 - ratio}`}</div>
           </>
         )}
-        {errors.genderRatio && (
+        {errors.hasGenderRatio && (
           <span className="text-red-500 text-sm">
-            {errors.genderRatio?.message}
+            {errors.hasGenderRatio?.message}
           </span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="ageRange">연령대</Label>
+        <Label htmlFor="ageRange">
+          연령대 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="ageRange"
           control={control}
@@ -637,67 +627,73 @@ const CreateMeetingForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingName">모임 이름</Label>
+        <Label htmlFor="name">
+          모임 이름 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="meetingName"
+          name="name"
           control={control}
           render={({ field }) => (
-            <Input id="meetingName" placeholder="모임 이름" {...field} />
+            <Input id="name" placeholder="모임 이름" {...field} />
           )}
         />
-        {errors.meetingName && (
+        {errors.name && (
+          <span className="text-red-500 text-sm">{errors.name?.message}</span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4 items-start">
+        <Label htmlFor="introduction">
+          모임 소개 <span className="text-primary font-neoBold">*</span>
+        </Label>
+        <Controller
+          name="introduction"
+          control={control}
+          render={({ field }) => (
+            <Textarea id="introduction" placeholder="모임 소개" {...field} />
+          )}
+        />
+        {errors.introduction && (
           <span className="text-red-500 text-sm">
-            {errors.meetingName?.message}
+            {errors.introduction?.message}
           </span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingIntroduction">모임 소개</Label>
+        <Label htmlFor="rules">
+          모임 규칙 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
-          name="meetingIntroduction"
+          name="rules"
           control={control}
           render={({ field }) => (
-            <Textarea
-              id="meetingIntroduction"
-              placeholder="모임 소개"
-              {...field}
+            <Textarea id="rules" placeholder="모임 규칙" {...field} />
+          )}
+        />
+        {errors.rules && (
+          <span className="text-red-500 text-sm">{errors.rules?.message}</span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4 items-start">
+        <Label htmlFor="images">이미지 추가 (선택)</Label>
+        <Controller
+          name="images"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="images"
+              type="file"
+              ref={fileInputRef}
+              onChange={(e) => {
+                handleFileChange(e);
+                field.onChange(e.target.files?.[0] ?? null);
+              }}
+              style={{ display: 'none' }}
+              accept="image/*"
             />
           )}
-        />
-        {errors.meetingIntroduction && (
-          <span className="text-red-500 text-sm">
-            {errors.meetingIntroduction?.message}
-          </span>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingRules">모임 규칙</Label>
-        <Controller
-          name="meetingRules"
-          control={control}
-          render={({ field }) => (
-            <Textarea id="meetingRules" placeholder="모임 규칙" {...field} />
-          )}
-        />
-        {errors.meetingRules && (
-          <span className="text-red-500 text-sm">
-            {errors.meetingRules?.message}
-          </span>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="meetingImage">이미지 추가 (선택)</Label>
-        <Input
-          id="meetingImage"
-          type="file"
-          placeholder="meetingImage"
-          {...register('meetingImage')}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          accept="image/*"
         />
         <button
           type="button"
@@ -710,15 +706,18 @@ const CreateMeetingForm = () => {
         >
           <Camera strokeWidth={0.75} size={48} color="#cccccc" />
         </button>
-        {errors.meetingImage && (
-          <span className="text-red-500 text-sm">
-            {errors.meetingImage?.message}
-          </span>
+        {selectedFile && (
+          <div className="text-sm text-gray-500">{selectedFile.name}</div>
+        )}
+        {errors.images && (
+          <span className="text-red-500 text-sm">{errors.images.message}</span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="joinQuestions">모임 참여 질문</Label>
+        <Label htmlFor="joinQuestions">
+          모임 참여 질문 <span className="text-primary font-neoBold">*</span>
+        </Label>
         <Controller
           name="joinQuestions"
           control={control}

@@ -11,7 +11,8 @@
     "test": "jest --watchAll",
     "test:ci": "jest --ci --passWithNoTests",
     "format": "prettier --check --ignore-path .gitignore .",
-    "format:fix": "prettier --write --ignore-path .gitignore ."
+    "format:fix": "prettier --write --ignore-path .gitignore .",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
@@ -39,6 +40,7 @@
     "date-fns": "^3.6.0",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.407.0",
+    "patch-package": "^8.0.0",
     "proj4": "^2.11.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
