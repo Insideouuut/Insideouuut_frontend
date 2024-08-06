@@ -1,5 +1,6 @@
 import Login from '@/pages/Auth/Login';
 import Signup from '@/pages/Auth/Signup';
+import UserInfo from '@/pages/Auth/UserInfo';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <Signup />,
+  },
+  {
+    path: '/userinfo',
+    element: <UserInfo />,
   },
   {
     path: '/main',
