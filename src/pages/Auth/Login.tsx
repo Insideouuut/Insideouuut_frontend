@@ -43,7 +43,7 @@ const Login = () => {
       const response = await login(data);
       const statusCode = response.data.status.code;
       const statusMessage = response.data.status.message;
-      const token = response.headers['access-token'];
+      const token = response.headers['authorization'];
 
       if (statusCode === 200) {
         alert('로그인에 성공했습니다.');
