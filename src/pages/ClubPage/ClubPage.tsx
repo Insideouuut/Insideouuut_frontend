@@ -1,27 +1,14 @@
+import { getClubData } from '@/api/meetingApi'; // API 호출 함수 임포트
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { ClubData } from '@/types/Meetings'; // ClubData 타입 임포트
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-
-interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
-  description: string;
-  date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-  role: '관리자' | '일반 회원';
-  backgroundColor: string;
-  backgroundImage: string;
-}
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
@@ -45,6 +32,7 @@ const ClubPage: React.FC = () => {
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>(); // useParams로 ID 가져오기
   const location = useLocation();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
@@ -93,20 +81,28 @@ const ClubPage: React.FC = () => {
     if (menu.includes('Board')) {
       navigate(`/club/board/${menu}`);
     } else if (menu === 'home') {
-      navigate('/club');
+      navigate(`/club/${id}`);
     } else {
-      navigate(`/club/${menu}`);
+      navigate(`/club/${id}/${menu}`);
     }
   };
 
   const [clubData, setClubData] = useState<ClubData | null>(null);
 
   useEffect(() => {
-    if (location.state) {
-      const state = location.state as ClubData;
-      setClubData(state);
-    }
-  }, [location.state]);
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const data: ClubData = await getClubData(id); // Ensure data is of type ClubData
+          setClubData(data);
+        } catch (error) {
+          console.error('Error fetching club data:', error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   return (
     <div className="relative">

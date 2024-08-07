@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import mymeetingdata, { Info } from "./mymeetingdata";
-import EditMeetingModal from './EditMeetingModal';
+import React, { useState } from 'react';
 import AttendanceModal from './AttendanceModal';
 import ConfirmModal from './ConfirmModal';
-import { Button } from '@/components/ui/button';
+import EditMeetingModal from './EditMeetingModal';
+import mymeetingdata, { Info } from './mymeetingdata';
 
 const Mymeeting: React.FC = () => {
   const [editMeeting, setEditMeeting] = useState<Info | null>(null);
   const [showAttendance, setShowAttendance] = useState<Info | null>(null);
-  const [confirmModal, setConfirmModal] = useState<{ action: string, meeting: Info | null }>({ action: "", meeting: null });
+  const [confirmModal, setConfirmModal] = useState<{
+    action: string;
+    meeting: Info | null;
+  }>({ action: '', meeting: null });
 
   const handleEditMeeting = (meeting: Info) => {
     setEditMeeting(meeting);
@@ -40,14 +43,36 @@ const Mymeeting: React.FC = () => {
                     <h3 className="text-lg font-semibold">{meeting.title}</h3>
                     <p>{meeting.description}</p>
                     <p>장소: {meeting.location}</p>
-                    <p>인원: {meeting.currentMembers}/{meeting.memberLimit}</p>
+                    <p>
+                      인원: {meeting.currentMembers}/{meeting.memberLimit}
+                    </p>
                     <p>일시: {meeting.date}</p>
-                    <p>회비: {meeting.fee === 0 ? "무료" : `${meeting.fee.toLocaleString()}원`}</p>
+                    <p>
+                      회비:{' '}
+                      {meeting.fee === 0
+                        ? '무료'
+                        : `${meeting.fee.toLocaleString()}원`}
+                    </p>
                   </div>
                   <div className="flex flex-col space-y-2 justify-center items-end">
-                    <Button className="px-4 py-2 bg-blue-500 bg-opacity-80 text-white rounded-md hover:bg-blue-700" onClick={() => handleEditMeeting(meeting)}>정보 수정</Button>
-                    <Button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-green-700" onClick={() => handleShowAttendance(meeting)}>출석 체크</Button>
-                    <Button className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-md hover:bg-red-700" onClick={() => handleConfirmAction("해체하기", meeting)}>모임 해체</Button>
+                    <Button
+                      className="px-4 py-2 bg-blue-500 bg-opacity-80 text-white rounded-md hover:bg-blue-700"
+                      onClick={() => handleEditMeeting(meeting)}
+                    >
+                      정보 수정
+                    </Button>
+                    <Button
+                      className="px-4 py-2 bg-primary text-white rounded-md hover:bg-green-700"
+                      onClick={() => handleShowAttendance(meeting)}
+                    >
+                      출석 체크
+                    </Button>
+                    <Button
+                      className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-md hover:bg-red-700"
+                      onClick={() => handleConfirmAction('해체하기', meeting)}
+                    >
+                      모임 해체
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -64,12 +89,24 @@ const Mymeeting: React.FC = () => {
                     <h3 className="text-lg font-semibold">{meeting.title}</h3>
                     <p>{meeting.description}</p>
                     <p>장소: {meeting.location}</p>
-                    <p>인원: {meeting.currentMembers}/{meeting.memberLimit}</p>
+                    <p>
+                      인원: {meeting.currentMembers}/{meeting.memberLimit}
+                    </p>
                     <p>일시: {meeting.date}</p>
-                    <p>회비: {meeting.fee === 0 ? "무료" : `${meeting.fee.toLocaleString()}원`}</p>
+                    <p>
+                      회비:{' '}
+                      {meeting.fee === 0
+                        ? '무료'
+                        : `${meeting.fee.toLocaleString()}원`}
+                    </p>
                   </div>
                   <div className="flex flex-col space-y-2 justify-center items-end">
-                    <Button className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-md hover:bg-red-700" onClick={() => handleConfirmAction("나가기", meeting)}>모임 나가기</Button>
+                    <Button
+                      className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-md hover:bg-red-700"
+                      onClick={() => handleConfirmAction('나가기', meeting)}
+                    >
+                      모임 나가기
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -79,9 +116,25 @@ const Mymeeting: React.FC = () => {
         </div>
       </div>
 
-      {editMeeting && <EditMeetingModal meeting={editMeeting} onClose={() => setEditMeeting(null)} />}
-      {showAttendance && <AttendanceModal meeting={showAttendance} onClose={() => setShowAttendance(null)} />}
-      {confirmModal.meeting && <ConfirmModal action={confirmModal.action} meeting={confirmModal.meeting} onClose={() => setConfirmModal({ action: "", meeting: null })} />}
+      {editMeeting && (
+        <EditMeetingModal
+          meeting={editMeeting}
+          onClose={() => setEditMeeting(null)}
+        />
+      )}
+      {showAttendance && (
+        <AttendanceModal
+          meeting={showAttendance}
+          onClose={() => setShowAttendance(null)}
+        />
+      )}
+      {confirmModal.meeting && (
+        <ConfirmModal
+          action={confirmModal.action}
+          meeting={confirmModal.meeting}
+          onClose={() => setConfirmModal({ action: '', meeting: null })}
+        />
+      )}
     </div>
   );
 };

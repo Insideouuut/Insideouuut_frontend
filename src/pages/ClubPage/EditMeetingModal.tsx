@@ -1,17 +1,22 @@
-import React, { useState } from "react";
-import { Info } from "./mymeetingdata";
 import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { Info } from './mymeetingdata';
 
 interface EditMeetingModalProps {
   meeting: Info;
   onClose: () => void;
 }
 
-const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose }) => {
+const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
+  meeting,
+  onClose,
+}) => {
   const [title, setTitle] = useState(meeting.title);
   const [description, setDescription] = useState(meeting.description);
   const [location, setLocation] = useState(meeting.location);
-  const [memberLimit, setMemberLimit] = useState<string | number>(meeting.memberLimit);
+  const [memberLimit, setMemberLimit] = useState<string | number>(
+    meeting.memberLimit,
+  );
   const [date, setDate] = useState(meeting.date);
   const [fee, setFee] = useState<string | number>(meeting.fee);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -22,17 +27,17 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
   };
 
   const handleMemberLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ""); // 숫자가 아닌 문자를 제거
+    const value = e.target.value.replace(/\D/g, ''); // 숫자가 아닌 문자를 제거
     setMemberLimit(Number(value));
   };
 
   const handleFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ""); // 숫자가 아닌 문자를 제거
+    const value = e.target.value.replace(/\D/g, ''); // 숫자가 아닌 문자를 제거
     setFee(Number(value));
   };
 
   const formatFee = (value: number) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return (
@@ -43,7 +48,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
           <div className="flex flex-col">
             <div className="flex">
               <label className="mb-2">제목</label>
-              {errors.title && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.title}</span>}
+              {errors.title && (
+                <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                  {errors.title}
+                </span>
+              )}
             </div>
             <input
               type="text"
@@ -55,7 +64,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
           <div className="flex flex-col">
             <div className="flex">
               <label className="mb-2">설명</label>
-              {errors.description && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.description}</span>}
+              {errors.description && (
+                <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                  {errors.description}
+                </span>
+              )}
             </div>
             <textarea
               value={description}
@@ -67,7 +80,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
             <div className="flex flex-col w-[48%]">
               <div className="flex">
                 <label className="mb-2">장소</label>
-                {errors.location && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.location}</span>}
+                {errors.location && (
+                  <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                    {errors.location}
+                  </span>
+                )}
               </div>
               <input
                 type="text"
@@ -79,7 +96,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
             <div className="flex flex-col w-[48%]">
               <div className="flex">
                 <label className="mb-2">최대 인원</label>
-                {errors.memberLimit && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.memberLimit}</span>}
+                {errors.memberLimit && (
+                  <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                    {errors.memberLimit}
+                  </span>
+                )}
               </div>
               <select
                 value={memberLimit}
@@ -99,9 +120,10 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
                 <option value="9">9명</option>
                 <option value="10">10명</option>
               </select>
-              {(memberLimit === "custom" || typeof memberLimit === "number") && (
+              {(memberLimit === 'custom' ||
+                typeof memberLimit === 'number') && (
                 <input
-                  value={typeof memberLimit === "number" ? memberLimit : ""}
+                  value={typeof memberLimit === 'number' ? memberLimit : ''}
                   onChange={handleMemberLimitChange}
                   className="mt-2 p-2 border rounded"
                   placeholder="최대 인원을 입력하세요"
@@ -112,7 +134,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
           <div className="flex flex-col">
             <div className="flex">
               <label className="mb-2">일시</label>
-              {errors.date && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.date}</span>}
+              {errors.date && (
+                <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                  {errors.date}
+                </span>
+              )}
             </div>
             <input
               type="text"
@@ -124,7 +150,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
           <div className="flex flex-col">
             <div className="flex">
               <label className="mb-2">회비</label>
-              {errors.fee && <span className="mt-1 ml-1 text-red-500 text-[12px]">{errors.fee}</span>}
+              {errors.fee && (
+                <span className="mt-1 ml-1 text-red-500 text-[12px]">
+                  {errors.fee}
+                </span>
+              )}
             </div>
             <select
               value={fee}
@@ -137,11 +167,11 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
               <option value="10000">10,000원</option>
               <option value="20000">20,000원</option>
             </select>
-            {(fee === "custom" || typeof fee === "number") && (
+            {(fee === 'custom' || typeof fee === 'number') && (
               <div className="flex items-center mt-2">
                 <input
                   type="text"
-                  value={typeof fee === "number" ? formatFee(fee) : ""}
+                  value={typeof fee === 'number' ? formatFee(fee) : ''}
                   onChange={handleFeeChange}
                   className="p-2 border rounded flex-grow"
                   placeholder="회비를 입력하세요"
@@ -151,10 +181,18 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({ meeting, onClose })
             )}
           </div>
           <div className="w-full flex justify-end space-x-2">
-            <Button type="button" className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" onClick={onClose}>
+            <Button
+              type="button"
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+              onClick={onClose}
+            >
               취소
             </Button>
-            <Button type="button" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700" onClick={handleSave}>
+            <Button
+              type="button"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+              onClick={handleSave}
+            >
               저장
             </Button>
           </div>

@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface GroupCardProps {
+  id: number;
   clubTypes: string[];
   meetingTypes: string[];
   imageUrl: string;
@@ -15,6 +16,7 @@ interface GroupCardProps {
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({
+  id,
   clubTypes,
   meetingTypes,
   imageUrl,
@@ -53,21 +55,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
   return (
     <Link
-      to="/club"
-      state={{
-        clubTypes,
-        meetingTypes,
-        imageUrl,
-        name,
-        description,
-        date,
-        location,
-        memberCount,
-        memberLimit,
-        role: '일반 회원', // example value, you might want to dynamically set this
-        backgroundColor: 'bg-gray-100', // example value, you might want to dynamically set this
-        backgroundImage: '', // example value, you might want to dynamically set this
-      }}
+      to={`/club/${id}`}
       className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
     >
       <div className="w-[140px] h-[135px]">
@@ -104,7 +92,9 @@ const GroupCard: React.FC<GroupCardProps> = ({
           </div>
           <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">
-            {description.length > 10 ? `${description.slice(0, 10)}...` : description}
+            {description.length > 10
+              ? `${description.slice(0, 10)}...`
+              : description}
           </p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Info } from "./mymeetingdata";
 import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { Info } from './mymeetingdata';
 
 interface AttendanceModalProps {
   meeting: Info;
@@ -66,17 +66,26 @@ const initialParticipants: Participant[] = [
   { name: '참가자50', status: '결석' },
 ];
 
-const AttendanceModal: React.FC<AttendanceModalProps> = ({ meeting, onClose }) => {
-  const [participantList, setParticipantList] = useState<Participant[]>(initialParticipants);
+const AttendanceModal: React.FC<AttendanceModalProps> = ({
+  meeting,
+  onClose,
+}) => {
+  const [participantList, setParticipantList] =
+    useState<Participant[]>(initialParticipants);
 
   const toggleStatus = (index: number) => {
     const updatedParticipants = [...participantList];
-    updatedParticipants[index].status = updatedParticipants[index].status === '출석' ? '결석' : '출석';
+    updatedParticipants[index].status =
+      updatedParticipants[index].status === '출석' ? '결석' : '출석';
     setParticipantList(updatedParticipants);
   };
 
-  const presentParticipants = participantList.filter(participant => participant.status === '출석');
-  const absentParticipants = participantList.filter(participant => participant.status === '결석');
+  const presentParticipants = participantList.filter(
+    (participant) => participant.status === '출석',
+  );
+  const absentParticipants = participantList.filter(
+    (participant) => participant.status === '결석',
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -86,12 +95,17 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ meeting, onClose }) =
           <h3 className="text-lg font-semibold mb-2">출석</h3>
           <div className="space-y-2 max-h-[200px] overflow-y-scroll">
             {presentParticipants.map((participant, index) => (
-              <div key={index} className="flex h-11 justify-between items-center bg-green-50 p-2 rounded-md">
+              <div
+                key={index}
+                className="flex h-11 justify-between items-center bg-green-50 p-2 rounded-md"
+              >
                 <span>{participant.name}</span>
                 <Button
                   type="button"
                   className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
-                  onClick={() => toggleStatus(participantList.indexOf(participant))}
+                  onClick={() =>
+                    toggleStatus(participantList.indexOf(participant))
+                  }
                 >
                   {participant.status}
                 </Button>
@@ -103,12 +117,17 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ meeting, onClose }) =
           <h3 className="text-lg font-semibold mb-2">결석</h3>
           <div className="space-y-2 max-h-[200px] overflow-y-scroll">
             {absentParticipants.map((participant, index) => (
-              <div key={index} className="flex h-11 justify-between items-center bg-red-50 p-2 rounded-md">
+              <div
+                key={index}
+                className="flex h-11 justify-between items-center bg-red-50 p-2 rounded-md"
+              >
                 <span>{participant.name}</span>
                 <Button
                   type="button"
                   className="px-4 py-2 bg-primary text-white rounded-md hover:bg-green-700"
-                  onClick={() => toggleStatus(participantList.indexOf(participant))}
+                  onClick={() =>
+                    toggleStatus(participantList.indexOf(participant))
+                  }
                 >
                   {participant.status}
                 </Button>
@@ -117,7 +136,11 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ meeting, onClose }) =
           </div>
         </div>
         <div className="flex justify-end space-x-2 mt-4">
-          <Button type="button" className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" onClick={onClose}>
+          <Button
+            type="button"
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+            onClick={onClose}
+          >
             닫기
           </Button>
         </div>

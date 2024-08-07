@@ -31,28 +31,43 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">모임 신청</h2>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">제목</label>
+          <label className="block text-sm font-medium text-gray-700">
+            제목
+          </label>
           <p className="mt-1">{meeting.title}</p>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">설명</label>
+          <label className="block text-sm font-medium text-gray-700">
+            설명
+          </label>
           <p className="mt-1">{meeting.description}</p>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">장소</label>
+          <label className="block text-sm font-medium text-gray-700">
+            장소
+          </label>
           <p className="mt-1">{meeting.location}</p>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">인원</label>
-          <p className="mt-1">{meeting.currentMembers}/{meeting.memberLimit}</p>
+          <label className="block text-sm font-medium text-gray-700">
+            인원
+          </label>
+          <p className="mt-1">
+            {meeting.currentMembers}/{meeting.memberLimit}
+          </p>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">일시</label>
+          <label className="block text-sm font-medium text-gray-700">
+            일시
+          </label>
           <p className="mt-1">{meeting.date}</p>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">회비</label>
-          <p className="mt-1">회비: {meeting.fee.toLocaleString()}원</p> {/* 회비 정보 추가 */}
+          <label className="block text-sm font-medium text-gray-700">
+            회비
+          </label>
+          <p className="mt-1">회비: {meeting.fee.toLocaleString()}원</p>{' '}
+          {/* 회비 정보 추가 */}
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

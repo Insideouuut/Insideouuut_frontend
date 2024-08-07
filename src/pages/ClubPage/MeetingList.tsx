@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Data, { Info } from './joggingdata';
 import ApplyModal from './ApplyModal';
+import Data, { Info } from './joggingdata';
 
 const MeetingList: React.FC = () => {
   const [selectedMeeting, setSelectedMeeting] = useState<Info | null>(null);

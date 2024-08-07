@@ -15,15 +15,15 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import ClubManagement from '../pages/ClubPage/ClubManagement';
 import ClubPage from '../pages/ClubPage/ClubPage';
+import CreateMeetinginClub from '../pages/ClubPage/CreateMeetinginClub';
 import MeetingList from '../pages/ClubPage/MeetingList';
 import MemberApproval from '../pages/ClubPage/MemberApproval';
 import MemberManagement from '../pages/ClubPage/MemberManagement';
+import Mymeeting from '../pages/ClubPage/MyMeeting';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
-import CreateMeetinginClub from '../pages/ClubPage/CreateMeetinginClub';
-import Mymeeting from '../pages/ClubPage/MyMeeting';
 
 const router = createBrowserRouter([
   {
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
     element: <SearchPage />,
   },
   {
-    path: '/club',
+    path: '/club/:id',
     element: <ClubPage />,
     children: [
       {
@@ -92,15 +92,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'createMeeting',
-        element: (
-          <CreateMeetinginClub/>
-        ),
+        element: <CreateMeetinginClub />,
       },
       {
         path: 'meetingListSettings',
-        element: (
-          <Mymeeting/>
-        ),
+        element: <Mymeeting />,
       },
       {
         path: 'manageClub',
