@@ -1,8 +1,9 @@
+import { getMeetings } from '@/api/meetingApi';
 import { dummyData } from '@/components/dummyData';
 import GroupCard from '@/components/GroupCard';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
 import ModongCard from './ModongCard';
@@ -29,6 +30,19 @@ const sortByDate = (data: Info[]): Info[] => {
 const MiddleSection: React.FC = () => {
   // 최신 생성 순으로 정렬
   const sortedData = sortByDate([...dummyData]);
+
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const data = await getMeetings();
+        console.log(data);
+      } catch (error) {
+        console.error('Failed to fetch meetings:', error);
+      }
+    };
+
+    fetchMeetings();
+  }, []);
 
   return (
     <div className="container flex flex-col items-center">

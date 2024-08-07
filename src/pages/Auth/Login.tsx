@@ -19,7 +19,6 @@ const loginSchema = z.object({
     .string()
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
     .regex(/[a-z]/, '비밀번호는 최소 한 개의 소문자를 포함해야 합니다.')
-    .regex(/[A-Z]/, '비밀번호는 최소 한 개의 대문자를 포함해야 합니다.')
     .regex(
       /[!@#$%^&*(),.?":{}|<>]/,
       '비밀번호는 최소 한 개의 특수문자를 포함해야 합니다.',
@@ -43,7 +42,7 @@ const Login = () => {
       const response = await login(data);
       const statusCode = response.data.status.code;
       const statusMessage = response.data.status.message;
-      const token = response.headers['access-token'];
+      const token = response.headers['authorization'];
 
       if (statusCode === 200) {
         alert('로그인에 성공했습니다.');
