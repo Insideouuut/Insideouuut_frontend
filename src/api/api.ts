@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from 'axios';
 import axiosInstance from './axiosConfig';
 
 // GET 요청 함수
@@ -7,7 +8,11 @@ export const getData = async <T>(url: string): Promise<T> => {
 };
 
 // POST 요청 함수
-export const postData = async <T, R>(url: string, data: T): Promise<R> => {
-  const response = await axiosInstance.post<R>(url, data);
+export const postData = async <T, R>(
+  url: string,
+  data: T,
+  config?: AxiosRequestConfig,
+): Promise<R> => {
+  const response = await axiosInstance.post<R>(url, data, config);
   return response.data;
 };

@@ -1,16 +1,16 @@
-import { mockUserData } from '@/pages/MyPage/mockUserData';
+import { emptyUserData, mockUserData } from '@/pages/MyPage/mockUserData';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface UserState {
-  imageUrl: string;
-  email: string;
-  nickname: string;
-  password: string;
-  confirmPassword: string;
-  phoneNumber: string;
-  location: string;
-  mbti: string;
+  imageUrl: string | undefined;
+  email: string | undefined;
+  nickname: string | undefined;
+  password: string | undefined;
+  confirmPassword: string | undefined;
+  phoneNumber: string | undefined;
+  location: string | undefined;
+  mbti: string | undefined;
   interests: string[];
   isLoggedIn: boolean;
   setUser: (user: Partial<UserState>) => void;
@@ -20,7 +20,7 @@ interface UserState {
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
-      ...mockUserData,
+      ...emptyUserData,
       isLoggedIn: false,
       setUser: (user) =>
         set((state) => ({ ...state, ...user, isLoggedIn: true })),

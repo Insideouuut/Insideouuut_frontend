@@ -65,9 +65,10 @@ const UserInfoForm = () => {
       category: data.interests,
       location: data.location,
     };
+    const token = localStorage.getItem('accessToken');
 
     try {
-      const response = await enterUserInfo(userInfoData);
+      const response = await enterUserInfo(userInfoData, token);
       if (response.status.code === 200) {
         alert('사용자 정보 입력에 성공했습니다.');
         navigate('/main');
