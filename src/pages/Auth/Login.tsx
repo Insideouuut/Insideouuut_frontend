@@ -47,9 +47,7 @@ const Login = () => {
 
       if (statusCode === 200) {
         alert('로그인에 성공했습니다.');
-        if (typeof token === 'string') {
-          localStorage.setItem('accessToken', token);
-        }
+        localStorage.setItem('accessToken', token);
         setUser(data);
         navigate('/main');
       } else {
@@ -60,6 +58,10 @@ const Login = () => {
       console.error('로그인 중 오류 발생:', error);
       alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
+  };
+
+  const kakaoLogin = async () => {
+    location.href = 'https://modong-backend.site/oauth2/authorization/kakao';
   };
 
   return (
@@ -84,7 +86,7 @@ const Login = () => {
 
             <Button
               type="button"
-              onClick={() => null}
+              onClick={kakaoLogin}
               className="w-full bg-yellow-400 text-black hover:bg-yellow-500"
             >
               카카오로 로그인하기

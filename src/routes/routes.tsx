@@ -1,4 +1,6 @@
+import IsFirstKakaoLogin from '@/pages/Auth/IsFirstKakaoLogin';
 import Login from '@/pages/Auth/Login';
+import Reissue from '@/pages/Auth/Reissue';
 import Signup from '@/pages/Auth/Signup';
 import UserInfo from '@/pages/Auth/UserInfo';
 import BoardList from '@/pages/board/BoardList';
@@ -143,6 +145,14 @@ const router = createBrowserRouter([
   {
     path: '/chatroom',
     element: <ChatRoom />,
+  },
+  {
+    path: '/reissue',
+    element: <Reissue />,
+  },
+  {
+    path: '/isFirstLoginWithKakao',
+    element: <IsFirstKakaoLogin />,
   },
 ]);
 
