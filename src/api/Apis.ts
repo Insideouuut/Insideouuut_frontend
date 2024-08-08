@@ -9,6 +9,11 @@
  * ---------------------------------------------------------------
  */
 
+export type JWTTokenData = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 export interface ClubRequestDto {
   category?: string;
   categoryDetail?: string;
