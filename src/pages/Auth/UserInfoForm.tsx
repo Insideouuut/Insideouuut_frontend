@@ -1,4 +1,4 @@
-import { enterUserInfo } from '@/api/authApi';
+import { checkNickname, enterUserInfo } from '@/api/authApi';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import { UserInfoFormInput, UserInfoRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -57,8 +58,13 @@ const UserInfoForm = () => {
     defaultValues: defaultData,
   });
   const setUser = useUserStore((state) => state.setUser);
+  const [checkedNickname, setCheckedNickname] = useState(false);
 
   const onSubmit = async (data: UserInfoFormInput) => {
+    if (!checkedNickname) {
+      alert('닉네임 중복 확인을 해주세요.');
+      return;
+    }
     const userInfoData: UserInfoRequest = {
       nickName: data.nickname,
       phoneNumber: data.phoneNumber,
@@ -98,6 +104,25 @@ const UserInfoForm = () => {
     }
   };
 
+  const clickCheckNickname = async (nickname: string) => {
+    try {
+      const response = await checkNickname(nickname);
+      const statusCode = response.data.status.code;
+      console.log('nickname response:', response);
+
+      if (statusCode === 200) {
+        alert('사용가능한 닉네임입니다.');
+        setCheckedNickname(true);
+      } else if (statusCode === 400 || statusCode === 409) {
+        alert(response.data.status.message);
+        setCheckedNickname(false);
+      }
+    } catch (error) {
+      alert('닉네임 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
+      console.error('Nickname checked Error:', error);
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -112,12 +137,20 @@ const UserInfoForm = () => {
                 name="nickname"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="nickname"
-                    type="text"
-                    placeholder="닉네임"
-                    {...field}
-                  />
+                  <div className="flex w-full gap-2">
+                    <Input
+                      id="nickname"
+                      type="text"
+                      placeholder="닉네임"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => clickCheckNickname(field.value)}
+                    >
+                      중복확인
+                    </Button>
+                  </div>
                 )}
               />
               {errors.nickname && (
