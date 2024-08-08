@@ -41,7 +41,6 @@ const UpdateUser: React.FC = () => {
     confirmPassword,
     phoneNumber,
     location,
-    mbti,
     interests,
     setUser,
   } = useUserStore();
@@ -58,7 +57,6 @@ const UpdateUser: React.FC = () => {
       confirmPassword,
       phoneNumber,
       location,
-      mbti,
       interests,
     },
   });
@@ -188,38 +186,7 @@ const UpdateUser: React.FC = () => {
               <span className="text-red-500">{errors.phoneNumber.message}</span>
             )}
           </div>
-          <div>
-            <label htmlFor="mbti" className="block text-sm font-medium">
-              MBTI/외향형 or 내향형
-            </label>
-            <select
-              id="mbti"
-              {...register('mbti')}
-              className="mt-1 block w-full border border-gray-200 p-2 "
-            >
-              <option value="ENFJ">ENFJ</option>
-              <option value="ENFP">ENFP</option>
-              <option value="ENTJ">ENTJ</option>
-              <option value="ENTP">ENTP</option>
-              <option value="ESFJ">ESFJ</option>
-              <option value="ESFP">ESFP</option>
-              <option value="ESTJ">ESTJ</option>
-              <option value="ESTP">ESTP</option>
-              <option value="INFJ">INFJ</option>
-              <option value="INFP">INFP</option>
-              <option value="INTJ">INTJ</option>
-              <option value="INTP">INTP</option>
-              <option value="ISFJ">ISFJ</option>
-              <option value="ISFP">ISFP</option>
-              <option value="ISTJ">ISTJ</option>
-              <option value="ISTP">ISTP</option>
-              <option value="외향형">외향형</option>
-              <option value="내향형">내향형</option>
-            </select>
-            {errors.mbti && (
-              <span className="text-red-500">{errors.mbti.message}</span>
-            )}
-          </div>
+
           <div>
             <label htmlFor="interests" className="block text-sm font-medium">
               관심사
