@@ -11,6 +11,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
+import { useUserStore } from '@/store/userStore';
 import { UserInfoFormInput, UserInfoRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -55,6 +56,7 @@ const UserInfoForm = () => {
     resolver: zodResolver(userInfoSchema),
     defaultValues: defaultData,
   });
+  const setUser = useUserStore((state) => state.setUser);
 
   const onSubmit = async (data: UserInfoFormInput) => {
     const userInfoData: UserInfoRequest = {
@@ -71,6 +73,7 @@ const UserInfoForm = () => {
       const response = await enterUserInfo(userInfoData, token);
       if (response.status.code === 200) {
         alert('사용자 정보 입력에 성공했습니다.');
+        setUser(userInfoData);
         navigate('/main');
       } else {
         alert(response.status.message);
