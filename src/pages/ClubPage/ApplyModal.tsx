@@ -1,18 +1,10 @@
+// ApplyModal.tsx
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-
-interface Meeting {
-  title: string;
-  description: string;
-  location: string;
-  currentMembers: number;
-  memberLimit: number;
-  date: string;
-  fee: number; // fee 필드를 추가합니다.
-}
+import { Result } from '@/types/Meetings';
 
 interface ApplyModalProps {
-  meeting: Meeting;
+  meeting: Result;
   onClose: () => void;
 }
 
@@ -34,26 +26,26 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
           <label className="block text-sm font-medium text-gray-700">
             제목
           </label>
-          <p className="mt-1">{meeting.title}</p>
+          <p className="mt-1">{meeting.name}</p>
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             설명
           </label>
-          <p className="mt-1">{meeting.description}</p>
+          <p className="mt-1">{meeting.introduction}</p>
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             장소
           </label>
-          <p className="mt-1">{meeting.location}</p>
+          <p className="mt-1">{meeting.place.name}</p>
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             인원
           </label>
           <p className="mt-1">
-            {meeting.currentMembers}/{meeting.memberLimit}
+            {meeting.participantsNumber}/{meeting.participantLimit}
           </p>
         </div>
         <div className="mb-4">
@@ -61,13 +53,6 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             일시
           </label>
           <p className="mt-1">{meeting.date}</p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            회비
-          </label>
-          <p className="mt-1">회비: {meeting.fee.toLocaleString()}원</p>{' '}
-          {/* 회비 정보 추가 */}
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

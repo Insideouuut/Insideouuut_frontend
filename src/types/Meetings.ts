@@ -1,14 +1,63 @@
-export interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
+// types/Meetings.ts
+export interface Image {
   name: string;
-  description: string;
+  url: string;
+}
+
+export interface ProfileImage {
+  name: string;
+  url: string;
+}
+
+export interface Host {
+  id: number;
+  nickname: string;
+  profileImage: ProfileImage;
+}
+
+export interface Place {
+  name: string;
+  placeUrl: string;
+  kakaoMapId: string;
+  addressName: string | null;
+  roadAddressName: string | null;
+  latitude: number;
+  longitude: number;
+}
+
+export interface Result {
+  type: string;
+  id: number;
+  name: string;
+  introduction: string;
+  view: number;
+  like: number;
+  hasMembershipFee: boolean;
+  membershipFeeAmount: number;
+  progress: string;
+  level: string;
+  categoryDetail: string;
+  category: string;
   date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-  role: '관리자' | '일반 회원';
-  backgroundColor: string;
-  backgroundImage: string;
+  participantsNumber: number;
+  participantLimit: number;
+  ratio: string;
+  ageRange: number[];
+  rules: string[];
+  joinQuestions: string[];
+  host: Host;
+  place: Place;
+  images: Image[];
+}
+
+export interface ApiResponse {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: {
+    resultCount: number;
+    pageable: null | any;
+  };
+  results: Result[];
 }

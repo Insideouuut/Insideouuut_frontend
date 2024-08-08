@@ -10,22 +10,8 @@ const SearchPage: React.FC = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [profileCoords, setProfileCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
-    top: 0,
-    left: 0,
-  });
-
-  const [notificationCoords, setNotificationCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
-    top: 0,
-    left: 0,
-  });
-
+  const [profileCoords, setProfileCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [notificationCoords, setNotificationCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
@@ -49,6 +35,8 @@ const SearchPage: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
+  const token = localStorage.getItem('accessToken') || '';
+
   return (
     <div className="relative">
       <Header
@@ -59,7 +47,7 @@ const SearchPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      <Search />
+      <Search token={token} />
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal

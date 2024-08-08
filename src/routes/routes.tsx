@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     element: <SetLocation />,
   },
   {
-    path: '/groupjoin',
+    path: '/groupjoin/:clubId',
     element: <GroupJoin />,
   },
   {

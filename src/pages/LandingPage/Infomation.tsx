@@ -4,6 +4,7 @@ import Lottie from 'lottie-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 const Infomation: React.FC = () => {
   return (
     <section className="flex bg-green-100 h-[620px] py-20">

@@ -4,14 +4,18 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import ClubRegistration from './ClubRegistration';
+import { getClubData } from '@/api/meetingApi';
 
 const GroupJoinPage: React.FC = () => {
+  const { clubId } = useParams<{ clubId: string }>();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
+  const [clubData, setClubData] = useState<any>(null);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -27,6 +31,19 @@ const GroupJoinPage: React.FC = () => {
     left: 0,
   });
   const profileRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getClubData(clubId || ''); // API 호출
+        setClubData(data);
+      } catch (error) {
+        console.error('Error fetching club data:', error);
+      }
+    };
+
+    fetchData();
+  }, [clubId]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -62,10 +79,14 @@ const GroupJoinPage: React.FC = () => {
       <HeroSection
         backgroundColor="bg-primary"
         title="모임 / 동아리 가입하기"
-        subtitle="우리의 다양한 모임과 동아리에서 새로운 취미를 발견하고,'기존의 취미를 더욱 즐겁게 누려보세요.'"
+        subtitle="우리의 다양한 모임과 동아리에서 새로운 취미를 발견하고,'기존의 취미를 더욱 즐겁게 누려보세요."
         imageData={{ src: runImg, alt: 'Run Icon' }}
       />
-      <ClubRegistration />
+      {clubData ? (
+        <ClubRegistration clubData={clubData} />
+      ) : (
+        <p>Loading...</p>
+      )}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal

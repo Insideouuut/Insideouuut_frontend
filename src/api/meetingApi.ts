@@ -1,13 +1,10 @@
-import { ClubData } from '@/types/Meetings';
-import { getData } from './api';
+import axiosInstance from './axiosConfig';
+import { ApiResponse, Result } from '@/types/Meetings';
 
-// Define the function to fetch club data
-export const getClubData = async (id: string): Promise<ClubData> => {
+export const getClubData = async (id: string): Promise<Result> => {
   try {
-    // Fetch the data using the getData function
-    const data = await getData<ClubData>(`/api/meetings/${id}`);
-    console.log(data); // Log the fetched data
-    return data;
+    const response = await axiosInstance.get<ApiResponse>(`/api/meetings/${id}`);
+    return response.data.results[0];
   } catch (error) {
     console.error('Error fetching club data:', error);
     throw error;

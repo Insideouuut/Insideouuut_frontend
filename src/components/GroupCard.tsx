@@ -4,32 +4,32 @@ import { Link } from 'react-router-dom';
 
 interface GroupCardProps {
   id: number;
-  clubTypes: string[];
-  meetingTypes: string[];
+  type: string;
   imageUrl: string;
   name: string;
-  description: string;
+  introduction: string;
   date: string;
   location: string;
-  memberCount: number;
-  memberLimit: number;
+  participantsNumber: number;
+  participantLimit: number;
+  category: string;
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({
   id,
-  clubTypes,
-  meetingTypes,
+  type,
   imageUrl,
   name,
-  description,
+  introduction,
   date,
   location,
-  memberCount,
-  memberLimit,
+  participantsNumber,
+  participantLimit,
+  category,
 }) => {
-  const isAlmostFull = memberCount / memberLimit >= 0.8;
+  const isAlmostFull = participantsNumber / participantLimit >= 0.8;
 
-  const getColorByClubType = (type: string) => {
+  const getColorByType = (type: string) => {
     switch (type) {
       case '동아리':
         return 'bg-green-200 text-green-800';
@@ -40,8 +40,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
     }
   };
 
-  const getColorByMeetingType = (type: string) => {
-    switch (type) {
+  const getColorByMeetingType = (category: string) => {
+    switch (category) {
       case '사교/취미':
         return 'bg-yellow-200 text-yellow-800';
       case '운동':
@@ -68,22 +68,16 @@ const GroupCard: React.FC<GroupCardProps> = ({
       <div className="ml-6 flex flex-col justify-between w-[60%]">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            {clubTypes.map((tag, index) => (
-              <span
-                key={index}
-                className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByClubType(tag)}`}
-              >
-                {tag}
-              </span>
-            ))}
-            {meetingTypes.map((tag, index) => (
-              <span
-                key={index}
-                className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(tag)}`}
-              >
-                {tag}
-              </span>
-            ))}
+            <span
+              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByType(type)}`}
+            >
+              {type}
+            </span>
+            <span
+              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(category)}`}
+            >
+              {category}
+            </span>
             {isAlmostFull && (
               <span className="flex items-center justify-center h-5 px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
                 마감임박
@@ -92,9 +86,9 @@ const GroupCard: React.FC<GroupCardProps> = ({
           </div>
           <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">
-            {description.length > 10
-              ? `${description.slice(0, 10)}...`
-              : description}
+            {introduction.length > 10
+              ? `${introduction.slice(0, 10)}...`
+              : introduction}
           </p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
@@ -103,7 +97,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <MapPin className="w-4 mr-1" />
             <p className="mr-4">{location}</p>
             <Users className="w-4 mr-1" />
-            <p>{`${memberCount}/${memberLimit}`}</p>
+            <p>{`${participantsNumber}/${participantLimit}`}</p>
           </div>
         </div>
       </div>

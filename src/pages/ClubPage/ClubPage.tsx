@@ -1,21 +1,22 @@
-import { getClubData } from '@/api/meetingApi'; // API 호출 함수 임포트
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import { ClubData } from '@/types/Meetings'; // ClubData 타입 임포트
 import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
+import { getClubData } from '@/api/meetingApi'; 
+import { Result } from '@/types/Meetings';
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [hasNotifications, setHasNotifications] = useState(false);
+  const { id: clubId } = useParams<{ id: string }>();  // 클럽 아이디를 URL 파라미터에서 가져옴
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -32,7 +33,6 @@ const ClubPage: React.FC = () => {
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // useParams로 ID 가져오기
   const location = useLocation();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
@@ -54,24 +54,14 @@ const ClubPage: React.FC = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setIsProfileModalOpen(false);
-  };
-
-  const handleColorChange = (newColor: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: newColor,
-        backgroundImage: '',
-      });
-    }
+    localStorage.removeItem('accessToken');
   };
 
   const handleImageChange = (newImage: string) => {
     if (clubData) {
       setClubData({
         ...clubData,
-        backgroundColor: 'bg-gray-100',
-        backgroundImage: newImage,
+        images: [{ name: 'newImage', url: newImage }],
       });
     }
   };
@@ -81,28 +71,28 @@ const ClubPage: React.FC = () => {
     if (menu.includes('Board')) {
       navigate(`/club/board/${menu}`);
     } else if (menu === 'home') {
-      navigate(`/club/${id}`);
+      navigate(`/club/${clubId}`);
     } else {
-      navigate(`/club/${id}/${menu}`);
+      navigate(`/club/${clubId}/${menu}`);
     }
   };
 
-  const [clubData, setClubData] = useState<ClubData | null>(null);
+  const [clubData, setClubData] = useState<Result | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (id) {
-        try {
-          const data: ClubData = await getClubData(id); // Ensure data is of type ClubData
+      try {
+        if (clubId) {
+          const data = await getClubData(clubId);
           setClubData(data);
-        } catch (error) {
-          console.error('Error fetching club data:', error);
         }
+      } catch (error) {
+        console.error('Error fetching club data:', error);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [clubId]);
 
   return (
     <div className="relative">
@@ -117,14 +107,14 @@ const ClubPage: React.FC = () => {
       {clubData && (
         <ClubHero
           clubData={clubData}
-          onColorChange={handleColorChange}
           onImageChange={handleImageChange}
+          isLoggedIn={isLoggedIn} // 로그인 여부를 ClubHero에 전달
         />
       )}
       <div className="flex mt-4 justify-center">
         <ClubSidebar
-          roomId="1"
-          clubId={1}
+          roomId={clubId ?? '0'} // clubId가 undefined일 경우 '0'을 사용
+          clubId={parseInt(clubId ?? '0')} // clubId가 undefined일 경우 '0'을 사용하여 숫자로 변환
           selectedMenu={selectedMenu}
           setSelectedMenu={handleMenuClick}
         />

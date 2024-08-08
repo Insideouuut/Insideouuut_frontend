@@ -6,16 +6,19 @@ import SearchResults from './SearchResults';
 const topTabs = ['전체', '모임', '동아리'];
 const bottomTabs = ['전체', '사교/취미', '운동', '스터디'];
 
-const Search: React.FC = () => {
+interface SearchProps {
+  token: string;
+}
+
+const Search: React.FC<SearchProps> = ({ token }) => {
   const [activeTopTab, setActiveTopTab] = useState<string>('전체');
   const [activeBottomTab, setActiveBottomTab] = useState<string>('전체');
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({});
-  const [bottomUnderlineStyle, setBottomUnderlineStyle] =
-    useState<React.CSSProperties>({});
+  const [bottomUnderlineStyle, setBottomUnderlineStyle] = useState<React.CSSProperties>({});
   const topTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const bottomTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>('');
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>('all');
 
   useEffect(() => {
     const activeTab = topTabRefs.current[topTabs.indexOf(activeTopTab)];
@@ -28,8 +31,7 @@ const Search: React.FC = () => {
   }, [activeTopTab]);
 
   useEffect(() => {
-    const activeTab =
-      bottomTabRefs.current[bottomTabs.indexOf(activeBottomTab)];
+    const activeTab = bottomTabRefs.current[bottomTabs.indexOf(activeBottomTab)];
     if (activeTab) {
       setBottomUnderlineStyle({
         left: activeTab.offsetLeft,
@@ -38,9 +40,13 @@ const Search: React.FC = () => {
     }
   }, [activeBottomTab]);
 
+  useEffect(() => {
+    setSubmittedSearchQuery(searchQuery.trim() === '' ? 'all' : searchQuery);
+  }, [activeTopTab, activeBottomTab, searchQuery]);
+
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setSubmittedSearchQuery(searchQuery);
+      setSubmittedSearchQuery(searchQuery.trim() === '' ? 'all' : searchQuery);
     }
   };
 
@@ -107,7 +113,7 @@ const Search: React.FC = () => {
             />
             <button
               className="ml-2 text-primary"
-              onClick={() => setSubmittedSearchQuery(searchQuery)}
+              onClick={() => setSubmittedSearchQuery(searchQuery.trim() === '' ? 'all' : searchQuery)}
             >
               <img src={search} alt="search" className="w-[23px]" />
             </button>
@@ -118,6 +124,7 @@ const Search: React.FC = () => {
         activeTopTab={activeTopTab}
         activeBottomTab={activeBottomTab}
         searchQuery={submittedSearchQuery}
+        token={token}
       />
     </section>
   );

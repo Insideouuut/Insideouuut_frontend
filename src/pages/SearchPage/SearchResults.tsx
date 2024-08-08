@@ -1,29 +1,50 @@
-import { dummyData } from '@/components/dummyData';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GroupCard from '../../components/GroupCard';
+import { searchMeetings } from '@/api/searchApi';
+import { Result } from '@/types/Search';
 
 interface SearchResultsProps {
   activeTopTab: string;
   activeBottomTab: string;
   searchQuery: string;
+  token: string;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   activeTopTab,
   activeBottomTab,
   searchQuery,
+  token,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+  const [filteredData, setFilteredData] = useState<Result[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sort, setSort] = useState<string>('date');
 
-  const filteredData = dummyData.filter(
-    (item) =>
-      (activeTopTab === '전체' || item.clubTypes.includes(activeTopTab)) &&
-      (activeBottomTab === '전체' ||
-        item.meetingTypes.includes(activeBottomTab)) &&
-      (item.name.includes(searchQuery) ||
-        item.description.includes(searchQuery)),
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const results = await searchMeetings(searchQuery, activeBottomTab, sort, token);
+        setFilteredData(results || []);
+      } catch (err) {
+        setError('Error fetching data');
+        console.error(err);
+        setFilteredData([]); // API 호출 실패 시 빈 배열로 설정
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [searchQuery, activeBottomTab, sort, token]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchQuery, activeBottomTab]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -47,14 +68,26 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     });
   };
 
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   return (
     <div className="w-full bg-white">
-      <div className="mx-auto py-5 flex-col  w-[960px] ">
+      <div className="mx-auto py-5 flex-col w-[960px]">
         <h2 className="font-neo text-2xl mb-2 ml-5">모임 목록</h2>
         <ul className="w-full flex pr-16 space-x-5 justify-end text-[12px] font-neoBold mb-4">
-          <li>인기순</li>
-          <li>날짜순</li>
-          <li>가까운순</li>
+          <li className={`cursor-pointer ${sort === 'like' ? 'text-primary' : ''}`} onClick={() => handleSortChange('like')}>인기순</li>
+          <li className={`cursor-pointer ${sort === 'date' ? 'text-primary' : ''}`} onClick={() => handleSortChange('date')}>최신순</li>
+          <li className={`cursor-pointer ${sort === 'rdate' ? 'text-primary' : ''}`} onClick={() => handleSortChange('rdate')}>오래된순</li>
         </ul>
         {filteredData.length === 0 ? (
           <div className="w-full flex justify-center items-center h-40">
@@ -64,18 +97,19 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           </div>
         ) : (
           <div className="w-[900px] mx-auto grid grid-cols-2 gap-4 pb-5">
-            {currentItems.map((item, index) => (
+            {currentItems.map((item) => (
               <GroupCard
-                key={index}
-                clubTypes={item.clubTypes}
-                meetingTypes={item.meetingTypes}
-                imageUrl={item.imageUrl}
+                key={item.id}
+                id={item.id}
+                type={item.type}
+                imageUrl={item.images[0]?.url || ''}
                 name={item.name}
-                description={item.description}
+                introduction={item.introduction}
                 date={item.date}
-                location={item.location}
-                memberLimit={item.memberLimit}
-                memberCount={item.memberCount}
+                location={item.place.name}
+                participantsNumber={item.participantsNumber}
+                participantLimit={item.participantLimit}
+                category={item.category}
               />
             ))}
           </div>
