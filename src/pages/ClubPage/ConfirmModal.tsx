@@ -32,7 +32,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <p className="mb-4">
           {meeting.title} 모임을 {action} 하시겠습니까?
         </p>
-        <p className="mb-4">확인을 위해 "{action}"을 입력해주세요.</p>
+        <p className="mb-4">확인을 위해 &quot;{action}&quot;을 입력해주세요.</p>
         <input
           type="text"
           value={input}

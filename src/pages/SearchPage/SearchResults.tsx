@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import GroupCard from '../../components/GroupCard';
 import { searchMeetings } from '@/api/searchApi';
 import { Result } from '@/types/Search';
+import React, { useEffect, useState } from 'react';
+import GroupCard from '../../components/GroupCard';
 
 interface SearchResultsProps {
-  activeTopTab: string;
   activeBottomTab: string;
   searchQuery: string;
   token: string;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
-  activeTopTab,
   activeBottomTab,
   searchQuery,
   token,
@@ -28,7 +26,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       setLoading(true);
       setError(null);
       try {
-        const results = await searchMeetings(searchQuery, activeBottomTab, sort, token);
+        const results = await searchMeetings(
+          searchQuery,
+          activeBottomTab,
+          sort,
+          token,
+        );
         setFilteredData(results || []);
       } catch (err) {
         setError('Error fetching data');
@@ -85,9 +88,24 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <div className="mx-auto py-5 flex-col w-[960px]">
         <h2 className="font-neo text-2xl mb-2 ml-5">모임 목록</h2>
         <ul className="w-full flex pr-16 space-x-5 justify-end text-[12px] font-neoBold mb-4">
-          <li className={`cursor-pointer ${sort === 'like' ? 'text-primary' : ''}`} onClick={() => handleSortChange('like')}>인기순</li>
-          <li className={`cursor-pointer ${sort === 'date' ? 'text-primary' : ''}`} onClick={() => handleSortChange('date')}>최신순</li>
-          <li className={`cursor-pointer ${sort === 'rdate' ? 'text-primary' : ''}`} onClick={() => handleSortChange('rdate')}>오래된순</li>
+          <button
+            className={`cursor-pointer ${sort === 'like' ? 'text-primary' : ''}`}
+            onClick={() => handleSortChange('like')}
+          >
+            인기순
+          </button>
+          <button
+            className={`cursor-pointer ${sort === 'date' ? 'text-primary' : ''}`}
+            onClick={() => handleSortChange('date')}
+          >
+            최신순
+          </button>
+          <button
+            className={`cursor-pointer ${sort === 'rdate' ? 'text-primary' : ''}`}
+            onClick={() => handleSortChange('rdate')}
+          >
+            오래된순
+          </button>
         </ul>
         {filteredData.length === 0 ? (
           <div className="w-full flex justify-center items-center h-40">

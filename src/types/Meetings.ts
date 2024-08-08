@@ -1,4 +1,3 @@
-// types/Meetings.ts
 export interface Image {
   name: string;
   url: string;
@@ -50,14 +49,16 @@ export interface Result {
   images: Image[];
 }
 
+export interface Metadata {
+  resultCount: number;
+  pageable: unknown | null; // `unknown` 타입을 사용하여 유연성을 유지합니다.
+}
+
 export interface ApiResponse {
   status: {
     code: number;
     message: string;
   };
-  metadata: {
-    resultCount: number;
-    pageable: null | any;
-  };
+  metadata: Metadata;
   results: Result[];
 }

@@ -1,22 +1,25 @@
+// ClubPage.tsx
+import { getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { Result } from '@/types/Meetings';
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-import { getClubData } from '@/api/meetingApi'; 
-import { Result } from '@/types/Meetings';
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('accessToken'));
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('accessToken'),
+  );
   const [hasNotifications, setHasNotifications] = useState(false);
-  const { id: clubId } = useParams<{ id: string }>();  // 클럽 아이디를 URL 파라미터에서 가져옴
+  const { id: clubId } = useParams<{ id: string }>();
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -33,7 +36,6 @@ const ClubPage: React.FC = () => {
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -113,8 +115,8 @@ const ClubPage: React.FC = () => {
       )}
       <div className="flex mt-4 justify-center">
         <ClubSidebar
-          roomId={clubId ?? '0'} // clubId가 undefined일 경우 '0'을 사용
-          clubId={parseInt(clubId ?? '0')} // clubId가 undefined일 경우 '0'을 사용하여 숫자로 변환
+          roomId={'1'}
+          clubId={clubId ? parseInt(clubId) : 0} // clubId가 undefined일 경우 0을 사용
           selectedMenu={selectedMenu}
           setSelectedMenu={handleMenuClick}
         />

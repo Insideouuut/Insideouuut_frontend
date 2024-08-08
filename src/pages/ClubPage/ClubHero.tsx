@@ -1,54 +1,24 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Result } from '@/types/Meetings';
 import {
   CalendarDays,
   ClipboardList,
+  Eye,
+  Heart,
   MapPin,
   MessageCircleMore,
   Users,
-  Eye,
-  Heart,
 } from 'lucide-react';
-import { Result } from '@/types/Meetings';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface ClubHeroProps {
   clubData: Result;
   onImageChange: (newImage: string) => void;
-  isLoggedIn: boolean; // 로그인 여부를 받음
+  isLoggedIn: boolean;
 }
 
-const ClubHero: React.FC<ClubHeroProps> = ({
-  clubData,
-  onImageChange,
-  isLoggedIn,
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setUploadedImage(null);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleImageSave = () => {
-    if (uploadedImage) {
-      onImageChange(uploadedImage);
-      closeModal();
-    }
-  };
-
+const ClubHero: React.FC<ClubHeroProps> = ({ clubData, isLoggedIn }) => {
   const getColorByType = (type: string) => {
     switch (type) {
       case '동아리':
@@ -85,10 +55,18 @@ const ClubHero: React.FC<ClubHeroProps> = ({
       <div className="relative flex items-center mx-auto w-[920px] justify-between z-10">
         <div className="flex flex-col h-[55%]">
           <div className="flex items-center space-x-2 mb-2">
-            <span className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByType(clubData.type)}`}>
+            <span
+              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByType(
+                clubData.type,
+              )}`}
+            >
               {clubData.type}
             </span>
-            <span className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByCategory(clubData.category)}`}>
+            <span
+              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByCategory(
+                clubData.category,
+              )}`}
+            >
               {clubData.category}
             </span>
           </div>
@@ -113,7 +91,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
                 {new Date(clubData.date).toLocaleString(undefined, {
                   year: '2-digit',
                   month: '2-digit',
-                  day: '2-digit'
+                  day: '2-digit',
                 })}
               </span>
             </div>
@@ -154,9 +132,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             </div>
           ) : (
             <Link to={`/groupjoin/${clubData.id}`}>
-              <Button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
+              <Button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                 가입하기
               </Button>
             </Link>

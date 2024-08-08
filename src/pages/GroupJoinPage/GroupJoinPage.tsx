@@ -1,13 +1,14 @@
+import { getClubData } from '@/api/meetingApi';
 import runImg from '@/assets/icons/run.png';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import React, { useRef, useState, useEffect } from 'react';
+import { Result } from '@/types/Meetings';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ClubRegistration from './ClubRegistration';
-import { getClubData } from '@/api/meetingApi';
 
 const GroupJoinPage: React.FC = () => {
   const { clubId } = useParams<{ clubId: string }>();
@@ -15,7 +16,7 @@ const GroupJoinPage: React.FC = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [clubData, setClubData] = useState<any>(null);
+  const [clubData, setClubData] = useState<Result | null>(null);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -82,11 +83,7 @@ const GroupJoinPage: React.FC = () => {
         subtitle="우리의 다양한 모임과 동아리에서 새로운 취미를 발견하고,'기존의 취미를 더욱 즐겁게 누려보세요."
         imageData={{ src: runImg, alt: 'Run Icon' }}
       />
-      {clubData ? (
-        <ClubRegistration clubData={clubData} />
-      ) : (
-        <p>Loading...</p>
-      )}
+      {clubData ? <ClubRegistration clubData={clubData} /> : <p>Loading...</p>}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal

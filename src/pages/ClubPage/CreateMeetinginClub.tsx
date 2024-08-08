@@ -70,7 +70,9 @@ const CreateMeeting: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col">
           <div className="flex">
-            <label className="mb-2">제목</label>
+            <label htmlFor="title" className="mb-2">
+              제목
+            </label>
             {errors.title && (
               <span className="mt-1 ml-1 text-red-500 text-[12px]">
                 {errors.title}
@@ -78,6 +80,7 @@ const CreateMeeting: React.FC = () => {
             )}
           </div>
           <input
+            id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -86,7 +89,9 @@ const CreateMeeting: React.FC = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex">
-            <label className="mb-2">설명</label>
+            <label htmlFor="description" className="mb-2">
+              설명
+            </label>
             {errors.description && (
               <span className="mt-1 ml-1 text-red-500 text-[12px]">
                 {errors.description}
@@ -94,6 +99,7 @@ const CreateMeeting: React.FC = () => {
             )}
           </div>
           <textarea
+            id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="p-2 border rounded"
@@ -101,8 +107,10 @@ const CreateMeeting: React.FC = () => {
         </div>
         <div className="flex w-full justify-between">
           <div className="flex flex-col w-[48%]">
-            <div className="flex ">
-              <label className="mb-2">장소</label>
+            <div className="flex">
+              <label htmlFor="location" className="mb-2">
+                장소
+              </label>
               {errors.location && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.location}
@@ -110,6 +118,7 @@ const CreateMeeting: React.FC = () => {
               )}
             </div>
             <input
+              id="location"
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
@@ -118,7 +127,9 @@ const CreateMeeting: React.FC = () => {
           </div>
           <div className="flex flex-col w-[48%]">
             <div className="flex">
-              <label className="mb-2">최대 인원</label>
+              <label htmlFor="memberLimit" className="mb-2">
+                최대 인원
+              </label>
               {errors.memberLimit && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.memberLimit}
@@ -126,6 +137,7 @@ const CreateMeeting: React.FC = () => {
               )}
             </div>
             <select
+              id="memberLimit"
               value={memberLimit}
               onChange={(e) => setMemberLimit(e.target.value)}
               className="p-2 border rounded h-[42px]"
@@ -155,7 +167,9 @@ const CreateMeeting: React.FC = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex">
-            <label className="mb-2">일시</label>
+            <label htmlFor="date" className="mb-2">
+              일시
+            </label>
             {errors.date && (
               <span className="mt-1 ml-1 text-red-500 text-[12px]">
                 {errors.date}
@@ -163,6 +177,7 @@ const CreateMeeting: React.FC = () => {
             )}
           </div>
           <input
+            id="date"
             type="datetime-local"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -171,7 +186,9 @@ const CreateMeeting: React.FC = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex">
-            <label className="mb-2">회비</label>
+            <label htmlFor="fee" className="mb-2">
+              회비
+            </label>
             {errors.fee && (
               <span className="mt-1 ml-1 text-red-500 text-[12px]">
                 {errors.fee}
@@ -179,6 +196,7 @@ const CreateMeeting: React.FC = () => {
             )}
           </div>
           <select
+            id="fee"
             value={fee}
             onChange={(e) => setFee(e.target.value)}
             className="p-2 border rounded"
@@ -202,10 +220,10 @@ const CreateMeeting: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="w-full flex justify-end ">
+        <div className="w-full flex justify-end">
           <Button
             type="submit"
-            className=" px-4 py-2 bg-primary w-28 text-white text-sm font-neoBold rounded-md hover:bg-green-700"
+            className="px-4 py-2 bg-primary w-28 text-white text-sm font-neoBold rounded-md hover:bg-green-700"
           >
             생성
           </Button>

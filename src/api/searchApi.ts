@@ -1,6 +1,6 @@
 // src/api/searchApi.ts
-import axiosInstance from './axiosConfig';
 import { ApiResponse, Result } from '@/types/Search';
+import axiosInstance from './axiosConfig';
 
 const getCategoryParam = (category: string) => {
   switch (category) {
@@ -25,15 +25,22 @@ export const searchMeetings = async (
   query: string = '',
   category: string = '전체',
   sort: string = 'date',
-  token: string
+  token: string,
 ): Promise<Result[]> => {
   try {
-    const response = await axiosInstance.get<ApiResponse>('/api/search/meeting', {
-      params: { query: getQueryParam(query), category: getCategoryParam(category), sort },
-      headers: {
-        Authorization: `${token}`,
+    const response = await axiosInstance.get<ApiResponse>(
+      '/api/search/meeting',
+      {
+        params: {
+          query: getQueryParam(query),
+          category: getCategoryParam(category),
+          sort,
+        },
+        headers: {
+          Authorization: `${token}`,
+        },
       },
-    });
+    );
     console.log('Request URL:', response.config.url);
     return response.data.results;
   } catch (error) {

@@ -1,6 +1,6 @@
+import { Result } from '@/types/Meetings';
 import React, { useState } from 'react';
 import ApplyModal from './ApplyModal';
-import { Result } from '@/types/Meetings';
 
 interface ClubMainProps {
   clubData: Result;
@@ -10,18 +10,18 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
   const [selectedMeeting, setSelectedMeeting] = useState<Result | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleMeetingClick = (meeting: Result) => {
-    setSelectedMeeting(meeting);
-    setIsModalOpen(true);
-  };
+  const participantRatio =
+    (clubData.participantsNumber / clubData.participantLimit) * 100;
+  const genderRatio =
+    (parseFloat(clubData.ratio.split(':')[0]) /
+      (parseFloat(clubData.ratio.split(':')[0]) +
+        parseFloat(clubData.ratio.split(':')[1]))) *
+    100;
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedMeeting(null);
   };
-
-  const participantRatio = (clubData.participantsNumber / clubData.participantLimit) * 100;
-  const genderRatio = parseFloat(clubData.ratio.split(':')[0]) / (parseFloat(clubData.ratio.split(':')[0]) + parseFloat(clubData.ratio.split(':')[1])) * 100;
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 space-y-6">
@@ -55,7 +55,10 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
         <div className="w-full md:w-[50%]">
           <h3 className="text-lg font-semibold text-gray-800">참가자 정원</h3>
           <div className="mt-2">
-            <p className="text-md text-gray-700">현재 참가자 수: {clubData.participantsNumber} / {clubData.participantLimit}</p>
+            <p className="text-md text-gray-700">
+              현재 참가자 수: {clubData.participantsNumber} /{' '}
+              {clubData.participantLimit}
+            </p>
             <div className="w-full bg-gray-300 rounded-full h-6 mt-2">
               <div
                 className="bg-blue-500 h-6 rounded-full text-center text-white"
@@ -85,14 +88,20 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
           </div>
           <div className="mt-4">
             <h3 className="text-lg font-semibold text-gray-800">연령대</h3>
-            <p className="text-md text-gray-700 mt-2">{clubData.ageRange.join(', ')}</p>
+            <p className="text-md text-gray-700 mt-2">
+              {clubData.ageRange.join(', ')}
+            </p>
           </div>
         </div>
       </div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div className="w-full md:w-[50%]">
           <h3 className="text-lg font-semibold text-gray-800">회비</h3>
-          <p className="text-md text-gray-700 mt-2">{clubData.membershipFeeAmount ? `${clubData.membershipFeeAmount}원` : '없음'}</p>
+          <p className="text-md text-gray-700 mt-2">
+            {clubData.membershipFeeAmount
+              ? `${clubData.membershipFeeAmount}원`
+              : '없음'}
+          </p>
         </div>
       </div>
       {isModalOpen && selectedMeeting && (

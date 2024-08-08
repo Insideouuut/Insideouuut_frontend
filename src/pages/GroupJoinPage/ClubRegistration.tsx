@@ -1,18 +1,22 @@
 import { Button } from '@/components/ui/button';
+import { Result } from '@/types/Meetings';
 import React, { useState } from 'react';
 
 interface ClubRegistrationProps {
-  clubData: any;
+  clubData: Result;
 }
 
 const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
   const [isAgreed, setIsAgreed] = useState(false);
   const [isInfoAgreed, setIsInfoAgreed] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>(
-    clubData.joinQuestions.reduce((acc: { [key: string]: string }, question: string, index: number) => {
-      acc[`question-${index}`] = '';
-      return acc;
-    }, {})
+    clubData.joinQuestions.reduce(
+      (acc: { [key: string]: string }, question: string, index: number) => {
+        acc[`question-${index}`] = '';
+        return acc;
+      },
+      {},
+    ),
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +91,9 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
             </span>
           </label>
           <div className="flex justify-end">
-            <Button className='hover:bg-green-700' disabled={!isFormValid()}>가입하기</Button>
+            <Button className="hover:bg-green-700" disabled={!isFormValid()}>
+              가입하기
+            </Button>
           </div>
         </div>
       </div>
