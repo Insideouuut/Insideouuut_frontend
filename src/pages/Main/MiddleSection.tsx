@@ -1,4 +1,4 @@
-import { getMeetings } from '@/api/meetingApi';
+import { Api } from '@/api/Apis';
 import { dummyData } from '@/components/dummyData';
 import GroupCard from '@/components/GroupCard';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,8 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
 import ModongCard from './ModongCard';
+
+const apiInstance = new Api();
 
 interface Info {
   clubTypes: string[];
@@ -30,20 +32,31 @@ const sortByDate = (data: Info[]): Info[] => {
 const MiddleSection: React.FC = () => {
   // 최신 생성 순으로 정렬
   const sortedData = sortByDate([...dummyData]);
-
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const data = await getMeetings();
-        console.log(data);
+        const response = await apiInstance.api.findAll1();
+        console.log(response); // 가져온 데이터를 콘솔에 출력
       } catch (error) {
-        console.error('Failed to fetch meetings:', error);
+        console.error('Failed to fetch meetings:', error); // 에러 처리
       }
     };
 
-    fetchMeetings();
+    fetchMeetings(); // 함수 호출
   }, []);
 
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const response = await apiInstance.api.findByType({ category: '운동' });
+        console.log('clubs :', response);
+      } catch (error) {
+        console.error('Failed to fetch clubs:', error);
+      }
+    };
+
+    fetchClubs(); // 함수 호출
+  }, []);
   return (
     <div className="container flex flex-col items-center">
       <section

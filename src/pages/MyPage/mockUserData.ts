@@ -11,3 +11,17 @@ export const mockUserData = {
   interests: ['사교/취미'],
   clubIds: [1, 3, 5], // 유저가 참여 중인 모임/동아리의 ID 목록
 };
+
+export const emptyUserData = {
+  imageUrl: '',
+  email: '',
+  name: '',
+  nickname: '',
+  password: '',
+  confirmPassword: '',
+  phoneNumber: '',
+  location: '',
+  mbti: '',
+  interests: [],
+  clubIds: [],
+};

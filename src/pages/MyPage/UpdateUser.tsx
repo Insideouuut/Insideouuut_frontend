@@ -1,9 +1,12 @@
+import { Api } from '@/api/Apis';
 import { useUserStore } from '@/store/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+
+const apiInstance = new Api();
 
 const profileSchema = z
   .object({
@@ -20,7 +23,6 @@ const profileSchema = z
       .min(10, '전화번호를 입력해주세요.')
       .max(13, '전화번호를 확인해주세요.'),
     location: z.string().min(1, '내 지역을 입력해주세요.'),
-    mbti: z.string().min(1, 'MBTI를 선택해주세요.'),
     interests: z
       .array(z.string())
       .min(1, '관심사를 최소 하나 이상 선택해주세요.'),
@@ -41,7 +43,6 @@ const UpdateUser: React.FC = () => {
     confirmPassword,
     phoneNumber,
     location,
-    mbti,
     interests,
     setUser,
   } = useUserStore();
@@ -49,6 +50,7 @@ const UpdateUser: React.FC = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -58,15 +60,32 @@ const UpdateUser: React.FC = () => {
       confirmPassword,
       phoneNumber,
       location,
-      mbti,
+
       interests,
     },
   });
   const [isUpdated, setIsUpdated] = useState(false);
+  const [checkedNickname, setCheckedNickname] = useState(false);
 
-  const onSubmit = (data: ProfileFormValues) => {
-    setUser(data);
-    setIsUpdated(true);
+  const onSubmit = async (data: ProfileFormValues) => {
+    try {
+      const updateRequest = {
+        nickname: data.nickname,
+        password: data.password,
+      };
+
+      const response = await apiInstance.api.updateUserProfile(updateRequest);
+      console.log('API response:', response);
+
+      setUser({
+        nickname: data.nickname,
+        password: data.password,
+      });
+      setIsUpdated(true);
+    } catch (error) {
+      console.error('프로필 업데이트에 실패했습니다', error);
+      alert('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleInterestChange = (value: string) => {
@@ -75,6 +94,30 @@ const UpdateUser: React.FC = () => {
       : [...interests, value];
     setValue('interests', newInterests);
     setUser({ interests: newInterests });
+  };
+
+  const checkNicknameAvailability = async () => {
+    if (checkedNickname) console.log('nickname checking');
+    try {
+      const { nickname } = getValues();
+      const response = await apiInstance.api.checkNickname({ nickname });
+      if (response.data && response.data.status) {
+        const statusCode = response.data.status.code;
+        console.log('nickname response:', response);
+        if (statusCode === 200) {
+          alert('사용가능한 닉네임입니다.');
+          setCheckedNickname(true);
+        } else if (statusCode === 400 || statusCode === 409) {
+          alert(response.data.status.message || '알 수 없는 오류');
+          setCheckedNickname(false);
+        }
+      } else {
+        alert('서버 응답에 오류가 있습니다.');
+      }
+    } catch (error) {
+      alert('닉네임 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
+      console.error('Nickname checked Error:', error);
+    }
   };
 
   return (
@@ -113,6 +156,7 @@ const UpdateUser: React.FC = () => {
             </div>
             <button
               type="button"
+              onClick={checkNicknameAvailability}
               className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
             >
               중복 확인
@@ -186,38 +230,6 @@ const UpdateUser: React.FC = () => {
             />
             {errors.phoneNumber && (
               <span className="text-red-500">{errors.phoneNumber.message}</span>
-            )}
-          </div>
-          <div>
-            <label htmlFor="mbti" className="block text-sm font-medium">
-              MBTI/외향형 or 내향형
-            </label>
-            <select
-              id="mbti"
-              {...register('mbti')}
-              className="mt-1 block w-full border border-gray-200 p-2 "
-            >
-              <option value="ENFJ">ENFJ</option>
-              <option value="ENFP">ENFP</option>
-              <option value="ENTJ">ENTJ</option>
-              <option value="ENTP">ENTP</option>
-              <option value="ESFJ">ESFJ</option>
-              <option value="ESFP">ESFP</option>
-              <option value="ESTJ">ESTJ</option>
-              <option value="ESTP">ESTP</option>
-              <option value="INFJ">INFJ</option>
-              <option value="INFP">INFP</option>
-              <option value="INTJ">INTJ</option>
-              <option value="INTP">INTP</option>
-              <option value="ISFJ">ISFJ</option>
-              <option value="ISFP">ISFP</option>
-              <option value="ISTJ">ISTJ</option>
-              <option value="ISTP">ISTP</option>
-              <option value="외향형">외향형</option>
-              <option value="내향형">내향형</option>
-            </select>
-            {errors.mbti && (
-              <span className="text-red-500">{errors.mbti.message}</span>
             )}
           </div>
           <div>

@@ -1,0 +1,24 @@
+diff --git a/node_modules/@radix-ui/react-radio-group/dist/index.d.ts b/node_modules/@radix-ui/react-radio-group/dist/index.d.ts
+index 466f8bb..4104724 100644
+--- a/node_modules/@radix-ui/react-radio-group/dist/index.d.ts
++++ b/node_modules/@radix-ui/react-radio-group/dist/index.d.ts
+@@ -35,8 +35,8 @@ type RadioGroupContextValue = {
+     name?: string;
+     required: boolean;
+     disabled: boolean;
+-    value?: string;
+-    onValueChange(value: string): void;
++    value?: string | boolean;
++    onValueChange(value: string | boolean): void;
+ };
+ type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
+@@ -54,7 +54,7 @@ interface RadioGroupProps extends PrimitiveDivProps {
+ declare const RadioGroup: React.ForwardRefExoticComponent<RadioGroupProps & React.RefAttributes<HTMLDivElement>>;
+ type RadioProps = React.ComponentPropsWithoutRef<typeof Radio>;
+ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
+-    value: string;
++    value: string | boolean;
+ }
+ declare const RadioGroupItem: React.ForwardRefExoticComponent<RadioGroupItemProps & React.RefAttributes<HTMLButtonElement>>;
+ type RadioIndicatorProps = React.ComponentPropsWithoutRef<typeof RadioIndicator>;

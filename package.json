@@ -11,7 +11,9 @@
     "test": "jest --watchAll",
     "test:ci": "jest --ci --passWithNoTests",
     "format": "prettier --check --ignore-path .gitignore .",
-    "format:fix": "prettier --write --ignore-path .gitignore ."
+    "format:fix": "prettier --write --ignore-path .gitignore .",
+    "postinstall": "patch-package",
+    "fetch-swagger": "node fetch-swagger.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
@@ -36,9 +38,11 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "controller": "^1.0.0",
     "date-fns": "^3.6.0",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.407.0",
+    "patch-package": "^8.0.0",
     "proj4": "^2.11.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -47,6 +51,7 @@
     "react-lottie": "^1.2.4",
     "react-router-dom": "^6.24.1",
     "socketjs-client": "^1.0.2",
+    "swagger-typescript-api": "^13.0.16",
     "tailwind-merge": "^2.4.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",

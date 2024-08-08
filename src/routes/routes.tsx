@@ -1,4 +1,6 @@
+import IsFirstKakaoLogin from '@/pages/Auth/IsFirstKakaoLogin';
 import Login from '@/pages/Auth/Login';
+import Reissue from '@/pages/Auth/Reissue';
 import Signup from '@/pages/Auth/Signup';
 import UserInfo from '@/pages/Auth/UserInfo';
 import BoardList from '@/pages/board/BoardList';
@@ -7,8 +9,8 @@ import PostForm from '@/pages/board/PostForm';
 import Chat from '@/pages/chat/Chat';
 import ChatRoom from '@/pages/chat/ChatRoom';
 import MemberList from '@/pages/ClubPage/MemberList';
-import CreateClub from '@/pages/Create/CreateClub';
-import CreateMeeting from '@/pages/Create/CreateMeeting';
+import CreateClub from '@/pages/CreateModong/CreateClub';
+import CreateMeeting from '@/pages/CreateModong/CreateMeeting';
 import Main from '@/pages/Main/Main';
 import MyPage from '@/pages/MyPage/MyPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -143,6 +145,14 @@ const router = createBrowserRouter([
   {
     path: '/chatroom',
     element: <ChatRoom />,
+  },
+  {
+    path: '/reissue',
+    element: <Reissue />,
+  },
+  {
+    path: '/isFirstLoginWithKakao',
+    element: <IsFirstKakaoLogin />,
   },
 ]);
 

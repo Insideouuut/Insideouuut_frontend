@@ -45,10 +45,46 @@ export const checkNickname = async (nickname: string) => {
 // 사용자 정보 입력 함수
 export const enterUserInfo = async (
   userInfoData: UserInfoRequest,
+  token: string | null,
 ): Promise<AuthResponse> => {
   const response = await postData<UserInfoRequest, AuthResponse>(
     '/api/oauth2/userInfo',
     userInfoData,
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
   );
+  return response;
+};
+
+// 토큰 재발급 함수
+export const reissueToken = async () => {
+  const response = axiosInstance.post('/api/reissue', {});
+  return response;
+};
+
+// Access 토큰 만료시 자동 재발급 설정
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
+//     if (error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
+//       await reissueToken();
+//       return axiosInstance(originalRequest);
+//     }
+//     return Promise.reject(error);
+//   },
+// );
+
+// 첫 로그인 회원 확인(카카오) 함수
+export const isFirstLoginWithKakao = async (token: string | null) => {
+  const response = axiosInstance.get('/api/oauth2/userInfo', {
+    headers: {
+      Authorization: token,
+    },
+  });
   return response;
 };
