@@ -36,6 +36,7 @@ const MiddleSection: React.FC = () => {
     const fetchMeetings = async () => {
       try {
         const response = await apiInstance.api.findAll1();
+
         console.log(response); // 가져온 데이터를 콘솔에 출력
       } catch (error) {
         console.error('Failed to fetch meetings:', error); // 에러 처리
