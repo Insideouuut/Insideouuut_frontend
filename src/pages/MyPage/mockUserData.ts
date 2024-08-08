@@ -13,15 +13,15 @@ export const mockUserData = {
 };
 
 export const emptyUserData = {
-  imageUrl: undefined,
-  email: undefined,
-  name: undefined,
-  nickname: undefined,
-  password: undefined,
-  confirmPassword: undefined,
-  phoneNumber: undefined,
-  location: undefined,
-  mbti: undefined,
+  imageUrl: '',
+  email: '',
+  name: '',
+  nickname: '',
+  password: '',
+  confirmPassword: '',
+  phoneNumber: '',
+  location: '',
+  mbti: '',
   interests: [],
   clubIds: [],
 };
