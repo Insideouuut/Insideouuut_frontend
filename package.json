@@ -12,7 +12,8 @@
     "test:ci": "jest --ci --passWithNoTests",
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "fetch-swagger": "node fetch-swagger.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.2",
@@ -52,6 +53,7 @@
     "react-lottie": "^1.2.4",
     "react-router-dom": "^6.24.1",
     "socketjs-client": "^1.0.2",
+    "swagger-typescript-api": "^13.0.16",
     "tailwind-merge": "^2.4.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",

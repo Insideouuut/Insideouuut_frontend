@@ -1,4 +1,4 @@
-import { mockUserData } from '@/pages/MyPage/mockUserData';
+import { emptyUserData } from '@/pages/MyPage/mockUserData';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -20,11 +20,11 @@ interface UserState {
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
-      ...mockUserData,
+      ...emptyUserData,
       isLoggedIn: false,
       setUser: (user) =>
         set((state) => ({ ...state, ...user, isLoggedIn: true })),
-      clearUser: () => set({ ...mockUserData, isLoggedIn: false }),
+      clearUser: () => set({ ...emptyUserData, isLoggedIn: false }),
     }),
     {
       name: 'user-storage', // localStorage key
