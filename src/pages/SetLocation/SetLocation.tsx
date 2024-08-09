@@ -1,3 +1,4 @@
+import { Api } from '@/api/Apis';
 import animationData from '@/assets/lottie/setlocation.json';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -13,12 +14,13 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import MapComponent from '@/pages/SetLocation/MapComponent';
 import { useUserStore } from '@/store/userStore';
-import axios from 'axios';
 import { CircleAlert, Map } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
+const apiInstance = new Api();
+
 const SetLocation: React.FC = () => {
-  const { isLoggedIn, setUser, clearUser, location } = useUserStore();
+  const { isLoggedIn, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
@@ -50,13 +52,10 @@ const SetLocation: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
-  const handleLoginLogout = () => {
-    if (isLoggedIn) {
-      clearUser();
-    } else {
-      // 로그인 로직 추가
-      setUser({ isLoggedIn: true });
-    }
+  const handleLogout = () => {
+    clearUser();
+    setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
   };
 
   // 위치 데이터를 업데이트하는 함수
@@ -69,13 +68,16 @@ const SetLocation: React.FC = () => {
   };
 
   const handleVerification = async () => {
+    const locationParts = myLocation.split(' ');
+    const location = locationParts[locationParts.length - 1];
     const isVerified = neighborhoods.includes(location);
     try {
-      await axios.post('api주소', {
-        location: location,
+      // 서버에 데이터 전송
+      await apiInstance.api.insertUserLocation({
+        locations: neighborhoods,
         isVerified,
-        neighborhoods,
       });
+
       alert(isVerified ? '동네 인증 성공!' : '동네 인증 실패.');
     } catch (error) {
       console.error('Error verifying location:', error);
@@ -88,7 +90,7 @@ const SetLocation: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={handleLoginLogout}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -140,7 +142,7 @@ const SetLocation: React.FC = () => {
         {isProfileModalOpen && (
           <ProfileModal
             toggleProfileModal={toggleProfileModal}
-            handleLogout={handleLoginLogout}
+            handleLogout={handleLogout}
             coords={profileCoords}
           />
         )}
