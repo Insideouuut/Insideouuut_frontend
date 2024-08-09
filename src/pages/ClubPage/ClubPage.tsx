@@ -1,4 +1,3 @@
-// ClubPage.tsx
 import { getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -80,6 +79,7 @@ const ClubPage: React.FC = () => {
   };
 
   const [clubData, setClubData] = useState<Result | null>(null);
+  const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +87,10 @@ const ClubPage: React.FC = () => {
         if (clubId) {
           const data = await getClubData(clubId);
           setClubData(data);
+
+          // 로그인한 사용자와 클럽 호스트의 닉네임을 비교
+          const loggedInUserNickname = localStorage.getItem('nickname');
+          setIsHost(data.host.nickname === loggedInUserNickname);
         }
       } catch (error) {
         console.error('Error fetching club data:', error);
@@ -110,16 +114,20 @@ const ClubPage: React.FC = () => {
         <ClubHero
           clubData={clubData}
           onImageChange={handleImageChange}
-          isLoggedIn={isLoggedIn} // 로그인 여부를 ClubHero에 전달
+          isLoggedIn={isLoggedIn}
         />
       )}
       <div className="flex mt-4 justify-center">
-        <ClubSidebar
-          roomId={'1'}
-          clubId={clubId ? parseInt(clubId) : 0} // clubId가 undefined일 경우 0을 사용
-          selectedMenu={selectedMenu}
-          setSelectedMenu={handleMenuClick}
-        />
+        {clubData && (
+          <ClubSidebar
+            roomId={'1'}
+            clubId={clubId ? parseInt(clubId) : 0}
+            selectedMenu={selectedMenu}
+            setSelectedMenu={handleMenuClick}
+            clubType={clubData.type}
+            isHost={isHost}
+          />
+        )}
         <div>
           {selectedMenu === 'home' && clubData && (
             <div>

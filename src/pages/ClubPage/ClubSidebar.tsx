@@ -16,6 +16,8 @@ interface ClubSidebarProps {
   clubId: number;
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
+  clubType: string;  // '동아리' 또는 '모임'
+  isHost: boolean;   // 사용자가 호스트인지 여부
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
@@ -23,6 +25,8 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   clubId,
   selectedMenu,
   setSelectedMenu,
+  clubType,
+  isHost,
 }) => {
   const [isBoardOpen, setIsBoardOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -179,7 +183,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           >
             <div className="flex items-center space-x-2">
               <House className="w-5 h-5" />
-              <span className="text-sm">나의 모임</span>
+              <span className="text-sm">{clubType === '동아리' ? '나의 동아리' : '모임 관리'}</span>
             </div>
             <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
           </div>
@@ -206,54 +210,56 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             </div>
           </div>
         </div>
-        <div className="space-y-1">
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => setIsAdminOpen(!isAdminOpen)}
-            onKeyDown={(event) =>
-              handleAccordionKeyDown(event, () => setIsAdminOpen(!isAdminOpen))
-            }
-            className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isAdminOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
-          >
-            <div className={`flex items-center space-x-2`}>
-              <Lock className="w-5 h-5" />
-              <span className="text-sm">관리자</span>
+        {isHost && (
+          <div className="space-y-1">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setIsAdminOpen(!isAdminOpen)}
+              onKeyDown={(event) =>
+                handleAccordionKeyDown(event, () => setIsAdminOpen(!isAdminOpen))
+              }
+              className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isAdminOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
+            >
+              <div className={`flex items-center space-x-2`}>
+                <Lock className="w-5 h-5" />
+                <span className="text-sm">관리자</span>
+              </div>
+              <span>{isAdminOpen ? <ChevronUp /> : <ChevronDown />}</span>
             </div>
-            <span>{isAdminOpen ? <ChevronUp /> : <ChevronDown />}</span>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${isAdminOpen ? 'max-h-[120px]' : 'max-h-0'}`}
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('memberRequests')}
+                onKeyDown={(event) => handleKeyDown(event, 'memberRequests')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('memberRequests')}`}
+              >
+                멤버 신청 목록
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('manageMembers')}
+                onKeyDown={(event) => handleKeyDown(event, 'manageMembers')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('manageMembers')}`}
+              >
+                멤버 관리
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('manageClub')}
+                onKeyDown={(event) => handleKeyDown(event, 'manageClub')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('manageClub')}`}
+              >
+                동아리 관리
+              </div>
+            </div>
           </div>
-          <div
-            className={`overflow-hidden transition-all duration-300 ${isAdminOpen ? 'max-h-[120px]' : 'max-h-0'}`}
-          >
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('memberRequests')}
-              onKeyDown={(event) => handleKeyDown(event, 'memberRequests')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('memberRequests')}`}
-            >
-              멤버 신청 목록
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('manageMembers')}
-              onKeyDown={(event) => handleKeyDown(event, 'manageMembers')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('manageMembers')}`}
-            >
-              멤버 관리
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('manageClub')}
-              onKeyDown={(event) => handleKeyDown(event, 'manageClub')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('manageClub')}`}
-            >
-              동아리 관리
-            </div>
-          </div>
-        </div>
+        )}
       </nav>
     </div>
   );
