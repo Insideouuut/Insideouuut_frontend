@@ -1,15 +1,11 @@
 import { Result } from '@/types/Meetings';
-import React, { useState } from 'react';
-import ApplyModal from './ApplyModal';
+import React from 'react';
 
 interface ClubMainProps {
   clubData: Result;
 }
 
 const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
-  const [selectedMeeting, setSelectedMeeting] = useState<Result | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const participantRatio =
     (clubData.participantsNumber / clubData.participantLimit) * 100;
   const genderRatio =
@@ -17,11 +13,6 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
       (parseFloat(clubData.ratio.split(':')[0]) +
         parseFloat(clubData.ratio.split(':')[1]))) *
     100;
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedMeeting(null);
-  };
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 space-y-6">
@@ -104,7 +95,6 @@ const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
           </p>
         </div>
       </div>
-
     </div>
   );
 };
