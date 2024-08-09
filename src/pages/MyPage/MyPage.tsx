@@ -1,3 +1,4 @@
+import { Api } from '@/api/Apis';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -5,12 +6,15 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/store/userStore';
+import { MyProfileResponse } from '@/types/User';
 import React, { useRef, useState } from 'react';
 import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
 
+const apiInstance = new Api();
+
 const MyPage: React.FC = () => {
-  const { imageUrl, setUser } = useUserStore();
+  const { imageUrl, setUser, nickname } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,6 +28,7 @@ const MyPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
+  const [profile] = useState<MyProfileResponse | null>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -46,20 +51,28 @@ const MyPage: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setUser({ imageUrl: reader.result as string });
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      const file = e.target.files[0];
+
+      try {
+        // API 호출 시 직접 파일을 전달
+        await apiInstance.api.updateUserProfileImage({ image: file });
+        setUser({ imageUrl: URL.createObjectURL(file) });
+      } catch (error) {
+        console.error('Error uploading profile image:', error);
+      }
     }
   };
 
   const handleImageReset = () => {
-    setUser({ imageUrl: 'https://via.placeholder.com/100' });
+    setUser({ imageUrl: '' }); // 빈 문자열로 설정하여 기본 스타일 적용
   };
 
+  const profileImageUrl =
+    profile && profile.results.profileImage
+      ? profile.results.profileImage
+      : imageUrl;
   return (
     <div className="relative">
       <Header
@@ -72,11 +85,19 @@ const MyPage: React.FC = () => {
       />
       <div className="bg-gray-200 w-full max-h-full p-10">
         <div className="container flex flex-col shadow-md border border-gray-200 rounded-lg p-10 items-center justify-center bg-white relative">
-          <img
-            src={imageUrl}
-            alt="Profile"
-            className="w-40 h-40 rounded-full mb-3"
-          />
+          <div
+            className={`w-40 h-40 rounded-full mb-3 flex items-center justify-center ${!profileImageUrl ? 'bg-primary' : ''}`}
+          >
+            {profileImageUrl ? (
+              <img
+                src={profileImageUrl}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="text-white text-xl">{nickname}</span>
+            )}
+          </div>
           <div className="flex space-x-4">
             <Button className="mb-3 font-neoBold hover:text-neutral-100 hover:bg-green-700">
               <label htmlFor="imageUpload" className="cursor-pointer">
