@@ -13,10 +13,10 @@ import UpdateUser from './UpdateUser';
 const apiInstance = new Api();
 
 const MyPage: React.FC = () => {
-  const { setUser, nickname } = useUserStore();
+  const { isLoggedIn, setUser, nickname, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -44,11 +44,6 @@ const MyPage: React.FC = () => {
       setNotificationCoords({ top: rect.bottom, left: rect.left });
     }
     setIsNotificationModalOpen(!isNotificationModalOpen);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsProfileModalOpen(false);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,14 +77,21 @@ const MyPage: React.FC = () => {
 
     fetchProfile(); // 함수 호출
   }, []);
-
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      clearUser();
+    } else {
+      // 로그인 로직 추가
+      setUser({ isLoggedIn: true });
+    }
+  };
   return (
     <div className="relative">
       <Header
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLoginLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -151,7 +153,7 @@ const MyPage: React.FC = () => {
       {isProfileModalOpen && (
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
-          handleLogout={handleLogout}
+          handleLogout={handleLoginLogout}
           coords={profileCoords}
         />
       )}
