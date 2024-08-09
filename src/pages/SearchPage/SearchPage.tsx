@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import React, { useRef, useState } from 'react';
-import Search from './searchHero';
+import Search from './searchHero'; // Make sure this import points to your Search component
 
 const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);

@@ -1,4 +1,4 @@
-import search from '@/assets/icons/search_24dp_5CB270.png';
+import searchIcon from '@/assets/icons/search_24dp_5CB270.png';
 import studyImg from '@/assets/icons/study.png';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchResults from './SearchResults';
@@ -19,8 +19,7 @@ const Search: React.FC<SearchProps> = ({ token }) => {
   const topTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const bottomTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [submittedSearchQuery, setSubmittedSearchQuery] =
-    useState<string>('all');
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>('');
 
   useEffect(() => {
     const activeTab = topTabRefs.current[topTabs.indexOf(activeTopTab)];
@@ -43,13 +42,9 @@ const Search: React.FC<SearchProps> = ({ token }) => {
     }
   }, [activeBottomTab]);
 
-  useEffect(() => {
-    setSubmittedSearchQuery(searchQuery.trim() === '' ? 'all' : searchQuery);
-  }, [activeTopTab, activeBottomTab, searchQuery]);
-
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setSubmittedSearchQuery(searchQuery.trim() === '' ? 'all' : searchQuery);
+      setSubmittedSearchQuery(searchQuery);
     }
   };
 
@@ -63,9 +58,7 @@ const Search: React.FC<SearchProps> = ({ token }) => {
           <p className="text-white font-neoLight mt-2">
             취향에 맞는 모임을 찾아
           </p>
-          <p className=" text-white font-neoLight mt-2">
-            같이 취미를 즐겨봐요.
-          </p>
+          <p className="text-white font-neoLight mt-2">같이 취미를 즐겨봐요.</p>
         </div>
         <img src={studyImg} style={{ height: 200, width: 200 }} alt="Study" />
       </div>
@@ -116,19 +109,14 @@ const Search: React.FC<SearchProps> = ({ token }) => {
             />
             <button
               className="ml-2 text-primary"
-              onClick={() =>
-                setSubmittedSearchQuery(
-                  searchQuery.trim() === '' ? 'all' : searchQuery,
-                )
-              }
+              onClick={() => setSubmittedSearchQuery(searchQuery)}
             >
-              <img src={search} alt="search" className="w-[23px]" />
+              <img src={searchIcon} alt="search" className="w-[23px]" />
             </button>
           </div>
         </div>
       </div>
       <SearchResults
-        activeTopTab={activeTopTab}
         activeBottomTab={activeBottomTab}
         searchQuery={submittedSearchQuery}
         token={token}
