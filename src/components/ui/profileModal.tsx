@@ -58,17 +58,19 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
             </Link>
           </li>
 
-          <div
-            className="text-[13px] font-neoBold text-red-500 cursor-pointer"
-            onClick={handleLogout}
-            role="button"
-            tabIndex={0}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') handleLogout();
-            }}
-          >
-            로그아웃
-          </div>
+          <Link to="/">
+            <div
+              className="text-[13px] font-neoBold text-red-500 cursor-pointer"
+              onClick={handleLogout}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') handleLogout();
+              }}
+            >
+              로그아웃
+            </div>
+          </Link>
         </ul>
       </div>
     </div>

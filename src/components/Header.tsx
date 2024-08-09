@@ -35,9 +35,15 @@ const Header: React.FC<HeaderProps> = ({
     <nav className="bg-white px-4 py-3.5 relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
-          <Link to="/main">
-            <img src={logo} alt="Logo" className="h-8 w-32" />
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/main">
+              <img src={logo} alt="Logo" className="h-8 w-32" />
+            </Link>
+          ) : (
+            <Link to="/">
+              <img src={logo} alt="Logo" className="h-8 w-32" />
+            </Link>
+          )}
         </div>
         <div className="hidden lg:flex items-center space-x-4 relative">
           {isLoggedIn ? (

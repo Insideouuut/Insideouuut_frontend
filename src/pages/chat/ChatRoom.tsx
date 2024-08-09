@@ -1,3 +1,8 @@
+import {
+  getChatRoomsByUserId,
+  getClubRoomsByUserId,
+  getMeetingRoomsByUserId,
+} from '@/api/chatApi'; // import the API functions
 import animationData from '@/assets/lottie/chat.json';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -12,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useUserStore } from '@/store/userStore'; // zustand store import
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { mockChatRooms } from './chatMockData';
 
@@ -61,6 +66,29 @@ const ChatRoom: React.FC = () => {
 
   const { clubId } = useParams<{ clubId: string }>(); // URL에서 clubId 값을 가져옴
   const { nickname, imageUrl } = useUserStore(); // zustand에서 현재 사용자 정보 가져오기
+
+  // 데이터 로드
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const chatRoomsResponse = await getChatRoomsByUserId();
+
+        console.log('Chat Rooms:', chatRoomsResponse);
+
+        const meetingRoomsResponse = await getMeetingRoomsByUserId();
+
+        console.log('Meeting Rooms:', meetingRoomsResponse);
+
+        const clubRoomsResponse = await getClubRoomsByUserId();
+
+        console.log('Club Rooms:', clubRoomsResponse);
+      } catch (error) {
+        console.error('Failed to fetch chat rooms:', error);
+      }
+    };
+
+    fetchChatRooms();
+  }, []);
 
   // 필터링된 채팅방 목록
   const filteredChatRooms = mockChatRooms.filter((room) => {
