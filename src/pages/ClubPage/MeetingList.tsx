@@ -1,7 +1,20 @@
-import React from 'react';
-import Data, { Info } from './joggingdata';
+import React, { useState } from 'react';
+import ApplyModal from './ApplyModal';
+import joggingData, { MeetingInfo } from './joggingdata';
 
 const MeetingList: React.FC = () => {
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingInfo | null>(
+    null,
+  );
+
+  const handleRowClick = (meeting: MeetingInfo) => {
+    setSelectedMeeting(meeting);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMeeting(null);
+  };
+
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
       <div className="overflow-x-auto">
@@ -17,8 +30,12 @@ const MeetingList: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {Data.map((meeting: Info, index: number) => (
-              <tr key={index} className="cursor-pointer hover:bg-gray-100">
+            {joggingData.map((meeting: MeetingInfo, index: number) => (
+              <tr
+                key={index}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => handleRowClick(meeting)}
+              >
                 <td className="py-3 px-5 border-b text-sm text-gray-800">
                   {meeting.title}
                 </td>
@@ -28,19 +45,22 @@ const MeetingList: React.FC = () => {
                     : meeting.description}
                 </td>
                 <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.location}
+                  {meeting.meetingPlace.name}
                 </td>
                 <td className="py-3 px-5 border-b text-center text-sm text-gray-500">
-                  {meeting.currentMembers}/{meeting.memberLimit}
+                  {meeting.participantLimit}
                 </td>
                 <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.date}
+                  {meeting.schedule}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {selectedMeeting && (
+        <ApplyModal meeting={selectedMeeting} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

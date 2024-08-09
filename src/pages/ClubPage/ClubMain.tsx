@@ -1,122 +1,99 @@
-import React, { useState } from 'react';
-import ApplyModal from './ApplyModal';
-import joggingData, { Info } from './joggingdata';
-
-interface ClubInfo {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
-  description: string;
-  date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-}
+import { Result } from '@/types/Meetings';
+import React from 'react';
 
 interface ClubMainProps {
-  clubData: ClubInfo;
+  clubData: Result;
 }
 
 const ClubMain: React.FC<ClubMainProps> = ({ clubData }) => {
-  const [selectedMeeting, setSelectedMeeting] = useState<Info | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleMeetingClick = (meeting: Info) => {
-    setSelectedMeeting(meeting);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedMeeting(null);
-  };
-
-  const truncateDescription = (description: string) => {
-    return description.length > 10
-      ? `${description.slice(0, 10)}...`
-      : description;
-  };
+  const participantRatio =
+    (clubData.participantsNumber / clubData.participantLimit) * 100;
+  const genderRatio =
+    (parseFloat(clubData.ratio.split(':')[0]) /
+      (parseFloat(clubData.ratio.split(':')[0]) +
+        parseFloat(clubData.ratio.split(':')[1]))) *
+    100;
 
   return (
-    <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
-      <div className="">
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div className="w-full md:w-[50%]">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {clubData.name}
-              </h2>
-              <p className="text-md text-gray-700 mt-2">
-                {clubData.description}
-              </p>
-            </div>
-            <div className="w-full md:w-[50%] mt-4 md:mt-0">
-              <h3 className="text-lg font-semibold text-gray-800">모임 시간</h3>
-              <p className="text-md text-gray-700 mt-2">{clubData.date}</p>
+    <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 space-y-6">
+      <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">모임 규칙</h3>
+        <ul className="text-md text-gray-700 mt-2 list-disc pl-5 space-y-1">
+          {clubData.rules.map((rule, index) => (
+            <li key={index}>{rule}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div className="w-full md:w-[50%]">
+          <h3 className="text-lg font-semibold text-gray-800">모임 시간</h3>
+          <p className="text-md text-gray-700 mt-2">
+            {new Date(clubData.date).toLocaleString(undefined, {
+              year: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </p>
+        </div>
+        <div className="w-full md:w-[50%]">
+          <h3 className="text-lg font-semibold text-gray-800">위치</h3>
+          <p className="text-md text-gray-700 mt-2">{clubData.place.name}</p>
+        </div>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div className="w-full md:w-[50%]">
+          <h3 className="text-lg font-semibold text-gray-800">참가자 정원</h3>
+          <div className="mt-2">
+            <p className="text-md text-gray-700">
+              현재 참가자 수: {clubData.participantsNumber} /{' '}
+              {clubData.participantLimit}
+            </p>
+            <div className="w-full bg-gray-300 rounded-full h-6 mt-2">
+              <div
+                className="bg-blue-500 h-6 rounded-full text-center text-white"
+                style={{ width: `${participantRatio}%` }}
+              >
+                {participantRatio.toFixed(1)}%
+              </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div className="w-full md:w-[50%] mt-4 md:mt-0">
-              <h3 className="text-lg font-semibold text-gray-800">위치</h3>
-              <p className="text-md text-gray-700 mt-2">{clubData.location}</p>
-            </div>
-            <div className="w-full md:w-[50%] mt-4 md:mt-0">
-              <h3 className="text-lg font-semibold text-gray-800">
-                참가자 정원
-              </h3>
-              <p className="text-md text-gray-700 mt-2">
-                현재 참가자 수: {clubData.memberCount} / {clubData.memberLimit}
-              </p>
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold text-gray-800">성비</h3>
+            <p className="text-md text-gray-700 mt-2">성비: {clubData.ratio}</p>
+            <div className="w-full bg-gray-300 rounded-full h-6 mt-2 flex">
+              <div
+                className="bg-blue-500 h-6 text-center text-white"
+                style={{ width: `${genderRatio}%` }}
+              >
+                {genderRatio.toFixed(1)}%
+              </div>
+              <div
+                className="bg-pink-500 h-6 text-center text-white"
+                style={{ width: `${100 - genderRatio}%` }}
+              >
+                {(100 - genderRatio).toFixed(1)}%
+              </div>
             </div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              최근 생성된 모임 목록
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead>
-                  <tr>
-                    <th className="py-3 px-5 border-b">제목</th>
-                    <th className="py-3 px-5 border-b">설명</th>
-                    <th className="py-3 px-5 border-b">장소</th>
-                    <th className="py-3 px-5 border-b">인원</th>
-                    <th className="py-3 px-5 border-b">일시</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {joggingData.slice(0, 5).map((meeting, index) => (
-                    <tr
-                      key={index}
-                      className="cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleMeetingClick(meeting)}
-                    >
-                      <td className="py-3 px-5 text-sm border-b text-gray-800">
-                        {meeting.title}
-                      </td>
-                      <td className="py-3 px-5 text-sm border-b text-gray-600">
-                        {truncateDescription(meeting.description)}
-                      </td>
-                      <td className="py-3 px-5 text-sm border-b text-gray-500">
-                        {meeting.location}
-                      </td>
-                      <td className="py-3 px-5  text-sm border-b text-gray-500">
-                        {meeting.currentMembers}/{meeting.memberLimit}
-                      </td>
-                      <td className="py-3 px-5 border-b text-gray-500">
-                        {meeting.date}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold text-gray-800">연령대</h3>
+            <p className="text-md text-gray-700 mt-2">
+              {clubData.ageRange.join(', ')}
+            </p>
           </div>
         </div>
-        {isModalOpen && selectedMeeting && (
-          <ApplyModal meeting={selectedMeeting} onClose={closeModal} />
-        )}
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div className="w-full md:w-[50%]">
+          <h3 className="text-lg font-semibold text-gray-800">회비</h3>
+          <p className="text-md text-gray-700 mt-2">
+            {clubData.membershipFeeAmount
+              ? `${clubData.membershipFeeAmount}원`
+              : '없음'}
+          </p>
+        </div>
       </div>
     </div>
   );

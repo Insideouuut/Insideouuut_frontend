@@ -198,8 +198,8 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <div
               role="button"
               tabIndex={0}
-              onClick={() => handleMenuClick('mymeetingList')}
-              onKeyDown={(event) => handleKeyDown(event, 'mymeetingList')}
+              onClick={() => handleMenuClick('meetingListSettings')}
+              onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
               className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('mymeetingList')}`}
             >
               모임 관리

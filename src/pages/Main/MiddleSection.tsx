@@ -1,50 +1,35 @@
-import { Api } from '@/api/Apis';
-import { dummyData } from '@/components/dummyData';
+import axiosInstance from '@/api/axiosConfig';
 import GroupCard from '@/components/GroupCard';
 import { Button } from '@/components/ui/button';
+import { Result } from '@/types/Search';
 import { MoveRight } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
 import ModongCard from './ModongCard';
 
-const apiInstance = new Api();
-
-interface Info {
-  clubTypes: string[];
-  meetingTypes: string[];
-  name: string;
-  description: string;
-  date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-  imageUrl: string;
-  createdAt: string;
-}
-
-const sortByDate = (data: Info[]): Info[] => {
-  return [...data].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-};
-
 const MiddleSection: React.FC = () => {
-  // 최신 생성 순으로 정렬
-  const sortedData = sortByDate([...dummyData]);
+  const [data, setData] = useState<Result[]>([]);
+
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const response = await apiInstance.api.findAll1();
-
-        console.log(response); // 가져온 데이터를 콘솔에 출력
+        const response = await axiosInstance.get('/api/search/meeting', {
+          params: {
+            query: 'all',
+            category: 'all',
+            sort: 'date',
+          },
+        });
+        setData(response.data.results);
       } catch (error) {
-        console.error('Failed to fetch meetings:', error); // 에러 처리
+        console.error('Failed to fetch meetings:', error);
       }
     };
 
-    fetchMeetings(); // 함수 호출
+    fetchMeetings();
   }, []);
+
   return (
     <div className="container flex flex-col items-center">
       <section
@@ -67,10 +52,21 @@ const MiddleSection: React.FC = () => {
       </section>
 
       <p className="text-grey-900 text-3xl py-10">관심 카테고리의 모동</p>
-      {/* 관심 카테고리의 모동, 추후 추가 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {dummyData.map((item, index) => (
-          <GroupCard key={index} {...item} />
+        {data.map((item) => (
+          <GroupCard
+            key={item.id}
+            id={item.id}
+            type={item.type}
+            imageUrl={item.images[0]?.url || ''}
+            name={item.name}
+            introduction={item.introduction}
+            date={item.date}
+            location={item.place.name}
+            participantsNumber={item.participantsNumber}
+            participantLimit={item.participantLimit}
+            category={item.category}
+          />
         ))}
       </div>
 
@@ -99,8 +95,18 @@ const MiddleSection: React.FC = () => {
         </div>
 
         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-2 z-30 overflow-y-auto">
-          {sortedData.map((item, index) => (
-            <ModongCard key={index} {...item} />
+          {data.map((item) => (
+            <ModongCard
+              clubTypes={[]}
+              meetingTypes={[]}
+              imageUrl={''}
+              description={''}
+              createdAt={''}
+              memberCount={0}
+              memberLimit={0}
+              key={item.id}
+              {...item}
+            />
           ))}
         </div>
       </div>

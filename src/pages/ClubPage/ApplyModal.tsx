@@ -1,17 +1,9 @@
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-
-interface Meeting {
-  title: string;
-  description: string;
-  location: string;
-  currentMembers: number;
-  memberLimit: number;
-  date: string;
-}
+import { MeetingInfo } from './joggingdata';
 
 interface ApplyModalProps {
-  meeting: Meeting;
+  meeting: MeetingInfo;
   onClose: () => void;
 }
 
@@ -29,13 +21,61 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">모임 신청</h2>
-        <p className="mb-4">{meeting.title}</p>
-        <p className="mb-4">{meeting.description}</p>
-        <p className="mb-4">{meeting.location}</p>
-        <p className="mb-4">
-          {meeting.currentMembers}/{meeting.memberLimit}
-        </p>
-        <p className="mb-4">{meeting.date}</p>
+        <div className="mb-4">
+          <label
+            htmlFor="meeting-title"
+            className="block text-sm font-medium text-gray-700"
+          >
+            제목
+          </label>
+          <p id="meeting-title" className="mt-1">
+            {meeting.title}
+          </p>
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="meeting-description"
+            className="block text-sm font-medium text-gray-700"
+          >
+            설명
+          </label>
+          <p id="meeting-description" className="mt-1">
+            {meeting.description}
+          </p>
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="meeting-place"
+            className="block text-sm font-medium text-gray-700"
+          >
+            장소
+          </label>
+          <p id="meeting-place" className="mt-1">
+            {meeting.meetingPlace.name}
+          </p>
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="meeting-participants"
+            className="block text-sm font-medium text-gray-700"
+          >
+            인원
+          </label>
+          <p id="meeting-participants" className="mt-1">
+            {meeting.participantLimit}
+          </p>
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="meeting-date"
+            className="block text-sm font-medium text-gray-700"
+          >
+            일시
+          </label>
+          <p id="meeting-date" className="mt-1">
+            {meeting.schedule}
+          </p>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label

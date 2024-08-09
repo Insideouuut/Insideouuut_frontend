@@ -1,34 +1,25 @@
+// ClubPage.tsx
+import { getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { Result } from '@/types/Meetings';
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-
-interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
-  description: string;
-  date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-  role: '관리자' | '일반 회원';
-  backgroundColor: string;
-  backgroundImage: string;
-}
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('accessToken'),
+  );
   const [hasNotifications, setHasNotifications] = useState(false);
+  const { id: clubId } = useParams<{ id: string }>();
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -45,7 +36,6 @@ const ClubPage: React.FC = () => {
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -66,24 +56,14 @@ const ClubPage: React.FC = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setIsProfileModalOpen(false);
-  };
-
-  const handleColorChange = (newColor: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: newColor,
-        backgroundImage: '',
-      });
-    }
+    localStorage.removeItem('accessToken');
   };
 
   const handleImageChange = (newImage: string) => {
     if (clubData) {
       setClubData({
         ...clubData,
-        backgroundColor: 'bg-gray-100',
-        backgroundImage: newImage,
+        images: [{ name: 'newImage', url: newImage }],
       });
     }
   };
@@ -93,20 +73,28 @@ const ClubPage: React.FC = () => {
     if (menu.includes('Board')) {
       navigate(`/club/board/${menu}`);
     } else if (menu === 'home') {
-      navigate('/club');
+      navigate(`/club/${clubId}`);
     } else {
-      navigate(`/club/${menu}`);
+      navigate(`/club/${clubId}/${menu}`);
     }
   };
 
-  const [clubData, setClubData] = useState<ClubData | null>(null);
+  const [clubData, setClubData] = useState<Result | null>(null);
 
   useEffect(() => {
-    if (location.state) {
-      const state = location.state as ClubData;
-      setClubData(state);
-    }
-  }, [location.state]);
+    const fetchData = async () => {
+      try {
+        if (clubId) {
+          const data = await getClubData(clubId);
+          setClubData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching club data:', error);
+      }
+    };
+
+    fetchData();
+  }, [clubId]);
 
   return (
     <div className="relative">
@@ -121,14 +109,14 @@ const ClubPage: React.FC = () => {
       {clubData && (
         <ClubHero
           clubData={clubData}
-          onColorChange={handleColorChange}
           onImageChange={handleImageChange}
+          isLoggedIn={isLoggedIn} // 로그인 여부를 ClubHero에 전달
         />
       )}
       <div className="flex mt-4 justify-center">
         <ClubSidebar
-          roomId="1"
-          clubId={1}
+          roomId={'1'}
+          clubId={clubId ? parseInt(clubId) : 0} // clubId가 undefined일 경우 0을 사용
           selectedMenu={selectedMenu}
           setSelectedMenu={handleMenuClick}
         />
