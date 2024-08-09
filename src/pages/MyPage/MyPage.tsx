@@ -6,15 +6,14 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/store/userStore';
-import { MyProfileResponse } from '@/types/User';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
 
 const apiInstance = new Api();
 
 const MyPage: React.FC = () => {
-  const { imageUrl, setUser, nickname } = useUserStore();
+  const { setUser, nickname } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,8 +27,9 @@ const MyPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
-  const [profile] = useState<MyProfileResponse | null>(null);
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [mannerRating, setMannerRating] = useState<number | null>(null); // mannerRating 상태 추가
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -64,15 +64,25 @@ const MyPage: React.FC = () => {
       }
     }
   };
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await apiInstance.api.getMyProfile();
+        const results = response.data.results;
+        if (results && results.length > 0) {
+          const profileImageUrl = results[0]?.profileImage;
+          const mannerRatingValue = results[0]?.mannerRating; // mannerRating 추출
+          setProfileImage(profileImageUrl || null);
+          setMannerRating(mannerRatingValue || null); // mannerRating 상태 설정
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error); // 에러 처리
+      }
+    };
 
-  const handleImageReset = () => {
-    setUser({ imageUrl: '' }); // 빈 문자열로 설정하여 기본 스타일 적용
-  };
+    fetchProfile(); // 함수 호출
+  }, []);
 
-  const profileImageUrl =
-    profile && profile.results.profileImage
-      ? profile.results.profileImage
-      : imageUrl;
   return (
     <div className="relative">
       <Header
@@ -86,11 +96,11 @@ const MyPage: React.FC = () => {
       <div className="bg-gray-200 w-full max-h-full p-10">
         <div className="container flex flex-col shadow-md border border-gray-200 rounded-lg p-10 items-center justify-center bg-white relative">
           <div
-            className={`w-40 h-40 rounded-full mb-3 flex items-center justify-center ${!profileImageUrl ? 'bg-primary' : ''}`}
+            className={`w-40 h-40 rounded-full mb-3 flex items-center justify-center ${!profileImage ? 'bg-primary' : ''}`}
           >
-            {profileImageUrl ? (
+            {profileImage ? (
               <img
-                src={profileImageUrl}
+                src={profileImage}
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover"
               />
@@ -110,15 +120,14 @@ const MyPage: React.FC = () => {
                 />
               </label>
             </Button>
-            <Button
-              className="mb-3 font-neoBold bg-white border border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100"
-              onClick={handleImageReset}
-            >
-              프로필 사진 삭제
-            </Button>
           </div>
           <p className="font-neoLight text-xs">최대 ?MB까지 업로드 가능</p>
           <p className="font-neoLight text-xs">회원 이미지는 원형으로 출력</p>
+          <p className="font-medium text-xs mt-4">
+            나의 매너 온도:
+            {mannerRating !== null ? ` ${mannerRating}` : '정보 없음'}
+          </p>
+          {/* mannerRating 표시 */}
           <div className="shadow-md border w-full border-gray-200 rounded-lg m-12 p-24 max-w-full  md:w-[800px]">
             <Tabs defaultValue="account" className="w-full">
               <div className="w-full flex items-center justify-center mb-10">
