@@ -3,7 +3,9 @@ import ApplyModal from './ApplyModal';
 import joggingData, { MeetingInfo } from './joggingdata';
 
 const MeetingList: React.FC = () => {
-  const [selectedMeeting, setSelectedMeeting] = useState<MeetingInfo | null>(null);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingInfo | null>(
+    null,
+  );
 
   const handleRowClick = (meeting: MeetingInfo) => {
     setSelectedMeeting(meeting);

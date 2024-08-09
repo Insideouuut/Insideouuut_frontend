@@ -19,7 +19,7 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
   );
   const [date, setDate] = useState(meeting.date);
   const [fee, setFee] = useState<string | number>(meeting.fee);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors] = useState<{ [key: string]: string }>({});
 
   const handleSave = () => {
     // 저장 로직 추가
@@ -47,7 +47,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
         <form className="space-y-4">
           <div className="flex flex-col">
             <div className="flex">
-              <label htmlFor="title" className="mb-2">제목</label>
+              <label htmlFor="title" className="mb-2">
+                제목
+              </label>
               {errors.title && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.title}
@@ -64,7 +66,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
           </div>
           <div className="flex flex-col">
             <div className="flex">
-              <label htmlFor="description" className="mb-2">설명</label>
+              <label htmlFor="description" className="mb-2">
+                설명
+              </label>
               {errors.description && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.description}
@@ -81,7 +85,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
           <div className="flex w-full justify-between">
             <div className="flex flex-col w-[48%]">
               <div className="flex">
-                <label htmlFor="location" className="mb-2">장소</label>
+                <label htmlFor="location" className="mb-2">
+                  장소
+                </label>
                 {errors.location && (
                   <span className="mt-1 ml-1 text-red-500 text-[12px]">
                     {errors.location}
@@ -98,7 +104,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
             </div>
             <div className="flex flex-col w-[48%]">
               <div className="flex">
-                <label htmlFor="memberLimit" className="mb-2">최대 인원</label>
+                <label htmlFor="memberLimit" className="mb-2">
+                  최대 인원
+                </label>
                 {errors.memberLimit && (
                   <span className="mt-1 ml-1 text-red-500 text-[12px]">
                     {errors.memberLimit}
@@ -138,7 +146,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
           </div>
           <div className="flex flex-col">
             <div className="flex">
-              <label htmlFor="date" className="mb-2">일시</label>
+              <label htmlFor="date" className="mb-2">
+                일시
+              </label>
               {errors.date && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.date}
@@ -155,7 +165,9 @@ const EditMeetingModal: React.FC<EditMeetingModalProps> = ({
           </div>
           <div className="flex flex-col">
             <div className="flex">
-              <label htmlFor="fee" className="mb-2">회비</label>
+              <label htmlFor="fee" className="mb-2">
+                회비
+              </label>
               {errors.fee && (
                 <span className="mt-1 ml-1 text-red-500 text-[12px]">
                   {errors.fee}

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { MeetingInfo } from './joggingdata';
 import React, { useState } from 'react';
+import { MeetingInfo } from './joggingdata';
 
 interface ApplyModalProps {
   meeting: MeetingInfo;
