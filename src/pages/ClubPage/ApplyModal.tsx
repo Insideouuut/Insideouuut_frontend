@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
-import { Result } from '@/types/Meetings';
+import { MeetingInfo } from './joggingdata';
 import React, { useState } from 'react';
 
 interface ApplyModalProps {
-  meeting: Result;
+  meeting: MeetingInfo;
   onClose: () => void;
 }
 
@@ -29,7 +29,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             제목
           </label>
           <p id="meeting-title" className="mt-1">
-            {meeting.name}
+            {meeting.title}
           </p>
         </div>
         <div className="mb-4">
@@ -40,7 +40,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             설명
           </label>
           <p id="meeting-description" className="mt-1">
-            {meeting.introduction}
+            {meeting.description}
           </p>
         </div>
         <div className="mb-4">
@@ -51,7 +51,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             장소
           </label>
           <p id="meeting-place" className="mt-1">
-            {meeting.place.name}
+            {meeting.meetingPlace.name}
           </p>
         </div>
         <div className="mb-4">
@@ -62,7 +62,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             인원
           </label>
           <p id="meeting-participants" className="mt-1">
-            {meeting.participantsNumber}/{meeting.participantLimit}
+            {meeting.participantLimit}
           </p>
         </div>
         <div className="mb-4">
@@ -73,7 +73,7 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             일시
           </label>
           <p id="meeting-date" className="mt-1">
-            {meeting.date}
+            {meeting.schedule}
           </p>
         </div>
         <form onSubmit={handleSubmit}>

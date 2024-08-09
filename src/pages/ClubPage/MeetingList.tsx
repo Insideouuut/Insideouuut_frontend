@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import ApplyModal from './ApplyModal';
-import Data, { Info } from './joggingdata';
+import joggingData, { MeetingInfo } from './joggingdata';
 
 const MeetingList: React.FC = () => {
-  const [selectedMeeting, setSelectedMeeting] = useState<Info | null>(null);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingInfo | null>(null);
 
-  const handleRowClick = (meeting: Info) => {
+  const handleRowClick = (meeting: MeetingInfo) => {
     setSelectedMeeting(meeting);
   };
 
@@ -28,7 +28,7 @@ const MeetingList: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {Data.map((meeting: Info, index: number) => (
+            {joggingData.map((meeting: MeetingInfo, index: number) => (
               <tr
                 key={index}
                 className="cursor-pointer hover:bg-gray-100"
@@ -43,13 +43,13 @@ const MeetingList: React.FC = () => {
                     : meeting.description}
                 </td>
                 <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.location}
+                  {meeting.meetingPlace.name}
                 </td>
                 <td className="py-3 px-5 border-b text-center text-sm text-gray-500">
-                  {meeting.currentMembers}/{meeting.memberLimit}
+                  {meeting.participantLimit}
                 </td>
                 <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.date}
+                  {meeting.schedule}
                 </td>
               </tr>
             ))}
