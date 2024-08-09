@@ -229,6 +229,11 @@ export interface ApiResponse {
   results?: object[];
 }
 
+export interface ApiResponseGetLocations {
+  locations: string[];
+  isVerified: boolean;
+}
+
 export interface LocationVerifiedRequest {
   locations?: string[];
   isVerified?: boolean;

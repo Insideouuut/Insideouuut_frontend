@@ -20,7 +20,7 @@ import React, { useRef, useState } from 'react';
 const apiInstance = new Api();
 
 const SetLocation: React.FC = () => {
-  const { isLoggedIn, clearUser } = useUserStore();
+  const { isLoggedIn, setUser, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
@@ -77,7 +77,10 @@ const SetLocation: React.FC = () => {
         locations: neighborhoods,
         isVerified,
       });
-
+      setUser({
+        location: location,
+      });
+      localStorage.setItem('neighborhoods', JSON.stringify(neighborhoods));
       alert(isVerified ? '동네 인증 성공!' : '동네 인증 실패.');
     } catch (error) {
       console.error('Error verifying location:', error);

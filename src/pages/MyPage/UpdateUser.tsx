@@ -1,4 +1,9 @@
 import { Api, ApiResponseMyProfileResponse } from '@/api/Apis';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useUserStore } from '@/store/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
@@ -63,6 +68,7 @@ const UpdateUser: React.FC = () => {
     },
   });
   const [isUpdated, setIsUpdated] = useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<
     boolean | null
   >(null);
@@ -81,6 +87,13 @@ const UpdateUser: React.FC = () => {
       console.error('프로필 업데이트 중 오류가 발생했습니다.', error);
     }
   };
+  useEffect(() => {
+    // 로컬 스토리지에서 동네 목록 가져오기
+    const storedNeighborhoods = localStorage.getItem('neighborhoods');
+    if (storedNeighborhoods) {
+      setLocations(JSON.parse(storedNeighborhoods));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -248,13 +261,31 @@ const UpdateUser: React.FC = () => {
                 <span className="text-red-500">{errors.location.message}</span>
               )}
             </div>
-            <button
-              type="button"
-              className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
-              onClick={() => navigate('/setlocation')}
-            >
-              인증하러 가기
-            </button>
+            {location ? (
+              <div className="items-center justify-center flex flex-col">
+                <div className="mt-7 text-primary text-xs">인증 완료</div>
+                <Popover>
+                  <PopoverTrigger className="text-sm hover:text-primary">
+                    동네 범위 보기
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <ul className="pl-5">
+                      {locations.map((neighborhood, index) => (
+                        <li key={index}>{neighborhood}</li>
+                      ))}
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
+                onClick={() => navigate('/setlocation')}
+              >
+                인증하러 가기
+              </button>
+            )}
           </div>
           <div>
             <label htmlFor="phoneNumber" className="block text-sm font-medium">
