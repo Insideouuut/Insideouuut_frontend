@@ -9,6 +9,7 @@
  * ---------------------------------------------------------------
  */
 
+import axiosInstance from './axiosConfig';
 export interface ChatRoom {
   /** @format int64 */
   id?: number;
@@ -788,7 +789,6 @@ import type {
   HeadersDefaults,
   ResponseType,
 } from 'axios';
-import axios from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -842,10 +842,7 @@ export class HttpClient<SecurityDataType = unknown> {
     format,
     ...axiosConfig
   }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({
-      ...axiosConfig,
-      baseURL: axiosConfig.baseURL || 'https://modong-backend.site',
-    });
+    this.instance = axiosInstance;
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;

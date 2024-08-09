@@ -1,4 +1,4 @@
-import { Api } from '@/api/Apis';
+import { Api, ApiResponseMyProfileResponse } from '@/api/Apis';
 import { useUserStore } from '@/store/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
@@ -73,6 +73,7 @@ const UpdateUser: React.FC = () => {
       await apiInstance.api.updateUserProfile({
         nickname: data.nickname,
         password: data.password,
+        interests: data.interests,
       });
       setUser(data);
       setIsUpdated(true);
@@ -84,27 +85,54 @@ const UpdateUser: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await apiInstance.api.getMyProfile();
+        const response: ApiResponseMyProfileResponse =
+          await apiInstance.api.getMyProfile();
 
         console.log(response); // 가져온 데이터를 콘솔에 출력
+
+        // response.results가 존재하고 배열이 아닐 경우 대비
+        const userProfile =
+          response.results && Array.isArray(response.results)
+            ? response.results[0]
+            : {};
+
+        // 프로필 데이터를 useUserStore에 저장
+        setUser({
+          nickname: userProfile.nickname || '',
+          phoneNumber: userProfile.phoneNumber || '',
+          location: userProfile.locations?.[0] || '', // locations를 사용하여 location 설정
+          interests:
+            userProfile.interests?.map((interest) => interest.toString()) || [], // interests를 문자열 배열로 변환
+          email: userProfile.email || '', // 이메일
+          imageUrl: userProfile.profileImage || '', // 프로필 이미지 URL
+        });
+
+        // Set default values in the form
+        setValue('nickname', userProfile.nickname || '');
+        setValue('phoneNumber', userProfile.phoneNumber || '');
+        setValue('location', userProfile.locations?.[0] || '');
+        setValue(
+          'interests',
+          userProfile.interests?.map((interest) => interest.toString()) || [],
+        );
       } catch (error) {
-        console.error('Failed to fetch meetings:', error); // 에러 처리
+        console.error('Failed to fetch profile:', error); // 에러 처리
       }
     };
 
     fetchProfile(); // 함수 호출
-  }, []);
+  }, [setUser, setValue]);
 
   const checkNicknameAvailability = async () => {
     try {
       const response = await apiInstance.api.checkNickname({ nickname });
-      const statusCode = response.data?.status?.code;
+      const statusCode = response.status?.code;
 
       if (statusCode === 200) {
         alert('사용가능한 닉네임입니다.');
         setIsNicknameAvailable(true);
       } else if (statusCode === 400 || statusCode === 409) {
-        alert(response.data?.status?.message);
+        alert(response.status?.message);
         setIsNicknameAvailable(false);
       }
     } catch (error) {
@@ -248,7 +276,7 @@ const UpdateUser: React.FC = () => {
               관심사
             </label>
             <div id="interests" className="flex gap-2 ">
-              {['사교/취미', '운동', '스터디'].map((interest) => (
+              {['SOCIAL', 'SPORTS', 'STUDY'].map((interest) => (
                 <button
                   type="button"
                   key={interest}
