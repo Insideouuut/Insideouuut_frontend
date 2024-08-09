@@ -9,12 +9,67 @@
  * ---------------------------------------------------------------
  */
 
-import axiosInstance from './axiosConfig';
+export interface ChatRoom {
+  /** @format int64 */
+  id?: number;
+  title?: string;
+  type?: ChatRoomTypeEnum;
+  /** @format int64 */
+  associatedId?: number;
+  lastMessageContent?: string;
+  /** @format date-time */
+  lastMessageTime?: string;
+  club?: Club;
+}
 
-export type JWTTokenData = {
-  accessToken: string;
-  refreshToken: string;
-};
+export interface Club {
+  clubName?: string;
+  category?: ClubCategoryEnum;
+  categoryDetail?: string;
+  level?: ClubLevelEnum;
+  /** @format date-time */
+  createdAt?: string;
+  content?: string;
+  date?: string;
+  region?: string;
+  /** @uniqueItems true */
+  joinQuestions?: string[];
+  /** @format int32 */
+  memberLimit?: number;
+  /** @format int32 */
+  memberCount?: number;
+  hasMembershipFee?: boolean;
+  /** @format int32 */
+  price?: number;
+  genderRatio?: ClubGenderRatioEnum;
+  /** @format int32 */
+  minAge?: number;
+  /** @format int32 */
+  maxAge?: number;
+  /** @uniqueItems true */
+  rules?: string[];
+  owner?: User;
+  members?: ClubUser[];
+  images?: ClubImage[];
+  likes?: ClubLike[];
+  chatRoom?: ChatRoom;
+  /** @format int64 */
+  chat_room_id?: number;
+}
+
+export interface ClubImage {
+  /** @format int64 */
+  id?: number;
+  image?: Image;
+  club?: Club;
+}
+
+export interface ClubLike {
+  /** @format int64 */
+  id?: number;
+  user?: User;
+  club?: Club;
+}
 
 export interface ClubRequestDto {
   category?: string;
@@ -28,7 +83,10 @@ export interface ClubRequestDto {
   participantLimit?: number;
   hasGenderRatio?: string;
   ratio?: string;
-  ageRange?: number[];
+  /** @format int32 */
+  minAge?: number;
+  /** @format int32 */
+  maxAge?: number;
   name?: string;
   introduction?: string;
   /** @uniqueItems true */
@@ -36,6 +94,52 @@ export interface ClubRequestDto {
   /** @uniqueItems true */
   joinQuestions?: string[];
   activityRegion?: string;
+  enum?: Club;
+}
+
+export interface ClubUser {
+  /** @format int64 */
+  clubUserId?: number;
+  /** @format int64 */
+  userId: number;
+  /** @format int64 */
+  clubId: number;
+  userName?: string;
+  profileImgUrl?: string;
+  mannerTemp?: number;
+}
+
+export interface Image {
+  uploadName?: string;
+  storeName?: string;
+  url?: string;
+}
+
+export interface ProfileImage {
+  /** @format int64 */
+  id?: number;
+  image?: Image;
+  user?: User;
+}
+
+export interface User {
+  /** @format int64 */
+  id?: number;
+  email?: string;
+  password?: string;
+  name?: string;
+  nickname?: string;
+  profileImage?: ProfileImage;
+  /** @format date */
+  birthDate?: string;
+  phoneNumber?: string;
+  mannerTemp?: number;
+  /** @uniqueItems true */
+  interests?: UserInterestsEnum[];
+  /** @uniqueItems true */
+  locations?: string[];
+  gender?: UserGenderEnum;
+  locationVerified?: boolean;
 }
 
 export interface ApiResponseClubResponseDto {
@@ -60,18 +164,18 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number;
   sort?: SortObject;
-  unpaged?: boolean;
   paged?: boolean;
   /** @format int32 */
   pageNumber?: number;
   /** @format int32 */
   pageSize?: number;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
   empty?: boolean;
-  unsorted?: boolean;
   sorted?: boolean;
+  unsorted?: boolean;
 }
 
 export interface Status {
@@ -199,6 +303,7 @@ export interface ClubApplyRequestDto {
 export interface ProfileUpdateRequest {
   nickname?: string;
   password?: string;
+  interests?: string[];
 }
 
 export interface ApiResponseProfileResponse {
@@ -248,6 +353,30 @@ export interface MeetingUpdateRequest {
   membershipFeeAmount?: number;
 }
 
+export interface ApiResponseMyProfileResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: MyProfileResponse[];
+}
+
+export interface MyProfileResponse {
+  /** @format int64 */
+  userId?: number;
+  email?: string;
+  profileImage?: string;
+  nickname?: string;
+  mannerRating?: number;
+  gender?: MyProfileResponseGenderEnum;
+  phoneNumber?: string;
+  /** @format date */
+  birthDate?: string;
+  interests?: MyProfileResponseInterestsEnum[];
+  locations?: string[];
+  pendingMeetings?: ProfileMeetingResponse[];
+  attendedMeetings?: ProfileMeetingResponse[];
+  closedMeetings?: ProfileMeetingResponse[];
+}
+
 export interface ApiResponseMeetingResponse {
   status?: Status;
   metadata?: Metadata;
@@ -293,8 +422,8 @@ export interface MeetingResponse {
   membershipFeeAmount?: number;
   progress?: string;
   level?: string;
-  category?: string;
   categoryDetail?: string;
+  category?: string;
   /** @format date-time */
   date?: string;
   /** @format int32 */
@@ -308,6 +437,58 @@ export interface MeetingResponse {
   host?: HostResponse;
   place?: MeetingPlaceResponse;
   images?: ImageResponse[];
+}
+
+export interface ApiResponseClubBoardResponseDto {
+  status?: Status;
+  metadata?: Metadata;
+  results?: ClubBoardResponseDto[];
+}
+
+export interface ClubBoardResponseDto {
+  /** @format int64 */
+  id?: number;
+  name?: string;
+  introduction?: string;
+  type?: string;
+  /** @format int64 */
+  chatRoomId?: number;
+  activityRegion?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format int32 */
+  view?: number;
+  /** @format int32 */
+  like?: number;
+  hasMembershipFee?: boolean;
+  /** @format int32 */
+  membershipFeeAmount?: number;
+  isRecruiting?: boolean;
+  level?: ClubBoardResponseDtoLevelEnum;
+  category?: ClubBoardResponseDtoCategoryEnum;
+  categoryDetail?: string;
+  date?: string;
+  /** @format int32 */
+  participantNumber?: number;
+  /** @format int32 */
+  participantLimit?: number;
+  genderRatio?: ClubBoardResponseDtoGenderRatioEnum;
+  ageRange?: number[];
+  rules?: string[];
+  joinQuestions?: string[];
+  host?: HostResponse;
+  images?: ImageResponse[];
+}
+
+export interface ApiResponseUnifiedSearchResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: UnifiedSearchResponse[];
+}
+
+export interface UnifiedSearchResponse {
+  clubSearchResults?: ClubBoardResponseDto[];
+  meetingSearchResults?: MeetingResponse[];
 }
 
 export interface Pageable {
@@ -332,29 +513,12 @@ export interface ApiResponseListClubListResponseDto {
 
 export interface ClubListResponseDto {
   /** @format int64 */
-  clubId?: number;
-  category?: string;
-  /** @format int64 */
-  ownerId?: number;
-  clubName?: string;
-  content?: string;
-}
-
-export interface ApiResponseClubBoardResponseDto {
-  status?: Status;
-  metadata?: Metadata;
-  results?: ClubBoardResponseDto[];
-}
-
-export interface ClubBoardResponseDto {
-  /** @format int64 */
   id?: number;
   name?: string;
   introduction?: string;
   type?: string;
   /** @format int64 */
   chatRoomId?: number;
-  isHost?: boolean;
   activityRegion?: string;
   /** @format date-time */
   createdAt?: string;
@@ -366,20 +530,19 @@ export interface ClubBoardResponseDto {
   /** @format int32 */
   membershipFeeAmount?: number;
   isRecruiting?: boolean;
-  level?: string;
-  category?: string;
+  level?: ClubListResponseDtoLevelEnum;
+  category?: ClubListResponseDtoCategoryEnum;
   categoryDetail?: string;
   date?: string;
   /** @format int32 */
   participantNumber?: number;
   /** @format int32 */
   participantLimit?: number;
-  ratio?: string;
+  genderRatio?: ClubListResponseDtoGenderRatioEnum;
+  host?: HostResponse;
   ageRange?: number[];
   rules?: string[];
   joinQuestions?: string[];
-  host?: HostResponse;
-  images?: ImageResponse[];
 }
 
 export interface ApiResponseListClubPostListResponseDto {
@@ -460,7 +623,7 @@ export interface ApiResponseListChatRoomResponseDTO {
 
 export interface ChatRoomResponseDTO {
   title?: string;
-  type?: 'CLUB' | 'MEETING';
+  type?: ChatRoomResponseDtoTypeEnum;
   lastMessageContent?: string;
   /** @format date-time */
   lastMessageTime?: string;
@@ -503,13 +666,129 @@ export interface InitialChatListResponseDTO {
   unreadMessages?: ChatResponseDTO[];
 }
 
+export enum ChatRoomTypeEnum {
+  CLUB = 'CLUB',
+  MEETING = 'MEETING',
+}
+
+export enum ClubCategoryEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum ClubLevelEnum {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  NONE = 'NONE',
+}
+
+export enum ClubGenderRatioEnum {
+  ONLY_MALE = 'ONLY_MALE',
+  ONLY_FEMALE = 'ONLY_FEMALE',
+  ONE_TO_NINE = 'ONE_TO_NINE',
+  TWO_TO_EIGHT = 'TWO_TO_EIGHT',
+  THREE_TO_SEVEN = 'THREE_TO_SEVEN',
+  FOUR_TO_SIX = 'FOUR_TO_SIX',
+  FIVE_TO_FIVE = 'FIVE_TO_FIVE',
+  SIX_TO_FOUR = 'SIX_TO_FOUR',
+  SEVEN_TO_THREE = 'SEVEN_TO_THREE',
+  EIGHT_TO_TWO = 'EIGHT_TO_TWO',
+  NINE_TO_ONE = 'NINE_TO_ONE',
+  IRRELEVANT = 'IRRELEVANT',
+}
+
+export enum UserInterestsEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum UserGenderEnum {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+
+export enum MyProfileResponseGenderEnum {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+
+export enum MyProfileResponseInterestsEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum ClubBoardResponseDtoLevelEnum {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  NONE = 'NONE',
+}
+
+export enum ClubBoardResponseDtoCategoryEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum ClubBoardResponseDtoGenderRatioEnum {
+  ONLY_MALE = 'ONLY_MALE',
+  ONLY_FEMALE = 'ONLY_FEMALE',
+  ONE_TO_NINE = 'ONE_TO_NINE',
+  TWO_TO_EIGHT = 'TWO_TO_EIGHT',
+  THREE_TO_SEVEN = 'THREE_TO_SEVEN',
+  FOUR_TO_SIX = 'FOUR_TO_SIX',
+  FIVE_TO_FIVE = 'FIVE_TO_FIVE',
+  SIX_TO_FOUR = 'SIX_TO_FOUR',
+  SEVEN_TO_THREE = 'SEVEN_TO_THREE',
+  EIGHT_TO_TWO = 'EIGHT_TO_TWO',
+  NINE_TO_ONE = 'NINE_TO_ONE',
+  IRRELEVANT = 'IRRELEVANT',
+}
+
+export enum ClubListResponseDtoLevelEnum {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  NONE = 'NONE',
+}
+
+export enum ClubListResponseDtoCategoryEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum ClubListResponseDtoGenderRatioEnum {
+  ONLY_MALE = 'ONLY_MALE',
+  ONLY_FEMALE = 'ONLY_FEMALE',
+  ONE_TO_NINE = 'ONE_TO_NINE',
+  TWO_TO_EIGHT = 'TWO_TO_EIGHT',
+  THREE_TO_SEVEN = 'THREE_TO_SEVEN',
+  FOUR_TO_SIX = 'FOUR_TO_SIX',
+  FIVE_TO_FIVE = 'FIVE_TO_FIVE',
+  SIX_TO_FOUR = 'SIX_TO_FOUR',
+  SEVEN_TO_THREE = 'SEVEN_TO_THREE',
+  EIGHT_TO_TWO = 'EIGHT_TO_TWO',
+  NINE_TO_ONE = 'NINE_TO_ONE',
+  IRRELEVANT = 'IRRELEVANT',
+}
+
+export enum ChatRoomResponseDtoTypeEnum {
+  CLUB = 'CLUB',
+  MEETING = 'MEETING',
+}
+
 import type {
   AxiosInstance,
   AxiosRequestConfig,
-  AxiosResponse,
   HeadersDefaults,
   ResponseType,
 } from 'axios';
+import axios from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -563,7 +842,10 @@ export class HttpClient<SecurityDataType = unknown> {
     format,
     ...axiosConfig
   }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axiosInstance;
+    this.instance = axios.create({
+      ...axiosConfig,
+      baseURL: axiosConfig.baseURL || 'https://modong-backend.site',
+    });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -632,7 +914,7 @@ export class HttpClient<SecurityDataType = unknown> {
     format,
     body,
     ...params
-  }: FullRequestParams): Promise<AxiosResponse<T>> => {
+  }: FullRequestParams): Promise<T> => {
     const secureParams =
       ((typeof secure === 'boolean' ? secure : this.secure) &&
         this.securityWorker &&
@@ -659,17 +941,19 @@ export class HttpClient<SecurityDataType = unknown> {
       body = JSON.stringify(body);
     }
 
-    return this.instance.request({
-      ...requestParams,
-      headers: {
-        ...(requestParams.headers || {}),
-        ...(type ? { 'Content-Type': type } : {}),
-      },
-      params: query,
-      responseType: responseFormat,
-      data: body,
-      url: path,
-    });
+    return this.instance
+      .request({
+        ...requestParams,
+        headers: {
+          ...(requestParams.headers || {}),
+          ...(type ? { 'Content-Type': type } : {}),
+        },
+        params: query,
+        responseType: responseFormat,
+        data: body,
+        url: path,
+      })
+      .then((response) => response.data);
   };
 }
 
@@ -1276,7 +1560,7 @@ export class Api<
      * @secure
      */
     getMyProfile: (params: RequestParams = {}) =>
-      this.request<ApiResponseProfileResponse, any>({
+      this.request<ApiResponseMyProfileResponse, any>({
         path: `/api/users`,
         method: 'GET',
         secure: true,
@@ -1428,9 +1712,59 @@ export class Api<
      * @description 모임을 검색하는 API 입니다.
      *
      * @tags SearchController
-     * @name FindAll
+     * @name FindMeetings
      * @summary 모임 검색 API
      * @request GET:/api/search/meeting
+     * @secure
+     */
+    findMeetings: (
+      query: {
+        query: string;
+        category: string;
+        sort: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseMeetingResponse, any>({
+        path: `/api/search/meeting`,
+        method: 'GET',
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리를 검색하는 API 입니다.
+     *
+     * @tags SearchController
+     * @name FindClubs
+     * @summary 동아리 검색 API
+     * @request GET:/api/search/club
+     * @secure
+     */
+    findClubs: (
+      query: {
+        query: string;
+        category: string;
+        sort: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseClubBoardResponseDto, any>({
+        path: `/api/search/club`,
+        method: 'GET',
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리와 모임을 한꺼번에 검색하는 API 입니다.
+     *
+     * @tags SearchController
+     * @name FindAll
+     * @summary 동아리 및 모임 검색 API
+     * @request GET:/api/search/all
      * @secure
      */
     findAll: (
@@ -1441,8 +1775,8 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiResponseMeetingResponse, any>({
-        path: `/api/search/meeting`,
+      this.request<ApiResponseUnifiedSearchResponse, any>({
+        path: `/api/search/all`,
         method: 'GET',
         query: query,
         secure: true,
@@ -1624,7 +1958,7 @@ export class Api<
     /**
      * @description 사용자가 속한 동아리/모임 채팅방 목록을 조회하는 API 입니다.
      *
-     * @tags CharRoomController
+     * @tags ChatRoomController
      * @name GetChatRoomsByUserId
      * @summary 사용자가 속한 동아리/모임 채팅방 목록 조회 API
      * @request GET:/api/chatrooms
@@ -1641,7 +1975,7 @@ export class Api<
     /**
      * @description 사용자가 속한 모임 채팅방 목록을 조회하는 API 입니다.
      *
-     * @tags CharRoomController
+     * @tags ChatRoomController
      * @name GetMeetingRoomsByUserId
      * @summary 사용자가 속한 모임 채팅방 목록 조회 API
      * @request GET:/api/chatrooms/meeting
@@ -1658,7 +1992,7 @@ export class Api<
     /**
      * @description 사용자가 속한 동아리 채팅방 목록을 조회하는 API 입니다.
      *
-     * @tags CharRoomController
+     * @tags ChatRoomController
      * @name GetClubRoomsByUserId
      * @summary 사용자가 속한 동아리 채팅방 목록 조회 API
      * @request GET:/api/chatrooms/club
@@ -1675,7 +2009,7 @@ export class Api<
     /**
      * @description 이전 메세지를 조회하는 API 입니다.
      *
-     * @tags CharController
+     * @tags ChatController
      * @name GetPreviousMessages
      * @summary 이전 메세지 조회 API
      * @request GET:/api/chat/previous/chatroom/{chatRoomId}
@@ -1700,7 +2034,7 @@ export class Api<
     /**
      * @description 이후 메세지를 추가적으로 조회하는 API 입니다.
      *
-     * @tags CharController
+     * @tags ChatController
      * @name GetNextMessages
      * @summary 이후 메세지 추가 조회 API
      * @request GET:/api/chat/next/chatroom/{chatRoomId}
@@ -1725,7 +2059,7 @@ export class Api<
     /**
      * @description 채팅방에 입장시 초기 메세지를 조회하는 API 입니다.
      *
-     * @tags CharController
+     * @tags ChatController
      * @name GetInitialMessages
      * @summary 채팅방 초기 메세지 조회 API
      * @request GET:/api/chat/initial/chatroom/{chatRoomId}
