@@ -45,13 +45,18 @@ const Search: React.FC<SearchProps> = ({ token }) => {
 
   const fetchSearchResults = useCallback(async () => {
     try {
-      await searchMeetings(
-        submittedSearchQuery,
-        activeBottomTab,
-        'date',
-        activeTopTab,
-        token,
-      );
+      let query = submittedSearchQuery;
+      if (activeBottomTab === '전체') {
+        query = 'all';
+      } else if (
+        activeBottomTab === '운동' ||
+        activeBottomTab === '스터디' ||
+        activeBottomTab === '사교/취미'
+      ) {
+        query = '';
+      }
+
+      await searchMeetings(query, activeBottomTab, 'date', activeTopTab, token);
     } catch (error) {
       console.error('Failed to fetch search results:', error);
     }

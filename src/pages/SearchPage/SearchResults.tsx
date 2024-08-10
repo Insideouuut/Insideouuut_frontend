@@ -3,6 +3,18 @@ import { Result } from '@/types/Search';
 import React, { useEffect, useState } from 'react';
 import GroupCard from '../../components/GroupCard';
 
+// 로딩 스피너 컴포넌트
+const Spinner: React.FC = () => (
+  <div className="w-full flex justify-center items-center h-[1000px]">
+    <div
+      className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+      role="status"
+    >
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
+
 interface SearchResultsProps {
   activeTopTab: string;
   activeBottomTab: string;
@@ -35,7 +47,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           activeTopTab,
           token,
         );
-        setFilteredData(results || []);
+
+        // 필터링 로직 추가: name 또는 introduction 속성에서 searchQuery와 일치하는 결과 필터링
+        const filteredResults = results.filter(
+          (item) =>
+            item.name.includes(searchQuery) ||
+            item.introduction.includes(searchQuery),
+        );
+
+        setFilteredData(filteredResults || []);
       } catch (err) {
         setError('Error fetching data');
         console.error(err);
@@ -103,17 +123,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           </button>
         </ul>
 
-        {loading && (
-          <div className="w-full flex justify-center items-center h-40">
-            <p className="text-lg font-neoBold">로딩 중...</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="w-full flex justify-center items-center h-40">
-            <p className="text-lg font-neoBold text-red-500">{error}</p>
-          </div>
-        )}
+        {loading && <Spinner />}
 
         {!loading && !error && filteredData.length === 0 && (
           <div className="w-full flex justify-center items-center h-40">
