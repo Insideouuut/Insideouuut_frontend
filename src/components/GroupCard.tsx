@@ -7,7 +7,7 @@ interface GroupCardProps {
   type: string;
   imageUrl: string;
   name: string;
-  introduction: string;
+  introduction: string | undefined;
   date: string;
   location: string;
   participantsNumber: number;
@@ -20,7 +20,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   type,
   imageUrl,
   name,
-  introduction,
+  introduction = '', // 기본값을 빈 문자열로 설정
   date,
   location,
   participantsNumber,

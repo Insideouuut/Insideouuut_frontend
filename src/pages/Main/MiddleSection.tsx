@@ -21,9 +21,10 @@ const MiddleSection: React.FC = () => {
             sort: 'date',
           },
         });
-        setData(response.data.results);
+        setData(response.data.results || []); // 빈 배열을 기본값으로 설정
       } catch (error) {
         console.error('Failed to fetch meetings:', error);
+        setData([]); // 오류 발생 시에도 빈 배열로 설정
       }
     };
 
@@ -53,21 +54,25 @@ const MiddleSection: React.FC = () => {
 
       <p className="text-grey-900 text-3xl py-10">관심 카테고리의 모동</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {data.map((item) => (
-          <GroupCard
-            key={item.id}
-            id={item.id}
-            type={item.type}
-            imageUrl={item.images[0]?.url || ''}
-            name={item.name}
-            introduction={item.introduction}
-            date={item.date}
-            location={item.place.name}
-            participantsNumber={item.participantsNumber}
-            participantLimit={item.participantLimit}
-            category={item.category}
-          />
-        ))}
+        {data.length > 0 ? (
+          data.map((item) => (
+            <GroupCard
+              key={item.id}
+              id={item.id}
+              type={item.type}
+              imageUrl={item.images[0]?.url || ''}
+              name={item.name}
+              introduction={item.introduction}
+              date={item.date}
+              location={item.place.name}
+              participantsNumber={item.participantsNumber}
+              participantLimit={item.participantLimit}
+              category={item.category}
+            />
+          ))
+        ) : (
+          <p>모임 데이터를 불러올 수 없습니다.</p>
+        )}
       </div>
 
       <div
@@ -95,19 +100,23 @@ const MiddleSection: React.FC = () => {
         </div>
 
         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-2 z-30 overflow-y-auto">
-          {data.map((item) => (
-            <ModongCard
-              clubTypes={[]}
-              meetingTypes={[]}
-              imageUrl={''}
-              description={''}
-              createdAt={''}
-              memberCount={0}
-              memberLimit={0}
-              key={item.id}
-              {...item}
-            />
-          ))}
+          {data.length > 0 ? (
+            data.map((item) => (
+              <ModongCard
+                clubTypes={[]}
+                meetingTypes={[]}
+                imageUrl={''}
+                description={''}
+                createdAt={''}
+                memberCount={0}
+                memberLimit={0}
+                key={item.id}
+                {...item}
+              />
+            ))
+          ) : (
+            <p>모임 데이터를 불러올 수 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
