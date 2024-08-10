@@ -1,12 +1,16 @@
+// src/pages/ClubPage/ClubPage.tsx
+
 import { Api } from '@/api/Apis';
-import { checkUserAuthority, getClubData } from '@/api/meetingApi';
+import { getClubData } from '@/api/clubApi';
+import { checkUserAuthority, getMeetingData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
@@ -20,19 +24,24 @@ const ClubPage: React.FC = () => {
   );
   const [hasNotifications, setHasNotifications] = useState(false);
   const { id: clubId } = useParams<{ id: string }>();
-  const [profileCoords, setProfileCoords] = useState({ top: 0, left: 0 });
-  const [notificationCoords, setNotificationCoords] = useState({
-    top: 0,
-    left: 0,
-  });
-  const profileRef = useRef<HTMLImageElement>(null);
-  const navigate = useNavigate();
-  const [clubData, setClubData] = useState<Result | null>(null);
+  const location = useLocation();
+  const type = location.pathname.includes('/club') ? 'club' : 'meeting';
+  const [clubData, setClubData] = useState<ClubData | Result | null>(null);
   const [userProfile, setUserProfile] = useState<{
     nickname: string;
     profileImage: string;
   } | null>(null);
   const [userAuthority, setUserAuthority] = useState<string>('');
+  const [profileCoords, setProfileCoords] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+  const [notificationCoords, setNotificationCoords] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+  const profileRef = useRef<HTMLImageElement>(null);
+  const navigate = useNavigate();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -71,8 +80,13 @@ const ClubPage: React.FC = () => {
     const fetchData = async () => {
       try {
         if (clubId) {
-          const data = await getClubData(clubId);
-          setClubData(data);
+          let data: ClubData | Result | null = null;
+          if (type === 'club') {
+            data = await getClubData(clubId);
+          } else if (type === 'meeting') {
+            data = await getMeetingData(clubId);
+          }
+          setClubData(data ?? null);
 
           const token = localStorage.getItem('accessToken') || '';
           const authorityResponse = await checkUserAuthority(clubId, token);
@@ -95,15 +109,12 @@ const ClubPage: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error(
-          'Error fetching club data or checking user authority:',
-          error,
-        );
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [clubId]);
+  }, [clubId, type]);
 
   return (
     <div className="relative">
