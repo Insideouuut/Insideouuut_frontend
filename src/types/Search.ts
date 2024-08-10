@@ -25,6 +25,8 @@ export interface Place {
 }
 
 export interface Result {
+  clubSearchResults: never[];
+  meetingSearchResults: never[];
   id: number;
   name: string;
   introduction: string;
@@ -51,10 +53,22 @@ export interface Result {
 
 export interface Metadata {
   resultCount: number;
-  pageable: unknown | null; // `unknown` 타입을 사용하여 유연성을 유지합니다.
+  pageable: unknown | null;
 }
 
-export interface ApiResponse {
+export interface ApiResponseForAll {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: Metadata;
+  results: {
+    clubSearchResults: Result[];
+    meetingSearchResults: Result[];
+  };
+}
+
+export interface ApiResponseForSpecific {
   status: {
     code: number;
     message: string;

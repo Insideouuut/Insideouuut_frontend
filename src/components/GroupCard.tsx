@@ -25,10 +25,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
   id,
   type,
   imageUrl,
-  name,
-  introduction = '', // 기본값을 빈 문자열로 설정
+  name = '', // name이 undefined일 때 기본값을 빈 문자열로 설정
+  introduction = '', // introduction이 undefined일 때 기본값을 빈 문자열로 설정
   date,
-  location,
+  location = '', // location이 undefined일 때 기본값을 빈 문자열로 설정
   participantsNumber,
   participantLimit,
   category,

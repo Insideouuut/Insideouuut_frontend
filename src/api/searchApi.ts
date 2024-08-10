@@ -1,4 +1,8 @@
-import { ApiResponse, Result } from '@/types/Search';
+import {
+  ApiResponseForAll,
+  ApiResponseForSpecific,
+  Result,
+} from '@/types/Search';
 import axiosInstance from './axiosConfig';
 
 const getCategoryParam = (category: string) => {
@@ -16,9 +20,16 @@ const getCategoryParam = (category: string) => {
   }
 };
 
-const getQueryParam = (query: string) => {
-  return query.trim() === '' ? 'all' : query;
+const getQueryParam = (query: string, topTab: string, bottomTab: string) => {
+  if (topTab === '전체') {
+    return bottomTab === '전체' ? 'all' : '';
+  } else if (topTab === '모임' || topTab === '동아리') {
+    return bottomTab === '전체' ? 'all' : '';
+  } else {
+    return query.trim() === '' ? 'all' : query;
+  }
 };
+
 
 const getApiEndpoint = (topTab: string) => {
   switch (topTab) {
@@ -41,9 +52,11 @@ export const searchMeetings = async (
 ): Promise<Result[]> => {
   try {
     const endpoint = getApiEndpoint(topTab);
-    const response = await axiosInstance.get<ApiResponse>(endpoint, {
+    const response = await axiosInstance.get<
+      ApiResponseForAll | ApiResponseForSpecific
+    >(endpoint, {
       params: {
-        query: getQueryParam(query),
+        query: getQueryParam(query, topTab, category),
         category: getCategoryParam(category),
         sort,
       },
@@ -52,7 +65,22 @@ export const searchMeetings = async (
       },
     });
     console.log('Request URL:', response.config.url);
-    return response.data.results;
+
+    const { results } = response.data;
+
+    if (topTab === '전체' && Array.isArray(results) && results.length > 0) {
+      // 전체 탭일 경우 결과를 합쳐서 반환
+      const combinedResults: Result[] = [
+        ...(results[0].clubSearchResults || []),
+        ...(results[0].meetingSearchResults || []),
+      ];
+      return combinedResults;
+    } else if (Array.isArray(results)) {
+      // 모임 또는 동아리 탭일 경우 결과 반환
+      return results;
+    } else {
+      throw new Error('Unexpected response structure');
+    }
   } catch (error) {
     console.error('Error fetching search results:', error);
     throw error;
