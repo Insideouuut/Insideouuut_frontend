@@ -1,8 +1,14 @@
+import {
+  getColorByMeetingType,
+  getColorByType,
+  getDefaultImageByCategory,
+} from '@/utils/cardUtils'; // 카드 관련 유틸리티 함수 임포트
+import { formatClubTime, formatEventTime } from '@/utils/timeUtils'; // 시간 관련 유틸리티 함수 임포트
 import { MapPin, Users } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface GroupCardProps {
+interface NewCardProps {
   id: number;
   type: string;
   imageUrl: string;
@@ -11,66 +17,35 @@ interface GroupCardProps {
   date: string;
   location: string;
   participantsNumber: number;
+  createdAt: string;
   participantLimit: number;
   category: string;
 }
 
-const NewCard: React.FC<GroupCardProps> = ({
+const NewCard: React.FC<NewCardProps> = ({
   id,
   type,
   imageUrl,
   name,
+  date,
   introduction,
   location,
+  createdAt,
   participantsNumber,
   participantLimit,
   category,
 }) => {
   const isAlmostFull = participantsNumber / participantLimit >= 0.8;
 
-  const getColorByType = (type: string) => {
-    switch (type) {
-      case '동아리':
-        return 'bg-green-200 text-green-800';
-      case '모임':
-        return 'bg-gray-200 text-gray-800';
-      default:
-        return '';
-    }
-  };
-
-  const getColorByMeetingType = (category: string) => {
-    switch (category) {
-      case '사교/취미':
-        return 'bg-yellow-200 text-yellow-800';
-      case '운동':
-        return 'bg-blue-200 text-blue-800';
-      case '스터디':
-        return 'bg-purple-200 text-purple-800';
-      default:
-        return '';
-    }
-  };
-
-  const getDefaultImageByCategory = (category: string) => {
-    switch (category) {
-      case '사교/취미':
-        return 'https://img.freepik.com/free-vector/hand-drawn-business-communication-concept_52683-76159.jpg?t=st=1723291187~exp=1723294787~hmac=33c5cd0b2c2ec164cb7dc4791b373c547b7b01ebcdcf8b2c88f6fbb7cd5ab7fd&w=996';
-      case '운동':
-        return 'https://img.freepik.com/free-vector/stretching-exercises-concept-illustration_114360-8922.jpg?t=st=1723291153~exp=1723294753~hmac=d3e3f118211a6b5fbe716604a75bd97539e3f34d54ef8847231ce3dd8a25dc2c&w=996';
-      case '스터디':
-        return 'https://img.freepik.com/free-vector/student-with-laptop-studying-online-course_74855-5293.jpg?t=st=1723291128~exp=1723294728~hmac=091e3ed23dadbc1bc1ddf3d1f8fd72a4d81a794afc6cb014bde7ac71ce9bfcab&w=996';
-      default:
-        return '';
-    }
-  };
+  const timeDisplay =
+    type === '동아리' ? formatClubTime(createdAt) : formatEventTime(date);
 
   const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
 
   return (
     <Link
       to={`/${type}/${id}`}
-      className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
+      className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[430px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
     >
       <div className="w-[100px] h-[100px]">
         <img
@@ -108,8 +83,9 @@ const NewCard: React.FC<GroupCardProps> = ({
         <div className="flex mt-1 items-center text-gray-500 font-neoBold text-[12px]">
           <MapPin className="w-4 mr-1" />
           <p className="mr-4">{location}</p>
-          <Users className="w-4 mr-1" />
-          <p>{`${participantsNumber}/${participantLimit}`}</p>
+          <Users className="w-4 mr-" />
+          <p className="mr-2">{`${participantsNumber}/${participantLimit}`}</p>
+          <p className="text-gray-600">{timeDisplay}</p> {/* 시간 표시 */}
         </div>
       </div>
     </Link>
