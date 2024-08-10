@@ -1,4 +1,9 @@
-import { Api } from '@/api/Apis';
+import { Api, ApiResponseMyProfileResponse } from '@/api/Apis';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useUserStore } from '@/store/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
@@ -63,6 +68,7 @@ const UpdateUser: React.FC = () => {
     },
   });
   const [isUpdated, setIsUpdated] = useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<
     boolean | null
   >(null);
@@ -73,6 +79,7 @@ const UpdateUser: React.FC = () => {
       await apiInstance.api.updateUserProfile({
         nickname: data.nickname,
         password: data.password,
+        interests: data.interests,
       });
       setUser(data);
       setIsUpdated(true);
@@ -80,31 +87,65 @@ const UpdateUser: React.FC = () => {
       console.error('프로필 업데이트 중 오류가 발생했습니다.', error);
     }
   };
+  useEffect(() => {
+    // 로컬 스토리지에서 동네 목록 가져오기
+    const storedNeighborhoods = localStorage.getItem('neighborhoods');
+    if (storedNeighborhoods) {
+      setLocations(JSON.parse(storedNeighborhoods));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await apiInstance.api.getMyProfile();
+        const response: ApiResponseMyProfileResponse =
+          await apiInstance.api.getMyProfile();
 
         console.log(response); // 가져온 데이터를 콘솔에 출력
+
+        // response.results가 존재하고 배열이 아닐 경우 대비
+        const userProfile =
+          response.results && Array.isArray(response.results)
+            ? response.results[0]
+            : {};
+
+        // 프로필 데이터를 useUserStore에 저장
+        setUser({
+          nickname: userProfile.nickname || '',
+          phoneNumber: userProfile.phoneNumber || '',
+          location: userProfile.locations?.[0] || '', // locations를 사용하여 location 설정
+          interests:
+            userProfile.interests?.map((interest) => interest.toString()) || [], // interests를 문자열 배열로 변환
+          email: userProfile.email || '', // 이메일
+          imageUrl: userProfile.profileImage || '', // 프로필 이미지 URL
+        });
+
+        // Set default values in the form
+        setValue('nickname', userProfile.nickname || '');
+        setValue('phoneNumber', userProfile.phoneNumber || '');
+        setValue('location', userProfile.locations?.[0] || '');
+        setValue(
+          'interests',
+          userProfile.interests?.map((interest) => interest.toString()) || [],
+        );
       } catch (error) {
-        console.error('Failed to fetch meetings:', error); // 에러 처리
+        console.error('Failed to fetch profile:', error); // 에러 처리
       }
     };
 
     fetchProfile(); // 함수 호출
-  }, []);
+  }, [setUser, setValue]);
 
   const checkNicknameAvailability = async () => {
     try {
       const response = await apiInstance.api.checkNickname({ nickname });
-      const statusCode = response.data?.status?.code;
+      const statusCode = response.status?.code;
 
       if (statusCode === 200) {
         alert('사용가능한 닉네임입니다.');
         setIsNicknameAvailable(true);
       } else if (statusCode === 400 || statusCode === 409) {
-        alert(response.data?.status?.message);
+        alert(response.status?.message);
         setIsNicknameAvailable(false);
       }
     } catch (error) {
@@ -220,13 +261,31 @@ const UpdateUser: React.FC = () => {
                 <span className="text-red-500">{errors.location.message}</span>
               )}
             </div>
-            <button
-              type="button"
-              className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
-              onClick={() => navigate('/setlocation')}
-            >
-              인증하러 가기
-            </button>
+            {location ? (
+              <div className="items-center justify-center flex flex-col">
+                <div className="mt-7 text-primary text-xs">인증 완료</div>
+                <Popover>
+                  <PopoverTrigger className="text-sm hover:text-primary">
+                    동네 범위 보기
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <ul className="pl-5">
+                      {locations.map((neighborhood, index) => (
+                        <li key={index}>{neighborhood}</li>
+                      ))}
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
+                onClick={() => navigate('/setlocation')}
+              >
+                인증하러 가기
+              </button>
+            )}
           </div>
           <div>
             <label htmlFor="phoneNumber" className="block text-sm font-medium">
@@ -248,7 +307,7 @@ const UpdateUser: React.FC = () => {
               관심사
             </label>
             <div id="interests" className="flex gap-2 ">
-              {['사교/취미', '운동', '스터디'].map((interest) => (
+              {['SOCIAL', 'SPORTS', 'STUDY'].map((interest) => (
                 <button
                   type="button"
                   key={interest}

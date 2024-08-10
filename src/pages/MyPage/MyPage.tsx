@@ -1,4 +1,4 @@
-import { Api } from '@/api/Apis';
+import { getMyProfile, updateUserProfileImage } from '@/api/userApi'; // apiService에서 import
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -10,10 +10,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
 
-const apiInstance = new Api();
-
 const MyPage: React.FC = () => {
-  const { isLoggedIn, setUser, nickname, clearUser } = useUserStore();
+  const { isLoggedIn, nickname, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
@@ -29,7 +27,8 @@ const MyPage: React.FC = () => {
   const profileRef = useRef<HTMLImageElement>(null);
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [mannerRating, setMannerRating] = useState<number | null>(null); // mannerRating 상태 추가
+  const [mannerRating, setMannerRating] = useState<number | null>(null);
+
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -46,52 +45,53 @@ const MyPage: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getMyProfile(); // apiService에서 가져온 함수 사용
+        const results = response.results;
+        if (results && results.length > 0) {
+          const profileImageUrl = results[0]?.profileImage;
+          const mannerRatingValue = results[0]?.mannerRating;
+          setProfileImage(profileImageUrl || null);
+          setMannerRating(mannerRatingValue || null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-
       try {
         // API 호출 시 직접 파일을 전달
-        await apiInstance.api.updateUserProfileImage({ image: file });
-        setUser({ imageUrl: URL.createObjectURL(file) });
+        const response = await updateUserProfileImage(file); // apiService에서 가져온 함수 사용
+        console.log('Image upload response:', response);
+        setProfileImage(URL.createObjectURL(file)); // 업로드한 이미지 URL 업데이트
       } catch (error) {
         console.error('Error uploading profile image:', error);
       }
     }
   };
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await apiInstance.api.getMyProfile();
-        const results = response.data.results;
-        if (results && results.length > 0) {
-          const profileImageUrl = results[0]?.profileImage;
-          const mannerRatingValue = results[0]?.mannerRating; // mannerRating 추출
-          setProfileImage(profileImageUrl || null);
-          setMannerRating(mannerRatingValue || null); // mannerRating 상태 설정
-        }
-      } catch (error) {
-        console.error('Failed to fetch profile:', error); // 에러 처리
-      }
-    };
 
-    fetchProfile(); // 함수 호출
-  }, []);
-  const handleLoginLogout = () => {
-    if (isLoggedIn) {
-      clearUser();
-    } else {
-      // 로그인 로직 추가
-      setUser({ isLoggedIn: true });
-    }
+  const handleLogout = () => {
+    clearUser();
+    setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
+
   return (
     <div className="relative">
       <Header
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={handleLoginLogout}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -129,7 +129,6 @@ const MyPage: React.FC = () => {
             나의 매너 온도:
             {mannerRating !== null ? ` ${mannerRating}` : '정보 없음'}
           </p>
-          {/* mannerRating 표시 */}
           <div className="shadow-md border w-full border-gray-200 rounded-lg m-12 p-24 max-w-full  md:w-[800px]">
             <Tabs defaultValue="account" className="w-full">
               <div className="w-full flex items-center justify-center mb-10">
@@ -153,7 +152,7 @@ const MyPage: React.FC = () => {
       {isProfileModalOpen && (
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
-          handleLogout={handleLoginLogout}
+          handleLogout={handleLogout}
           coords={profileCoords}
         />
       )}
