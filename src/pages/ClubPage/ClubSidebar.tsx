@@ -84,74 +84,77 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             <span className="text-sm">모임 목록</span>
           </div>
         )}
+        {clubType === '동아리' && (
+          <div className="space-y-1">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setIsBoardOpen(!isBoardOpen)}
+              onKeyDown={(event) =>
+                handleAccordionKeyDown(event, () =>
+                  setIsBoardOpen(!isBoardOpen),
+                )
+              }
+              className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isBoardOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
+            >
+              <div className="flex items-center space-x-2">
+                <List className="w-5 h-5" />
+                <span className="text-sm">게시판</span>
+              </div>
+              <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
+            </div>
 
-        <div className="space-y-1">
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => setIsBoardOpen(!isBoardOpen)}
-            onKeyDown={(event) =>
-              handleAccordionKeyDown(event, () => setIsBoardOpen(!isBoardOpen))
-            }
-            className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isBoardOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <List className="w-5 h-5" />
-              <span className="text-sm">게시판</span>
-            </div>
-            <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
-          </div>
-          <div
-            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
-          >
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('allBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+              className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
             >
-              전체 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('noticeBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'noticeBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('noticeBoard')}`}
-            >
-              공지 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('freeBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'freeBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('freeBoard')}`}
-            >
-              자유 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('reviewBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'reviewBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('reviewBoard')}`}
-            >
-              후기 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('questionBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'questionBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('questionBoard')}`}
-            >
-              질문 게시판
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('allBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+              >
+                전체 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('noticeBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'noticeBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('noticeBoard')}`}
+              >
+                공지 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('freeBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'freeBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('freeBoard')}`}
+              >
+                자유 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('reviewBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'reviewBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('reviewBoard')}`}
+              >
+                후기 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('questionBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'questionBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('questionBoard')}`}
+              >
+                질문 게시판
+              </div>
             </div>
           </div>
-        </div>
-
+        )}
         <div
           role="button"
           tabIndex={0}
