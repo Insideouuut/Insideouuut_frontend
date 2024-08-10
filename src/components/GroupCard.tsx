@@ -53,6 +53,21 @@ const GroupCard: React.FC<GroupCardProps> = ({
     }
   };
 
+  const getDefaultImageByCategory = (category: string) => {
+    switch (category) {
+      case '사교/취미':
+        return 'https://img.freepik.com/free-vector/hand-drawn-business-communication-concept_52683-76159.jpg?t=st=1723291187~exp=1723294787~hmac=33c5cd0b2c2ec164cb7dc4791b373c547b7b01ebcdcf8b2c88f6fbb7cd5ab7fd&w=996';
+      case '운동':
+        return 'https://img.freepik.com/free-vector/stretching-exercises-concept-illustration_114360-8922.jpg?t=st=1723291153~exp=1723294753~hmac=d3e3f118211a6b5fbe716604a75bd97539e3f34d54ef8847231ce3dd8a25dc2c&w=996';
+      case '스터디':
+        return 'https://img.freepik.com/free-vector/student-with-laptop-studying-online-course_74855-5293.jpg?t=st=1723291128~exp=1723294728~hmac=091e3ed23dadbc1bc1ddf3d1f8fd72a4d81a794afc6cb014bde7ac71ce9bfcab&w=996';
+      default:
+        return '';
+    }
+  };
+
+  const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
+  console.log('Image URL:', mainImage); // 디버깅용
   return (
     <Link
       to={`/club/${id}`}
@@ -60,7 +75,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
     >
       <div className="w-[140px] h-[135px]">
         <img
-          src={imageUrl}
+          src={mainImage}
           alt={name}
           className="w-full h-full rounded-lg object-cover"
         />

@@ -2,8 +2,8 @@ import location from '@/assets/icons/location.svg';
 import logo from '@/assets/icons/logo.png';
 import notification_active from '@/assets/icons/notification_active.svg';
 import notification_default from '@/assets/icons/notification_default.svg';
-import profileImage from '@/assets/icons/profile.webp';
 import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/store/userStore';
 import { Menu, X } from 'lucide-react';
 import React, { RefObject, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,6 +30,12 @@ const Header: React.FC<HeaderProps> = ({
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const { profileImage } = useUserStore((state) => ({
+    profileImage:
+      state.imageUrl ||
+      'https://w7.pngwing.com/pngs/665/132/png-transparent-user-defult-avatar.png',
+  }));
 
   return (
     <nav className="bg-white px-4 py-3.5 relative">
@@ -233,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({
                     ref={profileRef}
                     src={profileImage}
                     alt="Profile"
-                    className="h-8 w-8 rounded-full cursor-pointer"
+                    className="h-8 w-8 object-cover rounded-full cursor-pointer"
                   />
                 </button>
               </>
