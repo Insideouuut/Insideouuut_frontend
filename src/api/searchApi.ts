@@ -30,7 +30,6 @@ const getQueryParam = (query: string, topTab: string, bottomTab: string) => {
   }
 };
 
-
 const getApiEndpoint = (topTab: string) => {
   switch (topTab) {
     case '모임':
