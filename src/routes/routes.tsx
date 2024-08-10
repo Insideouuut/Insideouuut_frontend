@@ -118,6 +118,61 @@ const router = createBrowserRouter([
       },
     ],
   },
+  // Meeting 라우트 추가
+  {
+    path: '/meeting/:id',
+    element: <ClubPage />, // ClubPage를 재활용
+    children: [
+      {
+        path: 'board/:type',
+        element: <BoardList />,
+      },
+      {
+        path: 'board/:type/:id',
+        element: <PostDetail />,
+      },
+      {
+        path: 'board/:type/:id/edit',
+        element: <PostForm />,
+      },
+      {
+        path: 'board/new',
+        element: <PostForm />,
+      },
+      {
+        path: 'members',
+        element: <MemberList />,
+      },
+      {
+        path: 'meetingList',
+        element: <MeetingList />,
+      },
+      {
+        path: 'createMeeting',
+        element: <CreateMeetinginClub />,
+      },
+      {
+        path: 'meetingListSettings',
+        element: <Mymeeting />,
+      },
+      {
+        path: 'manageClub',
+        element: <ClubManagement />,
+      },
+      {
+        path: 'memberRequests',
+        element: <MemberApproval />,
+      },
+      {
+        path: 'manageMembers',
+        element: <MemberManagement />,
+      },
+      {
+        path: 'chatRooms/:meetingId/:roomId',
+        element: <Chat />,
+      },
+    ],
+  },
   {
     path: '/create-club',
     element: <CreateClub />,
