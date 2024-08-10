@@ -1,37 +1,91 @@
+import {
+  deleteClubData,
+  endMeeting,
+  getClubData,
+  updateClubData,
+} from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import { Result } from '@/types/Meetings';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-interface ClubData {
-  description: string;
-  schedule: string[];
-  currentParticipants: number;
-  membershipFee: string;
+interface MeetingPlace {
+  name: string;
+  placeUrl: string;
+  kakaoMapId: string;
+  addressName: string;
+  roadAddressName: string;
+  latitude: number;
+  longitude: number;
 }
 
-const daysOfWeek = [
-  '일요일',
-  '월요일',
-  '화요일',
-  '수요일',
-  '목요일',
-  '금요일',
-  '토요일',
-];
+interface ClubData {
+  name: string;
+  introduction: string;
+  category: string;
+  categoryDetail: string;
+  meetingPlace: MeetingPlace;
+  participantLimit: number;
+  rules: string[];
+  joinQuestions: string[];
+  date: string;
+  level: string;
+  ageRange: number[];
+  hasGenderRatio: string;
+  ratio: string;
+  hasMembershipFee: boolean;
+  membershipFeeAmount: number;
+  imageFiles: string[]; // 이미지 파일 필드 추가
+}
 
 const ClubManagement: React.FC = () => {
-  // 예시 데이터
-  const initialData: ClubData = {
-    description: '다같이 모여서 즐겁게 러닝해요!',
-    schedule: [],
-    currentParticipants: 10,
-    membershipFee: '50,000',
-  };
-
-  const [formData, setFormData] = useState<ClubData>(initialData);
+  const { id: meetingId } = useParams<{ id: string }>();
+  const [formData, setFormData] = useState<ClubData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisbandModalOpen, setIsDisbandModalOpen] = useState(false);
   const [disbandText, setDisbandText] = useState('');
   const [disbandError, setDisbandError] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data: Result = await getClubData(meetingId!);
+
+        const clubData: ClubData = {
+          name: data.name,
+          introduction: data.introduction,
+          category: data.category,
+          categoryDetail: data.categoryDetail,
+          meetingPlace: {
+            name: data.place.name,
+            placeUrl: data.place.placeUrl,
+            kakaoMapId: data.place.kakaoMapId,
+            addressName: data.place.addressName || '',
+            roadAddressName: data.place.roadAddressName || '',
+            latitude: data.place.latitude,
+            longitude: data.place.longitude,
+          },
+          participantLimit: data.participantLimit,
+          rules: data.rules,
+          joinQuestions: data.joinQuestions,
+          date: data.date,
+          level: data.level,
+          ageRange: data.ageRange,
+          hasGenderRatio: data.ratio ? 'true' : 'false',
+          ratio: data.ratio,
+          hasMembershipFee: data.hasMembershipFee,
+          membershipFeeAmount: data.membershipFeeAmount,
+          imageFiles: [], // 이미지 파일 필드 초기화
+        };
+
+        setFormData(clubData);
+      } catch (error) {
+        console.error('Error fetching club data:', error);
+      }
+    };
+
+    fetchData();
+  }, [meetingId]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -39,104 +93,220 @@ const ClubManagement: React.FC = () => {
     >,
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => prevData && { ...prevData, [name]: value });
   };
 
-  const handleScheduleChange = (day: string) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      schedule: prevData.schedule.includes(day)
-        ? prevData.schedule.filter((d) => d !== day)
-        : [...prevData.schedule, day],
-    }));
+  const handleMeetingPlaceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(
+      (prevData) =>
+        prevData && {
+          ...prevData,
+          meetingPlace: {
+            ...prevData.meetingPlace,
+            [name]: value,
+          },
+        },
+    );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRulesChange = (index: number, value: string) => {
+    if (formData) {
+      const newRules = [...formData.rules];
+      newRules[index] = value;
+      setFormData({ ...formData, rules: newRules });
+    }
+  };
+
+  const handleAddRule = () => {
+    setFormData(
+      (prevData) => prevData && { ...prevData, rules: [...prevData.rules, ''] },
+    );
+  };
+
+  const handleJoinQuestionsChange = (index: number, value: string) => {
+    if (formData) {
+      const newQuestions = [...formData.joinQuestions];
+      newQuestions[index] = value;
+      setFormData({ ...formData, joinQuestions: newQuestions });
+    }
+  };
+
+  const handleAddQuestion = () => {
+    setFormData(
+      (prevData) =>
+        prevData && {
+          ...prevData,
+          joinQuestions: [...prevData.joinQuestions, ''],
+        },
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsModalOpen(true);
-    console.log('Updated Club Data:', formData);
+    try {
+      const token = localStorage.getItem('accessToken') || '';
+      if (formData) {
+        await updateClubData(meetingId!, formData, token);
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error updating club data:', error);
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleDisbandClub = () => {
+  const handleEndMeeting = async () => {
+    try {
+      const token = localStorage.getItem('accessToken') || '';
+      await endMeeting(meetingId!, token);
+      alert('모임이 성공적으로 종료되었습니다.');
+    } catch (error) {
+      console.error('Error ending meeting:', error);
+      alert('모임 종료에 실패했습니다.');
+    }
+  };
+
+  const handleDisbandClub = async () => {
     if (disbandText === '해체하기') {
       setIsDisbandModalOpen(false);
-      console.log('Club disbanded');
-      setDisbandText('');
-      setDisbandError('');
+      try {
+        const token = localStorage.getItem('accessToken') || '';
+        await deleteClubData(meetingId!, token);
+        alert('모임이 성공적으로 삭제되었습니다.');
+        setDisbandText('');
+        setDisbandError('');
+      } catch (error) {
+        console.error('Error deleting club data:', error);
+        alert('모임 삭제에 실패했습니다.');
+      }
     } else {
       setDisbandError('해체하려면 &apos;해체하기&apos;를 입력하세요.');
     }
   };
 
-  const handleMembershipFeeChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = e.target.value.replace(/\D/g, ''); // 숫자가 아닌 문자 제거
-    setFormData({
-      ...formData,
-      membershipFee: new Intl.NumberFormat().format(Number(value)),
-    });
-  };
+  if (!formData) {
+    return <div>데이터를 불러오는 중...</div>;
+  }
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
       <h2 className="text-xl font-bold mb-4">클럽 관리</h2>
       <form onSubmit={handleSubmit}>
         <label className="block mb-2">
-          설명:
+          이름:
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
+        <label className="block mb-2">
+          소개:
           <textarea
-            name="description"
-            value={formData.description}
+            name="introduction"
+            value={formData.introduction}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
+        <label className="block mb-2">
+          카테고리:
+          <input
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
+        <label className="block mb-2">
+          카테고리 세부:
+          <input
+            name="categoryDetail"
+            value={formData.categoryDetail}
             onChange={handleChange}
             className="block w-full mt-1 p-2 border rounded"
           />
         </label>
         <div className="block mb-2">
-          스케줄:
-          <div className="flex flex-wrap mt-1">
-            {daysOfWeek.map((day) => (
-              <Button
-                type="button"
-                key={day}
-                onClick={() => handleScheduleChange(day)}
-                className={`p-2 m-1 rounded  ${formData.schedule.includes(day) ? 'bg-primary hover:bg-green-600' : 'bg-gray-300 hover:bg-slate-400'}`}
-              >
-                {day}
-              </Button>
-            ))}
-          </div>
+          장소:
+          <input
+            name="name"
+            value={formData.meetingPlace.name}
+            onChange={handleMeetingPlaceChange}
+            placeholder="장소 이름"
+            className="block w-full mt-1 p-2 border rounded"
+          />
+          <input
+            name="addressName"
+            value={formData.meetingPlace.addressName}
+            onChange={handleMeetingPlaceChange}
+            placeholder="주소"
+            className="block w-full mt-1 p-2 border rounded"
+          />
         </div>
-        <div className="flex justify-between items-center w-[70%]">
-          <label className="flex h-10 w-full mb-2">
-            <p className="w-[25%] my-auto">정원 수:</p>
-            <select
-              name="currentParticipants"
-              value={formData.currentParticipants}
-              onChange={handleChange}
-              className="block w-[30%] mt-1 mr-10 p-2 border rounded"
-            >
-              {Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex h-10 w-full mb-2">
-            <p className="w-[30%] my-auto">회비 (원):</p>
+        <div className="block mb-2">
+          규칙:
+          {formData.rules.map((rule, index) => (
             <input
-              type="text"
-              name="membershipFee"
-              value={formData.membershipFee}
-              onChange={handleMembershipFeeChange}
-              className="block w-[50%] h-[32px] my-auto mr-10 p-2 border rounded"
+              key={index}
+              value={rule}
+              onChange={(e) => handleRulesChange(index, e.target.value)}
+              placeholder={`규칙 ${index + 1}`}
+              className="block w-full mt-1 p-2 border rounded"
             />
-          </label>
+          ))}
+          <Button
+            type="button"
+            onClick={handleAddRule}
+            className="bg-gray-300 text-black p-2 rounded mt-2"
+          >
+            규칙 추가
+          </Button>
         </div>
+        <div className="block mb-2">
+          참가 질문:
+          {formData.joinQuestions.map((question, index) => (
+            <input
+              key={index}
+              value={question}
+              onChange={(e) => handleJoinQuestionsChange(index, e.target.value)}
+              placeholder={`질문 ${index + 1}`}
+              className="block w-full mt-1 p-2 border rounded"
+            />
+          ))}
+          <Button
+            type="button"
+            onClick={handleAddQuestion}
+            className="bg-gray-300 text-black p-2 rounded mt-2"
+          >
+            질문 추가
+          </Button>
+        </div>
+        <label className="block mb-2">
+          정원 수:
+          <input
+            name="participantLimit"
+            type="number"
+            value={formData.participantLimit}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
+        <label className="block mb-2">
+          회비:
+          <input
+            name="membershipFeeAmount"
+            type="number"
+            value={formData.membershipFeeAmount}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
         <Button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-700"
@@ -144,12 +314,22 @@ const ClubManagement: React.FC = () => {
           저장
         </Button>
       </form>
-      <Button
-        onClick={() => setIsDisbandModalOpen(true)}
-        className="bg-red-500 text-white p-2 rounded mt-4 hover:bg-red-700"
-      >
-        동아리 해체하기
-      </Button>
+
+      <div className="mt-4">
+        <Button
+          onClick={handleEndMeeting}
+          className="bg-green-500 text-white p-2 rounded hover:bg-green-700 mr-2"
+        >
+          모임 종료하기
+        </Button>
+        <Button
+          onClick={() => setIsDisbandModalOpen(true)}
+          className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
+        >
+          모임 삭제하기
+        </Button>
+      </div>
+
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
@@ -166,11 +346,12 @@ const ClubManagement: React.FC = () => {
           </div>
         </div>
       )}
+
       {isDisbandModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
             <h2 className="text-lg font-bold mb-4">경고</h2>
-            <p>정말로 동아리를 해체하시겠습니까?</p>
+            <p>정말로 모임을 삭제하시겠습니까?</p>
             <p>&apos;해체하기&apos;를 입력하여 확인하세요:</p>
             <input
               type="text"

@@ -78,14 +78,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setSort(newSort);
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
-
   return (
     <div className="w-full bg-white">
       <div className="mx-auto py-5 flex-col w-[960px]">
@@ -110,64 +102,80 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             오래된순
           </button>
         </ul>
-        {filteredData.length === 0 ? (
+
+        {loading && (
+          <div className="w-full flex justify-center items-center h-40">
+            <p className="text-lg font-neoBold">로딩 중...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="w-full flex justify-center items-center h-40">
+            <p className="text-lg font-neoBold text-red-500">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && filteredData.length === 0 && (
           <div className="w-full flex justify-center items-center h-40">
             <p className="text-lg font-neoBold">
               &#39;{searchQuery}&#39;에 대한 검색결과가 없습니다.
             </p>
           </div>
-        ) : (
-          <div className="w-[900px] mx-auto grid grid-cols-2 gap-4 pb-5">
-            {currentItems.map((item) => (
-              <GroupCard
-                key={item.id}
-                id={item.id}
-                type={item.type}
-                imageUrl={item.images[0]?.url || ''}
-                name={item.name}
-                introduction={item.introduction}
-                date={item.date}
-                location={item.place.name}
-                participantsNumber={item.participantsNumber}
-                participantLimit={item.participantLimit}
-                category={item.category}
-              />
-            ))}
-          </div>
         )}
-        {filteredData.length > 0 && (
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={handlePrevPage}
-              className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
-              disabled={currentPage === 1}
-            >
-              {'<'}
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => (
+
+        {!loading && !error && filteredData.length > 0 && (
+          <>
+            <div className="w-[900px] mx-auto grid grid-cols-2 gap-4 pb-5">
+              {currentItems.map((item) => (
+                <GroupCard
+                  key={item.id}
+                  id={item.id}
+                  type={item.type}
+                  imageUrl={item.images?.[0]?.url || ''}
+                  name={item.name}
+                  introduction={item.introduction}
+                  date={item.date}
+                  location={item.place?.name || ''}
+                  participantsNumber={item.participantsNumber}
+                  participantLimit={item.participantLimit}
+                  category={item.category}
+                />
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-4">
               <button
-                key={index}
-                onClick={() => {
-                  setCurrentPage(index + 1);
-                  window.scrollTo({ top: 484, behavior: 'smooth' });
-                }}
-                className={`mx-1 px-2 py-1 rounded ${
-                  currentPage === index + 1
-                    ? 'bg-primary text-white'
-                    : 'hover:bg-stone-200'
-                }`}
+                onClick={handlePrevPage}
+                className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
+                disabled={currentPage === 1}
               >
-                {index + 1}
+                {'<'}
               </button>
-            ))}
-            <button
-              onClick={handleNextPage}
-              className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
-              disabled={currentPage === totalPages}
-            >
-              {'>'}
-            </button>
-          </div>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setCurrentPage(index + 1);
+                    window.scrollTo({ top: 484, behavior: 'smooth' });
+                  }}
+                  className={`mx-1 px-2 py-1 rounded ${
+                    currentPage === index + 1
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-stone-200'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              <button
+                onClick={handleNextPage}
+                className="mx-1 px-2 py-1 rounded hover:bg-stone-200"
+                disabled={currentPage === totalPages}
+              >
+                {'>'}
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>

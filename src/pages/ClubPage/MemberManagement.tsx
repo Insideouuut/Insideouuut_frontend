@@ -1,3 +1,4 @@
+import { expelMember, getMeetingMembers } from '@/api/meetingApi'; // 추가된 API 함수 import
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -5,85 +6,31 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { Member } from '@/types/Member'; // 타입 import
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical } from 'lucide-react';
-import React, { useState } from 'react';
-import Member from './Member';
-
-interface Member {
-  id: number;
-  profileImage: string;
-  nickname: string;
-  temperature: number;
-}
-
-const MEMBERS: Member[] = [
-  {
-    id: 1,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥일',
-    temperature: 36.5,
-  },
-  {
-    id: 2,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥이',
-    temperature: 36.5,
-  },
-  {
-    id: 3,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥삼',
-    temperature: 36.5,
-  },
-  {
-    id: 4,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥사',
-    temperature: 36.5,
-  },
-  {
-    id: 5,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥오',
-    temperature: 36.5,
-  },
-  {
-    id: 6,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥육',
-    temperature: 36.5,
-  },
-  {
-    id: 7,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥칠',
-    temperature: 36.5,
-  },
-  {
-    id: 8,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥팔',
-    temperature: 36.5,
-  },
-  {
-    id: 9,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥구',
-    temperature: 36.5,
-  },
-  {
-    id: 10,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥십',
-    temperature: 36.5,
-  },
-];
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const MemberManagement: React.FC = () => {
-  const [members, setMembers] = useState<Member[]>(MEMBERS);
+  const { id: clubId } = useParams<{ id: string }>();
+  const [members, setMembers] = useState<Member[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const token = localStorage.getItem('accessToken') || '';
+        const membersData = await getMeetingMembers(clubId!, token);
+        setMembers(membersData);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      }
+    };
+
+    fetchMembers();
+  }, [clubId]);
 
   const openModal = (member: Member) => {
     setMemberToRemove(member);
@@ -95,10 +42,19 @@ const MemberManagement: React.FC = () => {
     setMemberToRemove(null);
   };
 
-  const handleRemoveMember = () => {
+  const handleRemoveMember = async () => {
     if (memberToRemove) {
-      setMembers(members.filter((member) => member.id !== memberToRemove.id));
-      closeModal();
+      try {
+        const token = localStorage.getItem('accessToken') || '';
+        // userId를 string으로 변환하여 expelMember 함수에 전달
+        await expelMember(String(memberToRemove.id), token);
+        setMembers((prevMembers) =>
+          prevMembers.filter((member) => member.id !== memberToRemove.id),
+        );
+        closeModal();
+      } catch (error) {
+        console.error('Error expelling member:', error);
+      }
     }
   };
 
@@ -111,11 +67,14 @@ const MemberManagement: React.FC = () => {
             <div className="flex items-center justify-between my-2">
               <div className="flex items-center">
                 <img
-                  src={member.profileImage}
+                  src={member.profileImage.url}
                   alt="avatar"
                   className="w-10 h-10 rounded-full mr-4"
                 />
-                <span>{member.nickname}</span>
+                <span>{member.nickName}</span>
+                <span className="ml-4 text-sm text-gray-500">
+                  매너온도: {member.mannerTemp}℃
+                </span>
               </div>
               <div className="flex items-center">
                 <Button
@@ -161,7 +120,7 @@ const MemberManagement: React.FC = () => {
             </Dialog.Title>
             <Dialog.Description>
               {memberToRemove && (
-                <p>정말로 {memberToRemove.nickname}님을 강퇴하시겠습니까?</p>
+                <p>정말로 {memberToRemove.nickName}님을 강퇴하시겠습니까?</p>
               )}
             </Dialog.Description>
             <div className="mt-4 flex space-x-4">
