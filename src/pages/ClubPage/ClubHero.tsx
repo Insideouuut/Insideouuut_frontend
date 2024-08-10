@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
 import {
   CalendarDays,
@@ -13,7 +14,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface ClubHeroProps {
-  clubData: Result;
+  clubData: Result | ClubData;
   userProfile: { nickname: string; profileImage: string } | null;
   userAuthority: string;
 }
@@ -23,6 +24,10 @@ const ClubHero: React.FC<ClubHeroProps> = ({
   userProfile,
   userAuthority,
 }) => {
+  const isMeeting = (data: Result | ClubData): data is Result => {
+    return (data as Result).participantsNumber !== undefined;
+  };
+
   const getColorByType = (type: string) => {
     switch (type) {
       case '동아리':
@@ -88,26 +93,47 @@ const ClubHero: React.FC<ClubHeroProps> = ({
           </div>
         </div>
         <div className="relative flex flex-col items-end w-[30%] mt-12">
-          <div className="flex w-28 flex-col gap-y-[2px]">
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
-              <CalendarDays className="w-[17px]" />
-              <span className="w-[80%] text-center text-[11px]">
-                {new Date(clubData.date).toLocaleString(undefined, {
-                  year: '2-digit',
-                  month: '2-digit',
-                  day: '2-digit',
-                })}
-              </span>
+          {isMeeting(clubData) ? (
+            // 모임일 때 스타일
+            <div className="flex w-28 flex-col gap-y-[2px]">
+              <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
+                <CalendarDays className="w-[17px]" />
+                <span className="w-[80%] text-center text-[11px]">
+                  {new Date(clubData.date).toLocaleString(undefined, {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                  })}
+                </span>
+              </div>
+              <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
+                <MapPin className="w-[17px]" />
+                <span className="w-[80%] text-center">
+                  {clubData.place.name}
+                </span>
+              </div>
+              <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
+                <Users className="w-[17px]" />
+                <span className="w-[80%] text-center">{`${clubData.participantsNumber} / ${clubData.participantLimit}`}</span>
+              </div>
             </div>
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
-              <MapPin className="w-[17px]" />
-              <span className="w-[80%] text-center">{clubData.place.name}</span>
+          ) : (
+            // 동아리일 때 스타일
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <CalendarDays className="w-5 h-5 text-gray-600" />
+                <span className="text-md text-gray-600 ml-2">
+                  {clubData.date}
+                </span>
+              </div>
+              <div className="flex items-center mt-2">
+                <MapPin className="w-5 h-5 text-gray-600" />
+                <span className="text-md text-gray-600 ml-2">
+                  {clubData.activityRegion}
+                </span>
+              </div>
             </div>
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
-              <Users className="w-[17px]" />
-              <span className="w-[80%] text-center">{`${clubData.participantsNumber} / ${clubData.participantLimit}`}</span>
-            </div>
-          </div>
+          )}
           {userAuthority === '호스트' || userAuthority === '멤버' ? (
             <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
               <img

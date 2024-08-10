@@ -1,24 +1,27 @@
-import { MeetingApplicantsApiResponse } from '@/types/MeetingApplicantsTypes';
+import {
+  MeetingApplicant,
+  MeetingApplicantsApiResponse,
+} from '@/types/MeetingApplicantsTypes';
 import { ApiResponse as MeetingApiResponse, Result } from '@/types/Meetings';
 import { Member, ApiResponse as MemberApiResponse } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
 
 // 모임 단건 조회 API
-export const getClubData = async (id: string): Promise<Result> => {
+export const getMeetingData = async (id: string): Promise<Result> => {
   try {
     const response = await axiosInstance.get<MeetingApiResponse>(
       `/api/meetings/${id}`,
     );
     return response.data.results[0];
   } catch (error) {
-    console.error('Error fetching club data:', error);
+    console.error('Error fetching meeting data:', error);
     throw error;
   }
 };
 
 // 모임 삭제 API
-export const deleteClubData = async (
+export const deleteMeetingData = async (
   id: string,
   token: string,
 ): Promise<void> => {
@@ -30,13 +33,13 @@ export const deleteClubData = async (
     });
     console.log('모임이 성공적으로 삭제되었습니다.');
   } catch (error) {
-    console.error('Error deleting club data:', error);
+    console.error('Error deleting meeting data:', error);
     throw error;
   }
 };
 
 // 모임 정보 수정 API
-export const updateClubData = async (
+export const updateMeetingData = async (
   id: string,
   data: Partial<Result>,
   token: string,
@@ -53,7 +56,7 @@ export const updateClubData = async (
     );
     return response.data.results[0];
   } catch (error) {
-    console.error('Error updating club data:', error);
+    console.error('Error updating meeting data:', error);
     throw error;
   }
 };
@@ -98,7 +101,7 @@ export const checkUserAuthority = async (
 export const getMeetingApplicants = async (
   id: string,
   token: string,
-): Promise<MeetingApplicantsApiResponse['results']> => {
+): Promise<MeetingApplicant[]> => {
   try {
     const response = await axiosInstance.get<MeetingApplicantsApiResponse>(
       `/api/meetings/${id}/apply`,
@@ -108,7 +111,8 @@ export const getMeetingApplicants = async (
         },
       },
     );
-    return response.data.results;
+    // 결과 배열 중 첫 번째 배열을 반환
+    return response.data.results[0];
   } catch (error) {
     console.error('Error fetching meeting applicants:', error);
     throw error;

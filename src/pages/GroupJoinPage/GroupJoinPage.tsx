@@ -1,4 +1,4 @@
-import { getClubData } from '@/api/meetingApi';
+import { getMeetingData } from '@/api/meetingApi';
 import runImg from '@/assets/icons/run.png';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -36,7 +36,7 @@ const GroupJoinPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getClubData(clubId || ''); // API 호출
+        const data = await getMeetingData(clubId || ''); // API 호출
         setClubData(data);
       } catch (error) {
         console.error('Error fetching club data:', error);
