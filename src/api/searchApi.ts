@@ -17,7 +17,7 @@ const getCategoryParam = (category: string) => {
 };
 
 const getQueryParam = (query: string) => {
-  return query.trim() === '' ? '' : query;
+  return query.trim() === '' ? 'all' : query;
 };
 
 const getApiEndpoint = (topTab: string) => {

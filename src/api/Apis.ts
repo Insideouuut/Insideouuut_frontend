@@ -2142,4 +2142,5 @@ export class Api<
         ...params,
       }),
   };
+  meeting: any;
 }

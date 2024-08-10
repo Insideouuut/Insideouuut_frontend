@@ -14,11 +14,15 @@ import { Link } from 'react-router-dom';
 
 interface ClubHeroProps {
   clubData: Result;
-  onImageChange: (newImage: string) => void;
-  isLoggedIn: boolean;
+  userProfile: { nickname: string; profileImage: string } | null;
+  userAuthority: string;
 }
 
-const ClubHero: React.FC<ClubHeroProps> = ({ clubData, isLoggedIn }) => {
+const ClubHero: React.FC<ClubHeroProps> = ({
+  clubData,
+  userProfile,
+  userAuthority,
+}) => {
   const getColorByType = (type: string) => {
     switch (type) {
       case '동아리':
@@ -104,17 +108,17 @@ const ClubHero: React.FC<ClubHeroProps> = ({ clubData, isLoggedIn }) => {
               <span className="w-[80%] text-center">{`${clubData.participantsNumber} / ${clubData.participantLimit}`}</span>
             </div>
           </div>
-          {isLoggedIn ? (
+          {userAuthority === '호스트' || userAuthority === '멤버' ? (
             <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
               <img
-                src={clubData.host.profileImage.url}
+                src={userProfile?.profileImage || ''}
                 alt="Profile"
                 className="w-10 h-10 rounded-full ml-4"
               />
               <div className="w-full">
                 <div className="flex justify-center w-full">
                   <p className="text-black font-neo flex items-end">
-                    {clubData.host.nickname}
+                    {userProfile?.nickname || 'Unknown'}
                   </p>
                 </div>
                 <div className="flex justify-center mt-2">
