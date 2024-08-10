@@ -6,30 +6,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { mockPosts } from './mockPosts';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PostForm: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (id) {
-      const post = mockPosts.find((post) => post.id === parseInt(id));
-      if (post) {
-        setCategory(post.category);
-        setTitle(post.title);
-        setDescription(post.description);
-        setImagePreviews(post.images.map((image) => image.url));
-      }
-    }
-  }, [id]);
+  // const { id } = useParams<{ id: string }>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +26,7 @@ const PostForm: React.FC = () => {
       return;
     }
 
-    // 여기에 API 호출 코드를 추가하여 글을 작성 또는 수정합니다.
+    // 여기에 API 호출 코드를 추가하여 글을 작성합니다.
     console.log({ category, title, description, images });
     navigate(`/club/board/${category}`);
   };
@@ -61,9 +48,7 @@ const PostForm: React.FC = () => {
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 bg-white">
-      <h1 className="text-2xl font-bold mb-4">
-        {id ? '글 수정' : '새 글 작성'}
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">새 글 작성</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Select onValueChange={setCategory} value={category} required>
@@ -129,7 +114,7 @@ const PostForm: React.FC = () => {
         </div>
         <div className="flex justify-end">
           <Button type="submit" className="hover:bg-green-600">
-            {id ? '수정 완료' : '작성 완료'}
+            작성 완료
           </Button>
         </div>
       </form>

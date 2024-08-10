@@ -642,6 +642,8 @@ export interface ApiResponseListChatRoomResponseDTO {
 }
 
 export interface ChatRoomResponseDTO {
+  /** @format int64 */
+  associatedId?: number;
   title?: string;
   type?: ChatRoomResponseDtoTypeEnum;
   lastMessageContent?: string;
