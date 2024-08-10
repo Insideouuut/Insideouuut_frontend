@@ -6,7 +6,10 @@ import GroupCard from '../../components/GroupCard';
 // 로딩 스피너 컴포넌트
 const Spinner: React.FC = () => (
   <div className="w-full flex justify-center items-center h-[1000px]">
-    <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+    <div
+      className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+      role="status"
+    >
       <span className="visually-hidden">Loading...</span>
     </div>
   </div>
