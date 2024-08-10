@@ -2,6 +2,7 @@ import {
   getColorByMeetingType,
   getColorByType,
   getDefaultImageByCategory,
+  getLinkByType,
 } from '@/utils/cardUtils'; // 카드 관련 유틸리티 함수 임포트
 import { formatClubTime, formatEventTime } from '@/utils/timeUtils'; // 시간 관련 유틸리티 함수 임포트
 import { MapPin, Users } from 'lucide-react';
@@ -44,7 +45,7 @@ const NewCard: React.FC<NewCardProps> = ({
 
   return (
     <Link
-      to={`/${type}/${id}`}
+      to={`/${getLinkByType(type)}/${id}`}
       className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[430px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
     >
       <div className="w-[100px] h-[100px]">
