@@ -56,15 +56,6 @@ const ClubPage: React.FC = () => {
     localStorage.removeItem('accessToken');
   };
 
-  const handleImageChange = (newImage: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        images: [{ name: 'newImage', url: newImage }],
-      });
-    }
-  };
-
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
     if (menu.includes('Board')) {
