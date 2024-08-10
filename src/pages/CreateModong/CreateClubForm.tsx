@@ -1,3 +1,4 @@
+import { createClub } from '@/api/createModongApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +18,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Club } from '@/types/Modong';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { Camera, Info } from 'lucide-react';
@@ -32,9 +32,9 @@ const LEVEL_DETAIL = [
 ];
 
 const ClubSchema = z.object({
-  category: z.enum(['사교/취미', '운동', '스터디']),
+  category: z.enum(['SOCIAL', 'SPORTS', 'STUDY']),
   categoryDetail: z.string().min(1, { message: '필수 입력 항목입니다.' }),
-  level: z.enum(['상', '중', '하']).optional(),
+  level: z.enum(['ADVANCED', 'INTERMEDIATE', 'BEGINNER']).optional(),
   hasMembershipFee: z.boolean(),
   membershipFeeAmount: z.preprocess(
     (val) => Number(val),
@@ -54,16 +54,16 @@ const ClubSchema = z.object({
   name: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   introduction: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   rules: z.string().min(1, { message: '필수 입력 항목입니다.' }),
-  images: z.union([z.instanceof(File), z.null()]),
+  imageFiles: z.union([z.instanceof(File), z.string()]),
   joinQuestions: z.string().min(1, { message: '필수 입력 항목입니다.' }),
 });
 
 type ClubFormData = z.infer<typeof ClubSchema>;
 
 const initialValues: ClubFormData = {
-  category: '사교/취미',
+  category: 'SOCIAL',
   categoryDetail: '',
-  level: '중',
+  level: 'INTERMEDIATE',
   hasMembershipFee: false,
   membershipFeeAmount: 0,
   activityRegion: '',
@@ -77,11 +77,12 @@ const initialValues: ClubFormData = {
   name: '',
   introduction: '',
   rules: '',
-  images: null,
+  imageFiles: '',
   joinQuestions: '',
 };
 
 const CreateClubForm = () => {
+  // const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -102,67 +103,77 @@ const CreateClubForm = () => {
   const frequency = watch('frequency');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | ''>('');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
+    const file = event.target.files?.[0] || '';
     setSelectedFile(file);
-    setValue('images', file);
+    setValue('imageFiles', file);
   };
 
   useEffect(() => {
     switch (category) {
-      case '사교/취미':
+      case 'SOCIAL':
         setCategoryDetail(CATEGORY_DETAIL[0]);
         break;
-      case '운동':
+      case 'SPORTS':
         setCategoryDetail(CATEGORY_DETAIL[1]);
         setLevelDetail(LEVEL_DETAIL[0]);
         break;
-      case '스터디':
+      case 'STUDY':
         setCategoryDetail(CATEGORY_DETAIL[2]);
         setLevelDetail(LEVEL_DETAIL[1]);
         break;
     }
   }, [category]);
 
-  const onSubmit = (data: ClubFormData) => {
-    let levelData = data.level || '';
-    if (data.category === '사교/취미') {
-      levelData = '';
-    }
-    const membershipFeeAmountData = data.membershipFeeAmount || 0;
-    let dateData = data.frequency + ' ';
-    if (data.frequency === '매주') {
-      dateData += data?.weekDay;
-    } else if (data.frequency === '매달') {
-      dateData += data?.monthDate + '일';
-    }
-    let ratioData = '';
-    if (data.ratio) {
-      ratioData = `${ratio} : ${10 - ratio}`;
-    }
-
-    const createClubData: Club = {
+  const onSubmit = async (data: ClubFormData) => {
+    const request = {
       category: data.category,
       categoryDetail: data.categoryDetail,
-      level: levelData,
+      level: data.category === 'SOCIAL' ? '' : data.level || '',
       hasMembershipFee: data.hasMembershipFee,
-      membershipFeeAmount: membershipFeeAmountData,
+      membershipFeeAmount: data.membershipFeeAmount || 0,
       activityRegion: data.activityRegion,
-      date: dateData,
+      date: `${data.frequency} ${data.frequency === '매주' ? data.weekDay : data.monthDate + '일'}`,
       participantLimit: data.participantLimit,
       hasGenderRatio: data.hasGenderRatio,
-      ratio: ratioData,
-      ageRange: data.ageRange,
+      ratio: `${data.ratio} : ${10 - data.ratio}`,
+      minAge: data.ageRange[0],
+      maxAge: data.ageRange[1],
       name: data.name,
       introduction: data.introduction,
-      rules: [data.rules],
-      images: data.images,
-      joinQuestions: [data.joinQuestions],
+      rules: data.rules.split(',').map((rule) => rule.trim()),
+      joinQuestions: data.joinQuestions
+        .split(',')
+        .map((joinQuestion) => joinQuestion.trim()),
     };
-    console.log('data:', createClubData);
-    alert('동아리 생성이 완료되었습니다!');
+
+    const formData = new FormData();
+    formData.append(
+      'request',
+      new Blob([JSON.stringify(request)], { type: 'application/json' }),
+    );
+    formData.append('imageFiles', data.imageFiles);
+
+    try {
+      const response = await createClub(formData);
+      // const clubId = response.data.results[0].clubId;
+      if (response.status === 200) {
+        if (response.data.status.code === 200) {
+          alert('동아리 생성이 완료되었습니다!');
+          // navigate(`/club/${clubId}`);
+        } else {
+          alert(response.data.status.message);
+        }
+      } else {
+        console.error(response.statusText);
+        alert(response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    }
   };
 
   return (
@@ -182,12 +193,12 @@ const CreateClubForm = () => {
               type="single"
               value={field.value}
               onValueChange={(value) => {
-                field.onChange(value as '사교/취미' | '운동' | '스터디');
+                field.onChange(value as 'SOCIAL' | 'SPORTS' | 'STUDY');
               }}
             >
-              <ToggleGroupItem value="사교/취미">사교/취미</ToggleGroupItem>
-              <ToggleGroupItem value="운동">운동</ToggleGroupItem>
-              <ToggleGroupItem value="스터디">스터디</ToggleGroupItem>
+              <ToggleGroupItem value="SOCIAL">사교/취미</ToggleGroupItem>
+              <ToggleGroupItem value="SPORTS">운동</ToggleGroupItem>
+              <ToggleGroupItem value="STUDY">스터디</ToggleGroupItem>
             </ToggleGroup>
           )}
         />
@@ -220,7 +231,7 @@ const CreateClubForm = () => {
         )}
       </div>
 
-      {(category === '운동' || category == '스터디') && (
+      {(category === 'SPORTS' || category == 'STUDY') && (
         <div className="flex flex-col gap-4 items-start">
           <div className="flex items-center justify-between w-full">
             <Label htmlFor="level">
@@ -250,26 +261,28 @@ const CreateClubForm = () => {
                 type="single"
                 value={field.value}
                 onValueChange={(value) =>
-                  field.onChange(value as '상' | '중' | '하')
+                  field.onChange(
+                    value as 'ADVANCED' | 'INTERMEDIATE' | 'BEGINNER',
+                  )
                 }
                 className="flex w-full"
               >
                 <ToggleGroupItem
-                  value="상"
+                  value="ADVANCED"
                   className="flex-1"
                   variant="outline"
                 >
                   상
                 </ToggleGroupItem>
                 <ToggleGroupItem
-                  value="중"
+                  value="INTERMEDIATE"
                   className="flex-1"
                   variant="outline"
                 >
                   중
                 </ToggleGroupItem>
                 <ToggleGroupItem
-                  value="하"
+                  value="BEGINNER"
                   className="flex-1"
                   variant="outline"
                 >
@@ -601,9 +614,29 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="rules">
-          동아리 규칙 <span className="text-primary font-neoBold">*</span>
-        </Label>
+        <div className="flex items-center justify-between w-full">
+          <Label htmlFor="rules">
+            <Label htmlFor="rules">
+              동아리 규칙 <span className="text-primary font-neoBold">*</span>
+            </Label>
+          </Label>
+          <Popover>
+            <PopoverTrigger>
+              <Info color="#ccc" />
+            </PopoverTrigger>
+            <PopoverContent className="m-2 text-xs">
+              <p>
+                규칙은 쉼표(,)로 구분됩니다.
+                <br />
+                마지막 규칙 뒤에 쉼표(,)를 작성하지 마세요.
+              </p>
+              <p className="mt-2">예시</p>
+              <p className="text-gray-500">
+                동아리 규칙 1, 동아리 규칙 2, 동아리 규칙 3
+              </p>
+            </PopoverContent>
+          </Popover>
+        </div>
         <Controller
           name="rules"
           control={control}
@@ -617,13 +650,13 @@ const CreateClubForm = () => {
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="images">이미지 추가 (선택)</Label>
+        <Label htmlFor="imageFiles">이미지 추가 (선택)</Label>
         <Controller
-          name="images"
+          name="imageFiles"
           control={control}
           render={({ field }) => (
             <Input
-              id="images"
+              id="imageFiles"
               type="file"
               ref={fileInputRef}
               onChange={(e) => {
@@ -649,15 +682,37 @@ const CreateClubForm = () => {
         {selectedFile && (
           <div className="text-sm text-gray-500">{selectedFile.name}</div>
         )}
-        {errors.images && (
-          <span className="text-red-500 text-sm">{errors.images.message}</span>
+        {errors.imageFiles && (
+          <span className="text-red-500 text-sm">
+            {errors.imageFiles.message}
+          </span>
         )}
       </div>
 
       <div className="flex flex-col gap-4 items-start">
-        <Label htmlFor="joinQuestions">
-          가입 질문 <span className="text-primary font-neoBold">*</span>
-        </Label>
+        <div className="flex items-center justify-between w-full">
+          <Label htmlFor="joinQuestions">
+            <Label htmlFor="joinQuestions">
+              가입 질문 <span className="text-primary font-neoBold">*</span>
+            </Label>
+          </Label>
+          <Popover>
+            <PopoverTrigger>
+              <Info color="#ccc" />
+            </PopoverTrigger>
+            <PopoverContent className="m-2 text-xs">
+              <p>
+                가입 질문은 쉼표(,)로 구분됩니다.
+                <br />
+                마지막 질문 뒤에 쉼표(,)를 작성하지 마세요.
+              </p>
+              <p className="mt-2">예시</p>
+              <p className="text-gray-500">
+                가입 질문 1, 가입 질문 2, 가입 질문 3
+              </p>
+            </PopoverContent>
+          </Popover>
+        </div>
         <Controller
           name="joinQuestions"
           control={control}

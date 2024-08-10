@@ -8,27 +8,37 @@ export interface Group {
   participantLimit: number;
   hasGenderRatio: string;
   ratio: string;
-  ageRange: number[];
   name: string;
   introduction: string;
   rules: string[];
-  images?: File | null;
   joinQuestions: string[];
 }
 
 export interface Meeting extends Group {
-  meetingPlace: string;
-  // meetingPlace: {
-  //   name: string;
-  //   placeUrl: string;
-  //   kakaoMapId: number;
-  //   addressName: string;
-  //   roadAddressName: string;
-  //   latitude: string;
-  //   longitude: string;
-  // };
+  meetingPlace: {
+    name: string;
+    placeUrl: string;
+    kakaoMapId: string;
+    addressName: string;
+    roadAddressName: string;
+    latitude: string;
+    longitude: string;
+  };
+  ageRange: number[];
+}
+
+export interface MeetingRequest {
+  request: Meeting;
+  imageFiles: FormData;
 }
 
 export interface Club extends Group {
   activityRegion: string;
+  minAge: number;
+  maxAge: number;
+}
+
+export interface ClubRequest {
+  request: Club;
+  imageFiles: FormData;
 }
