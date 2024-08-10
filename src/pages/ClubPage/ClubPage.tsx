@@ -1,5 +1,5 @@
-import { Api } from '@/api/Apis'; // Apis.ts 파일에서 Api 클래스를 가져옴
-import { getClubData } from '@/api/meetingApi';
+import { Api } from '@/api/Apis';
+import { checkUserAuthority, getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
@@ -20,22 +20,19 @@ const ClubPage: React.FC = () => {
   );
   const [hasNotifications, setHasNotifications] = useState(false);
   const { id: clubId } = useParams<{ id: string }>();
-  const [profileCoords, setProfileCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
-    top: 0,
-    left: 0,
-  });
-  const [notificationCoords, setNotificationCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
+  const [profileCoords, setProfileCoords] = useState({ top: 0, left: 0 });
+  const [notificationCoords, setNotificationCoords] = useState({
     top: 0,
     left: 0,
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
+  const [clubData, setClubData] = useState<Result | null>(null);
+  const [userProfile, setUserProfile] = useState<{
+    nickname: string;
+    profileImage: string;
+  } | null>(null);
+  const [userAuthority, setUserAuthority] = useState<string>('');
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -79,9 +76,6 @@ const ClubPage: React.FC = () => {
     }
   };
 
-  const [clubData, setClubData] = useState<Result | null>(null);
-  const [isHost, setIsHost] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -89,20 +83,31 @@ const ClubPage: React.FC = () => {
           const data = await getClubData(clubId);
           setClubData(data);
 
-          // 로그인한 사용자 프로필 정보를 가져옴
-          const api = new Api(); // API 클래스 인스턴스 생성
-          const profileResponse = await api.api.getMyProfile();
+          const token = localStorage.getItem('accessToken') || '';
+          const authorityResponse = await checkUserAuthority(clubId, token);
+          const authority = authorityResponse.results[0].authority;
+          setUserAuthority(authority);
 
-          const loggedInUserId = profileResponse.results?.[0]?.userId; // ProfileResponse의 userId 가져오기
-          console.log('Logged in user ID:', loggedInUserId);
-          console.log('Club host ID:', data.host.id);
+          if (authority === '호스트' || authority === '멤버') {
+            const api = new Api();
+            const profileResponse = await api.api.getMyProfile();
+            const profile = profileResponse.results?.[0];
 
-          if (loggedInUserId) {
-            setIsHost(data.host.id === loggedInUserId);
+            if (profile?.nickname && profile?.profileImage) {
+              setUserProfile({
+                nickname: profile.nickname,
+                profileImage: profile.profileImage,
+              });
+            } else {
+              setUserProfile(null);
+            }
           }
         }
       } catch (error) {
-        console.error('Error fetching club data or profile data:', error);
+        console.error(
+          'Error fetching club data or checking user authority:',
+          error,
+        );
       }
     };
 
@@ -124,6 +129,8 @@ const ClubPage: React.FC = () => {
           clubData={clubData}
           onImageChange={handleImageChange}
           isLoggedIn={isLoggedIn}
+          userProfile={userProfile}
+          userAuthority={userAuthority}
         />
       )}
       <div className="flex mt-4 justify-center">
@@ -134,7 +141,7 @@ const ClubPage: React.FC = () => {
             selectedMenu={selectedMenu}
             setSelectedMenu={handleMenuClick}
             clubType={clubData.type}
-            isHost={isHost}
+            isHost={userAuthority === '호스트'}
           />
         )}
         <div>

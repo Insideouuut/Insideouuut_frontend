@@ -222,7 +222,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           </div>
         )}
 
-        {clubType === '모임' && (
+        {clubType === '모임' && !isHost && (
           <div
             role="button"
             tabIndex={0}
