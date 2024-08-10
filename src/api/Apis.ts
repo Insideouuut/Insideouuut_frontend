@@ -360,6 +360,7 @@ export interface MeetingUpdateRequest {
 }
 
 export interface ApiResponseMyProfileResponse {
+  data: any;
   status?: Status;
   metadata?: Metadata;
   results?: MyProfileResponse[];
