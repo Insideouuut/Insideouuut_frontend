@@ -1,9 +1,12 @@
+import { login } from '@/api/authApi';
 import animationData from '@/assets/lottie/hi.json';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { useUserStore } from '@/store/userStore';
+import { LoginRequest } from '@/types/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Lottie from 'lottie-react';
 import { useForm } from 'react-hook-form';
@@ -16,33 +19,50 @@ const loginSchema = z.object({
     .string()
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
     .regex(/[a-z]/, '비밀번호는 최소 한 개의 소문자를 포함해야 합니다.')
-    .regex(/[A-Z]/, '비밀번호는 최소 한 개의 대문자를 포함해야 합니다.')
     .regex(
       /[!@#$%^&*(),.?":{}|<>]/,
       '비밀번호는 최소 한 개의 특수문자를 포함해야 합니다.',
     ),
 });
 
-type LoginFormValues = {
-  email: string;
-  password: string;
-};
-
 const Login = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
-    alert(JSON.stringify(data));
-    navigate('/landing');
-    // 여기에 폼 제출 로직 추가
+  const onSubmit = async (data: LoginRequest) => {
+    try {
+      const response = await login(data);
+      const statusCode = response.data.status.code;
+      const statusMessage = response.data.status.message;
+      const token = response.headers['authorization'];
+
+      if (statusCode === 200) {
+        console.log(token);
+
+        alert('로그인에 성공했습니다.');
+        localStorage.setItem('accessToken', token);
+        setUser(data);
+        navigate('/main');
+      } else {
+        console.error(statusMessage);
+        alert(statusMessage);
+      }
+    } catch (error) {
+      console.error('로그인 중 오류 발생:', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const kakaoLogin = async () => {
+    location.href = 'https://modong-backend.site/oauth2/authorization/kakao';
   };
 
   return (
@@ -65,15 +85,17 @@ const Login = () => {
               <h1 className="text-xl font-bold">로그인</h1>
             </div>
 
-            <Link to="/auth/kakao">
-              <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
-                카카오로 로그인하기
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              onClick={kakaoLogin}
+              className="w-full bg-yellow-400 text-black hover:bg-yellow-500"
+            >
+              카카오로 로그인하기
+            </Button>
 
             <div className="flex items-center">
               <Separator className="flex-1" />
-              <span className="text-gray-300 text-xs w-8">또는</span>
+              <span className="text-gray-300 text-xs mx-3">또는</span>
               <Separator className="flex-1" />
             </div>
 
@@ -122,7 +144,7 @@ const Login = () => {
 
               <div className="grow"></div>
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full hover:bg-green-600">
                 이메일로 로그인하기
               </Button>
             </div>

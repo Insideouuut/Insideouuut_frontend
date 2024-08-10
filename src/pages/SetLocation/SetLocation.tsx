@@ -1,3 +1,4 @@
+import { Api } from '@/api/Apis';
 import animationData from '@/assets/lottie/setlocation.json';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -12,13 +13,16 @@ import { Input } from '@/components/ui/input';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import MapComponent from '@/pages/SetLocation/MapComponent';
+import { useUserStore } from '@/store/userStore';
 import { CircleAlert, Map } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
+const apiInstance = new Api();
+
 const SetLocation: React.FC = () => {
+  const { isLoggedIn, setUser, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -29,7 +33,8 @@ const SetLocation: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
-  const [location, setLocation] = useState(''); // 위치 상태
+  const [myLocation, setMyLocation] = useState(''); // 위치 상태
+  const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -48,13 +53,38 @@ const SetLocation: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
   };
 
   // 위치 데이터를 업데이트하는 함수
   const handleLocationSelect = (newLocation: string) => {
-    setLocation(newLocation);
+    setMyLocation(newLocation);
+  };
+
+  const handleNeighborhoodsUpdate = (neighborhoods: string[]) => {
+    setNeighborhoods(neighborhoods);
+  };
+
+  const handleVerification = async () => {
+    const locationParts = myLocation.split(' ');
+    const location = locationParts[locationParts.length - 1];
+    const isVerified = neighborhoods.includes(location);
+    try {
+      // 서버에 데이터 전송
+      await apiInstance.api.insertUserLocation({
+        locations: neighborhoods,
+        isVerified,
+      });
+      setUser({
+        location: location,
+      });
+      localStorage.setItem('neighborhoods', JSON.stringify(neighborhoods));
+      alert(isVerified ? '동네 인증 성공!' : '동네 인증 실패.');
+    } catch (error) {
+      console.error('Error verifying location:', error);
+    }
   };
 
   return (
@@ -63,7 +93,7 @@ const SetLocation: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -76,14 +106,16 @@ const SetLocation: React.FC = () => {
         />
         <main className="flex-grow container mx-auto py-4 px-4 flex flex-col items-center">
           <section className="bg-white p-8 w-full mt-8 rounded shadow-md flex flex-col items-center">
-            <MapComponent onLocationSelect={handleLocationSelect} />
+            <MapComponent
+              onLocationSelect={handleLocationSelect}
+              onNeighborhoodsUpdate={handleNeighborhoodsUpdate}
+            />
             <div className="flex space-x-4 p-8 items-center justify-center">
               <Map className="text-primary " />
-              <p className="font-neoBold whitespace-nowrap">우리 동네</p>
+              <p className="font-neoBold whitespace-nowrap">현재 내 위치</p>
               <Input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="시, 구, 동 입력"
+                value={myLocation}
+                onChange={(e) => setMyLocation(e.target.value)}
               />
             </div>
 
@@ -101,7 +133,10 @@ const SetLocation: React.FC = () => {
               </HoverCardContent>
             </HoverCard>
 
-            <Button className="bg-slate-100 hover:bg-slate-200 text-black font-neoBold">
+            <Button
+              onClick={handleVerification}
+              className="bg-slate-100 hover:bg-slate-200 text-black font-neoBold"
+            >
               동네 인증하기
             </Button>
           </section>

@@ -1,109 +1,96 @@
-import locationImg from '@/assets/icons/location.svg';
-import peopleImg from '@/assets/icons/people.png';
+import {
+  getColorByMeetingType,
+  getColorByType,
+  getDefaultImageByCategory,
+  getLinkByType,
+} from '@/utils/cardUtils';
+import { MapPin, Users } from 'lucide-react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface GroupCardProps {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageSrc: string;
-  title: string;
-  subtitle: string;
+  id: number;
+  type: string;
+  imageUrl: string;
+  name: string;
+  introduction: string | undefined;
   date: string;
   location: string;
-  participants: string;
+  participantsNumber: number;
+  participantLimit: number;
+  category: string;
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({
-  clubTypes,
-  meetingTypes,
-  imageSrc,
-  title,
-  subtitle,
+  id,
+  type,
+  imageUrl,
+  name,
+  introduction = '', // 기본값을 빈 문자열로 설정
   date,
   location,
-  participants,
+  participantsNumber,
+  participantLimit,
+  category,
 }) => {
-  const participantRatio =
-    parseInt(participants.split('/')[0].replace('(', '')) /
-    parseInt(participants.split('/')[1].replace(')', ''));
-  const isAlmostFull = participantRatio >= 0.8;
+  const isAlmostFull = participantsNumber / participantLimit >= 0.8;
 
-  const getColorByClubType = (type: string) => {
-    switch (type) {
-      case '동아리':
-        return 'bg-green-200 text-green-800';
-      case '모임':
-        return 'bg-gray-200 text-gray-800';
-      default:
-        return '';
-    }
-  };
-
-  const getColorByMeetingType = (type: string) => {
-    switch (type) {
-      case '사교/취미':
-        return 'bg-yellow-200 text-yellow-800';
-      case '운동':
-        return 'bg-blue-200 text-blue-800';
-      case '스터디':
-        return 'bg-purple-200 text-purple-800';
-      default:
-        return '';
-    }
-  };
+  const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
 
   return (
-    <div className="flex mx-auto mb-1 items-center border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[160px]">
+    <Link
+      to={`/${getLinkByType(type)}/${id}`}
+      className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[170px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
+    >
       <div className="w-[140px] h-[135px]">
         <img
-          src={imageSrc}
-          alt={title}
+          src={mainImage}
+          alt={name}
           className="w-full h-full rounded-lg object-cover"
         />
       </div>
       <div className="ml-6 flex flex-col justify-between w-[60%]">
         <div>
           <div className="flex items-center space-x-2 mb-2">
-            {clubTypes.map((tag, index) => (
-              <span
-                key={index}
-                className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByClubType(tag)}`}
-              >
-                {tag}
-              </span>
-            ))}
-            {meetingTypes.map((tag, index) => (
-              <span
-                key={index}
-                className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(tag)}`}
-              >
-                {tag}
-              </span>
-            ))}
+            <span
+              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByType(type)}`}
+            >
+              {type}
+            </span>
+            <span
+              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(category)}`}
+            >
+              {category}
+            </span>
             {isAlmostFull && (
-              <span className="flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
+              <span className="flex items-center justify-center h-5 px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
                 마감임박
               </span>
             )}
           </div>
-          <h2 className="text-base font-neoBold mb-1">{title}</h2>
-          <p className="text-gray-500 text-[12px]">{subtitle}</p>
+          <h2 className="text-base font-neoBold mb-1">
+            {' '}
+            {name.length > 18 ? `${name.slice(0, 18)}...` : name}
+          </h2>
+          <p className="text-gray-500 text-[12px]">
+            {introduction.length > 20
+              ? `${introduction.slice(0, 20)}...`
+              : introduction}
+          </p>
         </div>
         <div className="text-gray-500 font-neoBold text-[12px] mt-1">
           <p>{date}</p>
           <div className="flex mt-1 items-center">
-            <img
-              src={locationImg}
-              alt="Location Icon"
-              className="w-[13px] h-[13px] mr-1"
-            />
-            <p className="mr-4">{location}</p>
-            <img src={peopleImg} alt="People Icon" className="w-4 h-4 mr-1" />
-            <p>{participants}</p>
+            <MapPin className="w-4 mr-1" />
+            <p className="mr-4">
+              {location.length > 10 ? `${location.slice(0, 10)}...` : location}
+            </p>
+            <Users className="w-4 mr-1" />
+            <p>{`${participantsNumber}/${participantLimit}`}</p>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

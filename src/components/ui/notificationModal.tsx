@@ -48,16 +48,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       }
     };
 
-    const handleMouseLeave = () => {
-      toggleNotificationModal();
-    };
-
     document.addEventListener('mousedown', handleClickOutside);
-    currentModalRef?.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      currentModalRef?.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [toggleNotificationModal]);
 
