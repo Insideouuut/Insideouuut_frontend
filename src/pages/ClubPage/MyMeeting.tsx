@@ -1,4 +1,4 @@
-import { getClubData } from '@/api/meetingApi';
+import { getMeetingData } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { Result } from '@/types/Meetings';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ const Mymeeting: React.FC = () => {
     if (clubId) {
       const fetchData = async () => {
         try {
-          const data = await getClubData(clubId);
+          const data = await getMeetingData(clubId);
           if (data.type === '모임') {
             setClubData(data);
           }

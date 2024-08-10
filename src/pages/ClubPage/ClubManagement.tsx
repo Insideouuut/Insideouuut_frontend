@@ -1,8 +1,8 @@
 import {
-  deleteClubData,
+  deleteMeetingData,
   endMeeting,
-  getClubData,
-  updateClubData,
+  getMeetingData,
+  updateMeetingData,
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { Result } from '@/types/Meetings';
@@ -49,7 +49,7 @@ const ClubManagement: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data: Result = await getClubData(meetingId!);
+        const data: Result = await getMeetingData(meetingId!);
 
         const clubData: ClubData = {
           name: data.name,
@@ -147,7 +147,7 @@ const ClubManagement: React.FC = () => {
     try {
       const token = localStorage.getItem('accessToken') || '';
       if (formData) {
-        await updateClubData(meetingId!, formData, token);
+        await updateMeetingData(meetingId!, formData, token);
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -175,7 +175,7 @@ const ClubManagement: React.FC = () => {
       setIsDisbandModalOpen(false);
       try {
         const token = localStorage.getItem('accessToken') || '';
-        await deleteClubData(meetingId!, token);
+        await deleteMeetingData(meetingId!, token);
         alert('모임이 성공적으로 삭제되었습니다.');
         setDisbandText('');
         setDisbandError('');

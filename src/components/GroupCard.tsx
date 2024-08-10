@@ -1,3 +1,5 @@
+// src/components/GroupCard.tsx
+
 import {
   getColorByMeetingType,
   getColorByType,
@@ -25,21 +27,23 @@ const GroupCard: React.FC<GroupCardProps> = ({
   id,
   type,
   imageUrl,
-  name = '', // name이 undefined일 때 기본값을 빈 문자열로 설정
-  introduction = '', // introduction이 undefined일 때 기본값을 빈 문자열로 설정
+  name = '',
+  introduction = '',
   date,
-  location = '', // location이 undefined일 때 기본값을 빈 문자열로 설정
+  location = '',
   participantsNumber,
   participantLimit,
   category,
 }) => {
   const isAlmostFull = participantsNumber / participantLimit >= 0.8;
-
   const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
+
+  // type에 따라 링크를 다르게 설정
+  const linkTo = `/${getLinkByType(type)}/${id}`;
 
   return (
     <Link
-      to={`/${getLinkByType(type)}/${id}`}
+      to={linkTo}
       className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[400px] h-[170px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
     >
       <div className="w-[140px] h-[135px]">
@@ -69,7 +73,6 @@ const GroupCard: React.FC<GroupCardProps> = ({
             )}
           </div>
           <h2 className="text-base font-neoBold mb-1">
-            {' '}
             {name.length > 18 ? `${name.slice(0, 18)}...` : name}
           </h2>
           <p className="text-gray-500 text-[12px]">

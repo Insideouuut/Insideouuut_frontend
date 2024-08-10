@@ -1,3 +1,5 @@
+// src/types/Meeting.ts
+
 export interface Host {
   nickname: string;
   profileImageUrl: string;
@@ -41,4 +43,40 @@ export interface MeetingListResponse {
   host: Host;
   images: Image[];
   meetingPlace: MeetingPlace;
+}
+
+// 추가적으로 필요할 수 있는 다른 타입들
+
+export interface MeetingApiResponse {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: {
+    resultCount: number;
+    pageable: unknown | null;
+  };
+  results: MeetingListResponse[];
+}
+
+export interface MeetingDetailResponse extends MeetingListResponse {
+  id: number;
+  type: string;
+  participants: {
+    nickname: string;
+    profileImageUrl: string;
+  }[];
+}
+
+// 예를 들어, 모임 단건 조회 API의 결과를 담는 타입
+export interface SingleMeetingResponse {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: {
+    resultCount: number;
+    pageable: unknown | null;
+  };
+  results: MeetingDetailResponse[];
 }
