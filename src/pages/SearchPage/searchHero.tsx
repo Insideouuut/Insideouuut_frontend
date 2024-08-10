@@ -1,12 +1,17 @@
-import search from '@/assets/icons/search_24dp_5CB270.png';
+import { searchMeetings } from '@/api/searchApi';
+import searchIcon from '@/assets/icons/search_24dp_5CB270.png';
 import studyImg from '@/assets/icons/study.png';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SearchResults from './SearchResults';
 
 const topTabs = ['전체', '모임', '동아리'];
 const bottomTabs = ['전체', '사교/취미', '운동', '스터디'];
 
-const Search: React.FC = () => {
+interface SearchProps {
+  token: string;
+}
+
+const Search: React.FC<SearchProps> = ({ token }) => {
   const [activeTopTab, setActiveTopTab] = useState<string>('전체');
   const [activeBottomTab, setActiveBottomTab] = useState<string>('전체');
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({});
@@ -38,6 +43,24 @@ const Search: React.FC = () => {
     }
   }, [activeBottomTab]);
 
+  const fetchSearchResults = useCallback(async () => {
+    try {
+      await searchMeetings(
+        submittedSearchQuery,
+        activeBottomTab,
+        'date',
+        activeTopTab,
+        token,
+      );
+    } catch (error) {
+      console.error('Failed to fetch search results:', error);
+    }
+  }, [submittedSearchQuery, activeBottomTab, activeTopTab, token]);
+
+  useEffect(() => {
+    fetchSearchResults();
+  }, [submittedSearchQuery, activeTopTab, activeBottomTab, fetchSearchResults]);
+
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setSubmittedSearchQuery(searchQuery);
@@ -54,9 +77,7 @@ const Search: React.FC = () => {
           <p className="text-white font-neoLight mt-2">
             취향에 맞는 모임을 찾아
           </p>
-          <p className=" text-white font-neoLight mt-2">
-            같이 취미를 즐겨봐요.
-          </p>
+          <p className="text-white font-neoLight mt-2">같이 취미를 즐겨봐요.</p>
         </div>
         <img src={studyImg} style={{ height: 200, width: 200 }} alt="Study" />
       </div>
@@ -109,7 +130,7 @@ const Search: React.FC = () => {
               className="ml-2 text-primary"
               onClick={() => setSubmittedSearchQuery(searchQuery)}
             >
-              <img src={search} alt="search" className="w-[23px]" />
+              <img src={searchIcon} alt="search" className="w-[23px]" />
             </button>
           </div>
         </div>
@@ -118,6 +139,7 @@ const Search: React.FC = () => {
         activeTopTab={activeTopTab}
         activeBottomTab={activeBottomTab}
         searchQuery={submittedSearchQuery}
+        token={token}
       />
     </section>
   );

@@ -1,3 +1,8 @@
+import {
+  acceptMeetingApplication,
+  getMeetingApplicants,
+  rejectMeetingApplication,
+} from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -5,97 +10,56 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { MeetingApplicant } from '@/types/MeetingApplicantsTypes';
 import { Dialog } from '@headlessui/react';
-import { EllipsisVertical } from 'lucide-react';
-import React, { useState } from 'react';
+import { EllipsisVertical, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 interface Member {
-  id: number;
+  applyId: number;
   profileImage: string;
   nickname: string;
-  application: string;
+  mannerTemp: number;
+  answer: string | null;
 }
 
-const MEMBERS: Member[] = [
-  {
-    id: 1,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥일',
-    application: '유저1의 신청서 내용',
-  },
-  {
-    id: 2,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥이',
-    application: '유저2의 신청서 내용',
-  },
-  {
-    id: 3,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥삼',
-    application: '유저3의 신청서 내용',
-  },
-  {
-    id: 4,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥사',
-    application: '유저4의 신청서 내용',
-  },
-  {
-    id: 5,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥오',
-    application: '유저5의 신청서 내용',
-  },
-  {
-    id: 6,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥육',
-    application: '유저6의 신청서 내용',
-  },
-  {
-    id: 7,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥칠',
-    application: '유저7의 신청서 내용',
-  },
-  {
-    id: 8,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥팔',
-    application: '유저8의 신청서 내용',
-  },
-  {
-    id: 9,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥구',
-    application: '유저9의 신청서 내용',
-  },
-  {
-    id: 10,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥십',
-    application: '유저10의 신청서 내용',
-  },
-  {
-    id: 10,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥십',
-    application: '유저10의 신청서 내용',
-  },
-  {
-    id: 10,
-    profileImage: 'https://github.com/shadcn.png',
-    nickname: '흰둥십',
-    application: '유저10의 신청서 내용',
-  },
-];
-
 const MemberApproval: React.FC = () => {
+  const { id: clubId } = useParams<{ id: string }>();
+  const [members, setMembers] = useState<Member[]>([]);
   const [selectedApplication, setSelectedApplication] = useState<Member | null>(
     null,
   );
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const token = localStorage.getItem('accessToken') || '';
+        const applicants: MeetingApplicant[][] = await getMeetingApplicants(
+          clubId!,
+          token,
+        );
+
+        console.log('응답 값:', applicants);
+
+        const formattedMembers = applicants
+          .flat()
+          .map((applicant: MeetingApplicant) => ({
+            applyId: applicant.applyId,
+            profileImage: applicant.basicUserResponse.profileImage.url,
+            nickname: applicant.basicUserResponse.nickname,
+            mannerTemp: applicant.basicUserResponse.mannerTemp,
+            answer: applicant.answer,
+          }));
+        setMembers(formattedMembers);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      }
+    };
+
+    fetchMembers();
+  }, [clubId]);
 
   const openApplicationModal = (member: Member) => {
     setSelectedApplication(member);
@@ -107,17 +71,29 @@ const MemberApproval: React.FC = () => {
     setSelectedApplication(null);
   };
 
-  const handleAction = (action: '승인' | '거절') => {
-    console.log(`${action} 처리`);
+  const handleAction = async (action: '승인' | '거절', applyId: number) => {
+    const token = localStorage.getItem('accessToken') || '';
+    try {
+      if (action === '승인') {
+        await acceptMeetingApplication(String(applyId), token);
+      } else {
+        await rejectMeetingApplication(String(applyId), token);
+      }
+      setMembers((prevMembers) =>
+        prevMembers.filter((member) => member.applyId !== applyId),
+      );
+    } catch (error) {
+      console.error(`Error handling ${action} action:`, error);
+    }
     closeApplicationModal();
   };
 
   return (
-    <div className=" flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 ">
+    <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
       <h2 className="text-2xl font-bold mb-6 text-center">멤버 승인</h2>
       <div className="bg-white rounded-lg shadow-lg p-4 max-h-[700px] overflow-x-auto">
-        {MEMBERS.map((member, index) => (
-          <div key={member.id}>
+        {members.map((member, index) => (
+          <div key={member.applyId}>
             <div className="flex items-center justify-between my-2">
               <div className="flex items-center">
                 <img
@@ -126,6 +102,9 @@ const MemberApproval: React.FC = () => {
                   className="w-10 h-10 rounded-full mr-4"
                 />
                 <span>{member.nickname}</span>
+                <span className="ml-4 text-sm text-gray-500">
+                  매너온도: {member.mannerTemp}℃
+                </span>
               </div>
               <div className="flex items-center">
                 <Button
@@ -150,7 +129,7 @@ const MemberApproval: React.FC = () => {
                 </Popover>
               </div>
             </div>
-            {index < MEMBERS.length - 1 && <Separator />}
+            {index < members.length - 1 && <Separator />}
           </div>
         ))}
       </div>
@@ -166,8 +145,15 @@ const MemberApproval: React.FC = () => {
             aria-hidden="true"
           ></div>
           <div className="bg-white rounded-lg max-w-sm mx-auto p-6 relative z-20">
-            <Dialog.Title className="text-xl font-bold mb-4">
+            <Dialog.Title className="text-xl font-bold mb-4 flex justify-between items-center">
               신청서 확인
+              <Button
+                variant="ghost"
+                className="p-1 hover:bg-white"
+                onClick={closeApplicationModal}
+              >
+                <X size={24} />
+              </Button>
             </Dialog.Title>
             <Dialog.Description>
               {selectedApplication && (
@@ -175,33 +161,33 @@ const MemberApproval: React.FC = () => {
                   <img
                     src={selectedApplication.profileImage}
                     alt="avatar"
-                    className="w-10 h-10 rounded-full mr-4"
+                    className="w-10 h-10 rounded-full"
                   />
                   <span>{selectedApplication.nickname}</span>
-                  <p className="mt-4">{selectedApplication.application}</p>
+                  <p className="mt-4">
+                    {selectedApplication.answer || '신청서 내용이 없습니다.'}
+                  </p>
                 </div>
               )}
             </Dialog.Description>
             <div className="mt-4 flex space-x-4">
               <Button
-                className="bg-green-500 text-white px-4 py-2 rounded"
-                onClick={() => handleAction('승인')}
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={() =>
+                  handleAction('승인', selectedApplication!.applyId)
+                }
               >
                 승인
               </Button>
               <Button
-                className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={() => handleAction('거절')}
+                className="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600"
+                onClick={() =>
+                  handleAction('거절', selectedApplication!.applyId)
+                }
               >
                 거절
               </Button>
             </div>
-            <Button
-              className="mt-4 text-gray-500"
-              onClick={closeApplicationModal}
-            >
-              닫기
-            </Button>
           </div>
         </div>
       </Dialog>

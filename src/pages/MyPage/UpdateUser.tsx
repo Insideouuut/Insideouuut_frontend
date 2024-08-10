@@ -1,7 +1,12 @@
-import { Api } from '@/api/Apis';
+import { Api, ApiResponseMyProfileResponse } from '@/api/Apis';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useUserStore } from '@/store/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -50,7 +55,6 @@ const UpdateUser: React.FC = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -60,31 +64,93 @@ const UpdateUser: React.FC = () => {
       confirmPassword,
       phoneNumber,
       location,
-
       interests,
     },
   });
   const [isUpdated, setIsUpdated] = useState(false);
-  const [checkedNickname, setCheckedNickname] = useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState<
+    boolean | null
+  >(null);
 
   const onSubmit = async (data: ProfileFormValues) => {
+    console.log('Submitted Data:', data); // 데이터 확인
     try {
-      const updateRequest = {
+      await apiInstance.api.updateUserProfile({
         nickname: data.nickname,
         password: data.password,
-      };
-
-      const response = await apiInstance.api.updateUserProfile(updateRequest);
-      console.log('API response:', response);
-
-      setUser({
-        nickname: data.nickname,
-        password: data.password,
+        interests: data.interests,
       });
+      setUser(data);
       setIsUpdated(true);
     } catch (error) {
-      console.error('프로필 업데이트에 실패했습니다', error);
-      alert('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+      console.error('프로필 업데이트 중 오류가 발생했습니다.', error);
+    }
+  };
+  useEffect(() => {
+    // 로컬 스토리지에서 동네 목록 가져오기
+    const storedNeighborhoods = localStorage.getItem('neighborhoods');
+    if (storedNeighborhoods) {
+      setLocations(JSON.parse(storedNeighborhoods));
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response: ApiResponseMyProfileResponse =
+          await apiInstance.api.getMyProfile();
+
+        console.log(response); // 가져온 데이터를 콘솔에 출력
+
+        // response.results가 존재하고 배열이 아닐 경우 대비
+        const userProfile =
+          response.results && Array.isArray(response.results)
+            ? response.results[0]
+            : {};
+
+        // 프로필 데이터를 useUserStore에 저장
+        setUser({
+          nickname: userProfile.nickname || '',
+          phoneNumber: userProfile.phoneNumber || '',
+          location: userProfile.locations?.[0] || '', // locations를 사용하여 location 설정
+          interests:
+            userProfile.interests?.map((interest) => interest.toString()) || [], // interests를 문자열 배열로 변환
+          email: userProfile.email || '', // 이메일
+          imageUrl: userProfile.profileImage || '', // 프로필 이미지 URL
+        });
+
+        // Set default values in the form
+        setValue('nickname', userProfile.nickname || '');
+        setValue('phoneNumber', userProfile.phoneNumber || '');
+        setValue('location', userProfile.locations?.[0] || '');
+        setValue(
+          'interests',
+          userProfile.interests?.map((interest) => interest.toString()) || [],
+        );
+      } catch (error) {
+        console.error('Failed to fetch profile:', error); // 에러 처리
+      }
+    };
+
+    fetchProfile(); // 함수 호출
+  }, [setUser, setValue]);
+
+  const checkNicknameAvailability = async () => {
+    try {
+      const response = await apiInstance.api.checkNickname({ nickname });
+      const statusCode = response.status?.code;
+
+      if (statusCode === 200) {
+        alert('사용가능한 닉네임입니다.');
+        setIsNicknameAvailable(true);
+      } else if (statusCode === 400 || statusCode === 409) {
+        alert(response.status?.message);
+        setIsNicknameAvailable(false);
+      }
+    } catch (error) {
+      alert('닉네임 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
+      console.error('Nickname checked Error:', error);
     }
   };
 
@@ -94,30 +160,6 @@ const UpdateUser: React.FC = () => {
       : [...interests, value];
     setValue('interests', newInterests);
     setUser({ interests: newInterests });
-  };
-
-  const checkNicknameAvailability = async () => {
-    if (checkedNickname) console.log('nickname checking');
-    try {
-      const { nickname } = getValues();
-      const response = await apiInstance.api.checkNickname({ nickname });
-      if (response.data && response.data.status) {
-        const statusCode = response.data.status.code;
-        console.log('nickname response:', response);
-        if (statusCode === 200) {
-          alert('사용가능한 닉네임입니다.');
-          setCheckedNickname(true);
-        } else if (statusCode === 400 || statusCode === 409) {
-          alert(response.data.status.message || '알 수 없는 오류');
-          setCheckedNickname(false);
-        }
-      } else {
-        alert('서버 응답에 오류가 있습니다.');
-      }
-    } catch (error) {
-      alert('닉네임 중복 확인 중 에러가 발생했습니다. 다시 시도해주세요.');
-      console.error('Nickname checked Error:', error);
-    }
   };
 
   return (
@@ -156,11 +198,20 @@ const UpdateUser: React.FC = () => {
             </div>
             <button
               type="button"
-              onClick={checkNicknameAvailability}
               className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
+              onClick={checkNicknameAvailability}
             >
               중복 확인
             </button>
+            {isNicknameAvailable !== null && (
+              <span
+                className={`text-sm mt-7 ${isNicknameAvailable ? 'text-green-500' : 'text-red-500'}`}
+              >
+                {isNicknameAvailable
+                  ? '사용 가능한 닉네임입니다.'
+                  : '이미 사용 중인 닉네임입니다.'}
+              </span>
+            )}
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium">
@@ -210,13 +261,31 @@ const UpdateUser: React.FC = () => {
                 <span className="text-red-500">{errors.location.message}</span>
               )}
             </div>
-            <button
-              type="button"
-              className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
-              onClick={() => navigate('/setlocation')}
-            >
-              인증하러 가기
-            </button>
+            {location ? (
+              <div className="items-center justify-center flex flex-col">
+                <div className="mt-7 text-primary text-xs">인증 완료</div>
+                <Popover>
+                  <PopoverTrigger className="text-sm hover:text-primary">
+                    동네 범위 보기
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <ul className="pl-5">
+                      {locations.map((neighborhood, index) => (
+                        <li key={index}>{neighborhood}</li>
+                      ))}
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="mt-7 h-10 bg-primary text-white px-3 py-1 rounded"
+                onClick={() => navigate('/setlocation')}
+              >
+                인증하러 가기
+              </button>
+            )}
           </div>
           <div>
             <label htmlFor="phoneNumber" className="block text-sm font-medium">
@@ -226,18 +295,19 @@ const UpdateUser: React.FC = () => {
               id="phoneNumber"
               type="text"
               {...register('phoneNumber')}
-              className="mt-1  block border border-gray-200 p-2 rounded-md w-full"
+              className="mt-1 block border border-gray-200 p-2 rounded-md w-full"
             />
             {errors.phoneNumber && (
               <span className="text-red-500">{errors.phoneNumber.message}</span>
             )}
           </div>
+
           <div>
             <label htmlFor="interests" className="block text-sm font-medium">
               관심사
             </label>
             <div id="interests" className="flex gap-2 ">
-              {['사교/취미', '운동', '스터디'].map((interest) => (
+              {['SOCIAL', 'SPORTS', 'STUDY'].map((interest) => (
                 <button
                   type="button"
                   key={interest}

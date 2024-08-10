@@ -1,3 +1,4 @@
+import { Api, ChatRoomResponseDTO } from '@/api/Apis';
 import animationData from '@/assets/lottie/chat.json';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -11,16 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useUserStore } from '@/store/userStore'; // zustand store import
-import React, { useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { mockChatRooms } from './chatMockData';
+import { useUserStore } from '@/store/userStore';
+import { Bell, UsersRound } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+const apiInstance = new Api();
 
 const ChatRoom: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
+
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
     left: number;
@@ -35,7 +38,7 @@ const ChatRoom: React.FC = () => {
     top: 0,
     left: 0,
   });
-  const [filter, setFilter] = useState<'ALL' | 'CLUB' | 'MEETING'>('ALL'); // 필터 상태 추가
+
   const profileRef = useRef<HTMLImageElement>(null);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
@@ -55,18 +58,117 @@ const ChatRoom: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
-  const { clubId } = useParams<{ clubId: string }>(); // URL에서 clubId 값을 가져옴
-  const { nickname, imageUrl } = useUserStore(); // zustand에서 현재 사용자 정보 가져오기
+  // 채팅방 목록 조회
 
-  // 필터링된 채팅방 목록
-  const filteredChatRooms = mockChatRooms.filter((room) => {
-    if (filter === 'ALL') return true;
-    return room.type === filter;
-  });
+  const [allRooms, setAllRooms] = useState<ChatRoomResponseDTO[][]>([]);
+  const [meetingRooms, setMeetingRooms] = useState<ChatRoomResponseDTO[]>([]);
+  const [clubRooms, setClubRooms] = useState<ChatRoomResponseDTO[]>([]);
+  const [selectedRoomType, setSelectedRoomType] = useState<string>('ALL');
+
+  useEffect(() => {
+    const fetchAllRooms = async () => {
+      try {
+        const response = await apiInstance.api.getChatRoomsByUserId();
+        console.log('All Rooms :', response);
+        if (response?.results) {
+          setAllRooms(response.results); // 이차원 배열로 저장
+        }
+      } catch (error) {
+        console.log('failed to fetch allRooms: ', error);
+      }
+    };
+
+    const fetchMeetingRooms = async () => {
+      try {
+        const response = await apiInstance.api.getMeetingRoomsByUserId();
+        console.log('Meeting Rooms :', response);
+        if (response?.results) {
+          setMeetingRooms(response.results.flat()); // 이차원 배열로 저장
+        }
+      } catch (error) {
+        console.log('failed to fetch allRooms: ', error);
+      }
+    };
+
+    const fetchClubRooms = async () => {
+      try {
+        const response = await apiInstance.api.getClubRoomsByUserId();
+        console.log('Club Rooms :', response);
+        if (response?.results) {
+          setClubRooms(response.results.flat()); // 이차원 배열로 저장
+        }
+      } catch (error) {
+        console.log('failed to fetch allRooms: ', error);
+      }
+    };
+
+    fetchAllRooms();
+    fetchMeetingRooms();
+    fetchClubRooms();
+  }, []);
+
+  const renderRooms = () => {
+    let roomsToRender: ChatRoomResponseDTO[] = [];
+
+    if (selectedRoomType === 'ALL') {
+      roomsToRender = allRooms.flat();
+    } else if (selectedRoomType === 'CLUB') {
+      roomsToRender = clubRooms;
+    } else if (selectedRoomType === 'MEETING') {
+      roomsToRender = meetingRooms;
+    }
+
+    if (roomsToRender.length === 0) {
+      return <p>참여중인 채팅방이 없습니다</p>;
+    }
+
+    return roomsToRender.map((room: ChatRoomResponseDTO, index: number) => (
+      <li
+        key={index}
+        className="mb-4 flex items-center p-3 space-x-4 rounded-lg border-2 border-gray-100"
+      >
+        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white text-xl">
+          {room.lastMessageContent ? room.lastMessageContent.charAt(0) : ''}
+        </div>
+
+        <div className="w-full">
+          <Link
+            to={`/${room.type?.toLowerCase()}/chatRooms/${index}`}
+            state={{ room }}
+            className="text-primary hover:cursor-pointer text-md font-semibold"
+          >
+            <div className="w-full flex justify-between ">
+              <div>
+                <p> {room.title}</p>
+                <p className="text-xs text-gray-600">
+                  {room.lastMessageContent
+                    ? room.lastMessageContent
+                    : '메시지 내역이 없습니다.'}
+                </p>
+              </div>
+
+              <div className="mr-10 flex items-center space-x-3  justify-center ">
+                <div className="flex flex-col items-center  text-xs font-neoExtraBold text-red-600  ">
+                  <Bell />
+                  {room.unreadMessageCnt}
+                </div>
+                <div className="flex flex-col items-center font-neoExtraBold">
+                  <UsersRound />
+                  <p className="text-xs">{room.userCount}</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </li>
+    ));
+  };
 
   return (
     <div>
@@ -74,7 +176,7 @@ const ChatRoom: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -86,11 +188,7 @@ const ChatRoom: React.FC = () => {
       />
       <main className="relative mt-4 min-h-screen flex flex-col items-center">
         <div className="container flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
-          <Select
-            onValueChange={(value) =>
-              setFilter(value as 'ALL' | 'CLUB' | 'MEETING')
-            }
-          >
+          <Select onValueChange={(value) => setSelectedRoomType(value)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="전체 채팅방" />
             </SelectTrigger>
@@ -101,39 +199,7 @@ const ChatRoom: React.FC = () => {
             </SelectContent>
           </Select>
           <span className="mb-6 block w-full h-[1px] bg-gray-200"></span>
-          <div>
-            <ul>
-              {filteredChatRooms.map((room, index) => {
-                return (
-                  <li
-                    key={index}
-                    className="mb-4 flex items-center p-3 space-x-4 rounded-lg border-2 border-gray-100"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white text-xl">
-                      {room.lastMessageContent}
-                    </div>
-
-                    <div>
-                      <Link
-                        to={`/club/chatRooms/${clubId}/${index}`}
-                        state={{ user: { nickname, imageUrl } }}
-                        key={index}
-                        className="text-primary hover:cursor text-md font-semibold"
-                      >
-                        {room.title}
-
-                        <p className="text-xs text-gray-600">
-                          {room.lastMessageContent
-                            ? `${room.lastMessageContent}`
-                            : 'No messages yet.'}
-                        </p>
-                      </Link>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <ul className="mt-4">{renderRooms()}</ul>
         </div>
         <Footer />
         {isProfileModalOpen && (

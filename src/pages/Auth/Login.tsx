@@ -45,6 +45,8 @@ const Login = () => {
       const token = response.headers['authorization'];
 
       if (statusCode === 200) {
+        console.log(token);
+
         alert('로그인에 성공했습니다.');
         localStorage.setItem('accessToken', token);
         setUser(data);

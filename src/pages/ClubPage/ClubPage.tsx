@@ -1,51 +1,38 @@
+import { Api } from '@/api/Apis';
+import { checkUserAuthority, getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { Result } from '@/types/Meetings';
 import React, { useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import ClubHero from './ClubHero';
 import ClubMain from './ClubMain';
 import ClubSidebar from './ClubSidebar';
-
-interface ClubData {
-  clubTypes: string[];
-  meetingTypes: string[];
-  imageUrl: string;
-  name: string;
-  description: string;
-  date: string;
-  location: string;
-  memberCount: number;
-  memberLimit: number;
-  role: '관리자' | '일반 회원';
-  backgroundColor: string;
-  backgroundImage: string;
-}
 
 const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('accessToken'),
+  );
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [profileCoords, setProfileCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
-    top: 0,
-    left: 0,
-  });
-  const [notificationCoords, setNotificationCoords] = useState<{
-    top: number;
-    left: number;
-  }>({
+  const { id: clubId } = useParams<{ id: string }>();
+  const [profileCoords, setProfileCoords] = useState({ top: 0, left: 0 });
+  const [notificationCoords, setNotificationCoords] = useState({
     top: 0,
     left: 0,
   });
   const profileRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [clubData, setClubData] = useState<Result | null>(null);
+  const [userProfile, setUserProfile] = useState<{
+    nickname: string;
+    profileImage: string;
+  } | null>(null);
+  const [userAuthority, setUserAuthority] = useState<string>('');
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -66,26 +53,7 @@ const ClubPage: React.FC = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setIsProfileModalOpen(false);
-  };
-
-  const handleColorChange = (newColor: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: newColor,
-        backgroundImage: '',
-      });
-    }
-  };
-
-  const handleImageChange = (newImage: string) => {
-    if (clubData) {
-      setClubData({
-        ...clubData,
-        backgroundColor: 'bg-gray-100',
-        backgroundImage: newImage,
-      });
-    }
+    localStorage.removeItem('accessToken');
   };
 
   const handleMenuClick = (menu: string) => {
@@ -93,20 +61,49 @@ const ClubPage: React.FC = () => {
     if (menu.includes('Board')) {
       navigate(`/club/board/${menu}`);
     } else if (menu === 'home') {
-      navigate('/club');
+      navigate(`/club/${clubId}`);
     } else {
-      navigate(`/club/${menu}`);
+      navigate(`/club/${clubId}/${menu}`);
     }
   };
 
-  const [clubData, setClubData] = useState<ClubData | null>(null);
-
   useEffect(() => {
-    if (location.state) {
-      const state = location.state as ClubData;
-      setClubData(state);
-    }
-  }, [location.state]);
+    const fetchData = async () => {
+      try {
+        if (clubId) {
+          const data = await getClubData(clubId);
+          setClubData(data);
+
+          const token = localStorage.getItem('accessToken') || '';
+          const authorityResponse = await checkUserAuthority(clubId, token);
+          const authority = authorityResponse.results[0].authority;
+          setUserAuthority(authority);
+
+          if (authority === '호스트' || authority === '멤버') {
+            const api = new Api();
+            const profileResponse = await api.api.getMyProfile();
+            const profile = profileResponse.results?.[0];
+
+            if (profile?.nickname && profile?.profileImage) {
+              setUserProfile({
+                nickname: profile.nickname,
+                profileImage: profile.profileImage,
+              });
+            } else {
+              setUserProfile(null);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching club data or checking user authority:',
+          error,
+        );
+      }
+    };
+
+    fetchData();
+  }, [clubId]);
 
   return (
     <div className="relative">
@@ -121,17 +118,21 @@ const ClubPage: React.FC = () => {
       {clubData && (
         <ClubHero
           clubData={clubData}
-          onColorChange={handleColorChange}
-          onImageChange={handleImageChange}
+          userProfile={userProfile}
+          userAuthority={userAuthority}
         />
       )}
       <div className="flex mt-4 justify-center">
-        <ClubSidebar
-          roomId="1"
-          clubId={1}
-          selectedMenu={selectedMenu}
-          setSelectedMenu={handleMenuClick}
-        />
+        {clubData && (
+          <ClubSidebar
+            roomId={'1'}
+            clubId={clubId ? parseInt(clubId) : 0}
+            selectedMenu={selectedMenu}
+            setSelectedMenu={handleMenuClick}
+            clubType={clubData.type}
+            isHost={userAuthority === '호스트'}
+          />
+        )}
         <div>
           {selectedMenu === 'home' && clubData && (
             <div>
