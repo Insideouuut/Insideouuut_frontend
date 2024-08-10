@@ -16,8 +16,8 @@ interface ClubSidebarProps {
   clubId: number;
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
-  clubType: string;  // '동아리' 또는 '모임'
-  isHost: boolean;   // 사용자가 호스트인지 여부
+  clubType: string; // '동아리' 또는 '모임'
+  isHost: boolean; // 사용자가 호스트인지 여부
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
@@ -29,8 +29,8 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   isHost,
 }) => {
   const [isBoardOpen, setIsBoardOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
@@ -71,16 +71,20 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <Home className="w-5 h-5" />
           <span className="text-sm">홈</span>
         </div>
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => handleMenuClick('meetingList')}
-          onKeyDown={(event) => handleKeyDown(event, 'meetingList')}
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('meetingList')}`}
-        >
-          <ClipboardList className="w-5 h-5" />
-          <span className="text-sm">모임 목록</span>
-        </div>
+
+        {clubType === '동아리' && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => handleMenuClick('meetingList')}
+            onKeyDown={(event) => handleKeyDown(event, 'meetingList')}
+            className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('meetingList')}`}
+          >
+            <ClipboardList className="w-5 h-5" />
+            <span className="text-sm">모임 목록</span>
+          </div>
+        )}
+
         <div className="space-y-1">
           <div
             role="button"
@@ -147,6 +151,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
             </div>
           </div>
         </div>
+
         <div
           role="button"
           tabIndex={0}
@@ -154,11 +159,12 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           onKeyDown={(event) =>
             handleKeyDown(event, `chatRooms/${clubId}/${roomId}`)
           }
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('chat')}`}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms/${clubId}/${roomId}`)}`}
         >
           <MessageCircleMore className="w-5 h-5" />
           <span className="text-sm">채팅</span>
         </div>
+
         <div
           role="button"
           tabIndex={0}
@@ -169,47 +175,66 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <Users className="w-5 h-5" />
           <span className="text-sm">멤버</span>
         </div>
-        <div className="space-y-1">
+
+        {clubType === '동아리' && (
+          <div className="space-y-1">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              onKeyDown={(event) =>
+                handleAccordionKeyDown(event, () =>
+                  setIsSettingsOpen(!isSettingsOpen),
+                )
+              }
+              className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isSettingsOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
+            >
+              <div className="flex items-center space-x-2">
+                <House className="w-5 h-5" />
+                <span className="text-sm">나의 동아리</span>
+              </div>
+              <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
+            </div>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${isSettingsOpen ? 'max-h-40' : 'max-h-0'}`}
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('createMeeting')}
+                onKeyDown={(event) => handleKeyDown(event, 'createMeeting')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('createMeeting')}`}
+              >
+                모임 생성
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('meetingListSettings')}
+                onKeyDown={(event) =>
+                  handleKeyDown(event, 'meetingListSettings')
+                }
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('mymeetingList')}`}
+              >
+                모임 관리
+              </div>
+            </div>
+          </div>
+        )}
+
+        {clubType === '모임' && (
           <div
             role="button"
             tabIndex={0}
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            onKeyDown={(event) =>
-              handleAccordionKeyDown(event, () =>
-                setIsSettingsOpen(!isSettingsOpen),
-              )
-            }
-            className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isSettingsOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
+            onClick={() => handleMenuClick('meetingListSettings')}
+            onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
+            className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('meetingListSettings')}`}
           >
-            <div className="flex items-center space-x-2">
-              <House className="w-5 h-5" />
-              <span className="text-sm">{clubType === '동아리' ? '나의 동아리' : '모임 관리'}</span>
-            </div>
-            <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
+            <House className="w-5 h-5" />
+            <span className="text-sm">모임 관리</span>
           </div>
-          <div
-            className={`overflow-hidden transition-all duration-300 ${isSettingsOpen ? 'max-h-40' : 'max-h-0'}`}
-          >
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('createMeeting')}
-              onKeyDown={(event) => handleKeyDown(event, 'createMeeting')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('createMeeting')}`}
-            >
-              모임 생성
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('meetingListSettings')}
-              onKeyDown={(event) => handleKeyDown(event, 'meetingListSettings')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('mymeetingList')}`}
-            >
-              모임 관리
-            </div>
-          </div>
-        </div>
+        )}
+
         {isHost && (
           <div className="space-y-1">
             <div
@@ -217,7 +242,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
               tabIndex={0}
               onClick={() => setIsAdminOpen(!isAdminOpen)}
               onKeyDown={(event) =>
-                handleAccordionKeyDown(event, () => setIsAdminOpen(!isAdminOpen))
+                handleAccordionKeyDown(event, () =>
+                  setIsAdminOpen(!isAdminOpen),
+                )
               }
               className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isAdminOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
             >
@@ -255,7 +282,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
                 onKeyDown={(event) => handleKeyDown(event, 'manageClub')}
                 className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('manageClub')}`}
               >
-                동아리 관리
+                {clubType === '동아리' ? '동아리 관리' : '모임 관리'}
               </div>
             </div>
           </div>

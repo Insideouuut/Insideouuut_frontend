@@ -4,12 +4,14 @@ import React, { useEffect, useState } from 'react';
 import GroupCard from '../../components/GroupCard';
 
 interface SearchResultsProps {
+  activeTopTab: string;
   activeBottomTab: string;
   searchQuery: string;
   token: string;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
+  activeTopTab,
   activeBottomTab,
   searchQuery,
   token,
@@ -30,6 +32,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           searchQuery,
           activeBottomTab,
           sort,
+          activeTopTab,
           token,
         );
         setFilteredData(results || []);
@@ -43,7 +46,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     };
 
     fetchData();
-  }, [searchQuery, activeBottomTab, sort, token]);
+  }, [searchQuery, activeBottomTab, sort, activeTopTab, token]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change

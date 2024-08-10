@@ -1,3 +1,4 @@
+import { Api } from '@/api/Apis'; // Apis.ts 파일에서 Api 클래스를 가져옴
 import { getClubData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -88,12 +89,20 @@ const ClubPage: React.FC = () => {
           const data = await getClubData(clubId);
           setClubData(data);
 
-          // 로그인한 사용자와 클럽 호스트의 닉네임을 비교
-          const loggedInUserNickname = localStorage.getItem('nickname');
-          setIsHost(data.host.nickname === loggedInUserNickname);
+          // 로그인한 사용자 프로필 정보를 가져옴
+          const api = new Api(); // API 클래스 인스턴스 생성
+          const profileResponse = await api.api.getMyProfile();
+
+          const loggedInUserId = profileResponse.data.results?.[0]?.userId;
+          console.log('Logged in user ID:', loggedInUserId);
+          console.log('Club host ID:', data.host.id);
+
+          if (loggedInUserId) {
+            setIsHost(data.host.id === loggedInUserId);
+          }
         }
       } catch (error) {
-        console.error('Error fetching club data:', error);
+        console.error('Error fetching club data or profile data:', error);
       }
     };
 

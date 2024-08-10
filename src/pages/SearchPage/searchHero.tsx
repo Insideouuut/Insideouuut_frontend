@@ -1,6 +1,7 @@
+import { searchMeetings } from '@/api/searchApi';
 import searchIcon from '@/assets/icons/search_24dp_5CB270.png';
 import studyImg from '@/assets/icons/study.png';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SearchResults from './SearchResults';
 
 const topTabs = ['전체', '모임', '동아리'];
@@ -41,6 +42,24 @@ const Search: React.FC<SearchProps> = ({ token }) => {
       });
     }
   }, [activeBottomTab]);
+
+  const fetchSearchResults = useCallback(async () => {
+    try {
+      await searchMeetings(
+        submittedSearchQuery,
+        activeBottomTab,
+        'date',
+        activeTopTab,
+        token,
+      );
+    } catch (error) {
+      console.error('Failed to fetch search results:', error);
+    }
+  }, [submittedSearchQuery, activeBottomTab, activeTopTab, token]);
+
+  useEffect(() => {
+    fetchSearchResults();
+  }, [submittedSearchQuery, activeTopTab, activeBottomTab, fetchSearchResults]);
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -117,6 +136,7 @@ const Search: React.FC<SearchProps> = ({ token }) => {
         </div>
       </div>
       <SearchResults
+        activeTopTab={activeTopTab}
         activeBottomTab={activeBottomTab}
         searchQuery={submittedSearchQuery}
         token={token}
