@@ -8,8 +8,8 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
-
 import axiosInstance from './axiosConfig';
+
 export interface ChatRoom {
   /** @format int64 */
   id?: number;
@@ -105,6 +105,7 @@ export interface ClubUser {
   userId: number;
   /** @format int64 */
   clubId: number;
+  role?: ClubUserRoleEnum;
   userName?: string;
   profileImgUrl?: string;
   mannerTemp?: number;
@@ -185,24 +186,6 @@ export interface Status {
   message?: string;
 }
 
-export interface ClubPostRequestDto {
-  postTitle?: string;
-  category?: string;
-  postContent?: string;
-}
-
-export interface ApiResponseClubPostResponseDto {
-  status?: Status;
-  metadata?: Metadata;
-  results?: ClubPostResponseDto[];
-}
-
-export interface ClubPostResponseDto {
-  message?: string;
-  /** @format int64 */
-  clubPostId?: number;
-}
-
 export interface ClubCommentRequestDto {
   content?: string;
 }
@@ -227,11 +210,6 @@ export interface ApiResponse {
   status?: Status;
   metadata?: Metadata;
   results?: object[];
-}
-
-export interface ApiResponseGetLocations {
-  locations: string[];
-  isVerified: boolean;
 }
 
 export interface LocationVerifiedRequest {
@@ -302,6 +280,24 @@ export interface UserJoinRequestDTO {
   birthDate?: string;
 }
 
+export interface ClubPostRequestDto {
+  postTitle?: string;
+  category?: string;
+  postContent?: string;
+}
+
+export interface ApiResponseClubPostResponseDto {
+  status?: Status;
+  metadata?: Metadata;
+  results?: ClubPostResponseDto[];
+}
+
+export interface ClubPostResponseDto {
+  message?: string;
+  /** @format int64 */
+  clubPostId?: number;
+}
+
 export interface ClubApplyRequestDto {
   answer?: string;
 }
@@ -360,7 +356,6 @@ export interface MeetingUpdateRequest {
 }
 
 export interface ApiResponseMyProfileResponse {
-  data: any;
   status?: Status;
   metadata?: Metadata;
   results?: MyProfileResponse[];
@@ -498,6 +493,51 @@ export interface UnifiedSearchResponse {
   meetingSearchResults?: MeetingResponse[];
 }
 
+export interface ApiResponseListMeetingUserResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: MeetingUserResponse[][];
+}
+
+export interface MeetingUserResponse {
+  /** @format int64 */
+  id?: number;
+  role?: string;
+  nickName?: string;
+  profileImage?: ImageResponse;
+  mannerTemp?: number;
+}
+
+export interface ApiResponseMeetingUserAuthorityResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: MeetingUserAuthorityResponse[];
+}
+
+export interface MeetingUserAuthorityResponse {
+  authority?: string;
+  message?: string;
+}
+
+export interface ApiResponseListMeetingApplyResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: MeetingApplyResponse[][];
+}
+
+export interface BasicUserResponse {
+  nickname?: string;
+  mannerTemp?: number;
+  profileImage?: ImageResponse;
+}
+
+export interface MeetingApplyResponse {
+  basicUserResponse?: BasicUserResponse;
+  /** @format int64 */
+  applyId?: number;
+  answer?: string;
+}
+
 export interface Pageable {
   /**
    * @format int32
@@ -510,46 +550,6 @@ export interface Pageable {
    */
   size?: number;
   sort?: string[];
-}
-
-export interface ApiResponseListClubListResponseDto {
-  status?: Status;
-  metadata?: Metadata;
-  results?: ClubListResponseDto[][];
-}
-
-export interface ClubListResponseDto {
-  /** @format int64 */
-  id?: number;
-  name?: string;
-  introduction?: string;
-  type?: string;
-  /** @format int64 */
-  chatRoomId?: number;
-  activityRegion?: string;
-  /** @format date-time */
-  createdAt?: string;
-  /** @format int32 */
-  view?: number;
-  /** @format int32 */
-  like?: number;
-  hasMembershipFee?: boolean;
-  /** @format int32 */
-  membershipFeeAmount?: number;
-  isRecruiting?: boolean;
-  level?: ClubListResponseDtoLevelEnum;
-  category?: ClubListResponseDtoCategoryEnum;
-  categoryDetail?: string;
-  date?: string;
-  /** @format int32 */
-  participantNumber?: number;
-  /** @format int32 */
-  participantLimit?: number;
-  genderRatio?: ClubListResponseDtoGenderRatioEnum;
-  host?: HostResponse;
-  ageRange?: number[];
-  rules?: string[];
-  joinQuestions?: string[];
 }
 
 export interface ApiResponseListClubPostListResponseDto {
@@ -578,6 +578,7 @@ export interface ClubPostDto {
   dateTime?: string;
   writer?: string;
   content: string;
+  images?: ImageResponse[];
 }
 
 export interface ApiResponseListClubCommentListResponseDto {
@@ -602,9 +603,21 @@ export interface ApiResponseListClubMembersResponseDto {
 }
 
 export interface ClubMembersResponseDto {
+  role?: string;
   userName?: string;
   profileImgUrl?: string;
   mannerTemp?: number;
+}
+
+export interface ApiResponseClubUserAuthorityResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: ClubUserAuthorityResponse[];
+}
+
+export interface ClubUserAuthorityResponse {
+  authority?: string;
+  message?: string;
 }
 
 export interface ApiResponseListClubApplyResponseDto {
@@ -706,6 +719,12 @@ export enum ClubGenderRatioEnum {
   IRRELEVANT = 'IRRELEVANT',
 }
 
+export enum ClubUserRoleEnum {
+  HOST = 'HOST',
+  MEMBER = 'MEMBER',
+  NONE = 'NONE',
+}
+
 export enum UserInterestsEnum {
   SOCIAL = 'SOCIAL',
   SPORTS = 'SPORTS',
@@ -742,34 +761,6 @@ export enum ClubBoardResponseDtoCategoryEnum {
 }
 
 export enum ClubBoardResponseDtoGenderRatioEnum {
-  ONLY_MALE = 'ONLY_MALE',
-  ONLY_FEMALE = 'ONLY_FEMALE',
-  ONE_TO_NINE = 'ONE_TO_NINE',
-  TWO_TO_EIGHT = 'TWO_TO_EIGHT',
-  THREE_TO_SEVEN = 'THREE_TO_SEVEN',
-  FOUR_TO_SIX = 'FOUR_TO_SIX',
-  FIVE_TO_FIVE = 'FIVE_TO_FIVE',
-  SIX_TO_FOUR = 'SIX_TO_FOUR',
-  SEVEN_TO_THREE = 'SEVEN_TO_THREE',
-  EIGHT_TO_TWO = 'EIGHT_TO_TWO',
-  NINE_TO_ONE = 'NINE_TO_ONE',
-  IRRELEVANT = 'IRRELEVANT',
-}
-
-export enum ClubListResponseDtoLevelEnum {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  NONE = 'NONE',
-}
-
-export enum ClubListResponseDtoCategoryEnum {
-  SOCIAL = 'SOCIAL',
-  SPORTS = 'SPORTS',
-  STUDY = 'STUDY',
-}
-
-export enum ClubListResponseDtoGenderRatioEnum {
   ONLY_MALE = 'ONLY_MALE',
   ONLY_FEMALE = 'ONLY_FEMALE',
   ONE_TO_NINE = 'ONE_TO_NINE',
@@ -1032,72 +1023,6 @@ export class Api<
       }),
 
     /**
-     * @description 동아리 게시글을 조회하는 API 입니다.
-     *
-     * @tags ClubPostController
-     * @name FindClubPost
-     * @summary 동아리 게시글 단건 조회 API
-     * @request GET:/api/clubs/{clubId}/post/{postId}
-     * @secure
-     */
-    findClubPost: (
-      postId: number,
-      clubId: string,
-      params: RequestParams = {},
-    ) =>
-      this.request<ApiResponseClubPostDto, any>({
-        path: `/api/clubs/${clubId}/post/${postId}`,
-        method: 'GET',
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description 동아리 게시글을 수정하는 API 입니다.
-     *
-     * @tags ClubPostController
-     * @name UpdateClubPost
-     * @summary 동아리 게시글 수정 API
-     * @request PUT:/api/clubs/{clubId}/post/{postId}
-     * @secure
-     */
-    updateClubPost: (
-      clubId: number,
-      postId: number,
-      data: ClubPostRequestDto,
-      params: RequestParams = {},
-    ) =>
-      this.request<ApiResponseClubPostResponseDto, any>({
-        path: `/api/clubs/${clubId}/post/${postId}`,
-        method: 'PUT',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * @description 동아리 게시글을 삭제하는 API 입니다.
-     *
-     * @tags ClubPostController
-     * @name DeleteClubPost
-     * @summary 동아리 게시글 삭제 API
-     * @request DELETE:/api/clubs/{clubId}/post/{postId}
-     * @secure
-     */
-    deleteClubPost: (
-      clubId: number,
-      postId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<ApiResponse, any>({
-        path: `/api/clubs/${clubId}/post/${postId}`,
-        method: 'DELETE',
-        secure: true,
-        ...params,
-      }),
-
-    /**
      * @description 동아리 게시글의 댓글을 수정하는 API 입니다.
      *
      * @tags ClubCommentController
@@ -1300,6 +1225,57 @@ export class Api<
       }),
 
     /**
+     * @description 모임 참여 신청자를 조회하는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name FindApplyList
+     * @summary 모임 참여 신청자 조회 API
+     * @request GET:/api/meetings/{meetingId}/apply
+     * @secure
+     */
+    findApplyList: (meetingId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseListMeetingApplyResponse, any>({
+        path: `/api/meetings/${meetingId}/apply`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 모임 참여 신청을 하는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name ApplyMeetingUser
+     * @summary 모임 참여 신청 API
+     * @request POST:/api/meetings/{meetingId}/apply
+     * @secure
+     */
+    applyMeetingUser: (meetingId: number, params: RequestParams = {}) =>
+      this.request<ApiResponse, any>({
+        path: `/api/meetings/${meetingId}/apply`,
+        method: 'POST',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 모임 참여 신청을 수락하는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name AcceptApply
+     * @summary 모임 참여 수락 API
+     * @request POST:/api/meetings/apply/{applyId}/accept
+     * @secure
+     */
+    acceptApply: (applyId: number, params: RequestParams = {}) =>
+      this.request<ApiResponse, any>({
+        path: `/api/meetings/apply/${applyId}/accept`,
+        method: 'POST',
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description 회원가입을 하는 API 입니다.
      *
      * @tags UserJoinController
@@ -1327,16 +1303,10 @@ export class Api<
      * @request GET:/api/clubs
      * @secure
      */
-    findByType: (
-      query: {
-        category: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<ApiResponseListClubListResponseDto, any>({
+    findByType: (params: RequestParams = {}) =>
+      this.request<ApiResponseClubBoardResponseDto, any>({
         path: `/api/clubs`,
         method: 'GET',
-        query: query,
         secure: true,
         ...params,
       }),
@@ -1352,7 +1322,7 @@ export class Api<
      */
     saveClub: (
       data: {
-        clubRequestDto: ClubRequestDto;
+        request: ClubRequestDto;
         imageFiles: File[];
       },
       params: RequestParams = {},
@@ -1372,20 +1342,13 @@ export class Api<
      * @tags ClubPostController
      * @name FindByPostType
      * @summary 동아리 게시글 목록 조회 API
-     * @request GET:/api/clubs/{clubId}/post
+     * @request GET:/api/clubs/{clubId}/posts
      * @secure
      */
-    findByPostType: (
-      clubId: number,
-      query: {
-        category: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    findByPostType: (clubId: number, params: RequestParams = {}) =>
       this.request<ApiResponseListClubPostListResponseDto, any>({
-        path: `/api/clubs/${clubId}/post`,
+        path: `/api/clubs/${clubId}/posts`,
         method: 'GET',
-        query: query,
         secure: true,
         ...params,
       }),
@@ -1396,16 +1359,19 @@ export class Api<
      * @tags ClubPostController
      * @name SaveClubPost
      * @summary 동아리 게시글 생성 API
-     * @request POST:/api/clubs/{clubId}/post
+     * @request POST:/api/clubs/{clubId}/posts
      * @secure
      */
     saveClubPost: (
       clubId: number,
-      data: ClubPostRequestDto,
+      data: {
+        request: ClubPostRequestDto;
+        imageFiles: File[];
+      },
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseClubPostResponseDto, any>({
-        path: `/api/clubs/${clubId}/post`,
+        path: `/api/clubs/${clubId}/posts`,
         method: 'POST',
         body: data,
         secure: true,
@@ -1462,12 +1428,12 @@ export class Api<
      * @description 동아리 멤버 지원자 목록을 조회하는 API 입니다.
      *
      * @tags ClubUserController
-     * @name FindApplyList
+     * @name FindApplyList1
      * @summary 동아리 멤버 지원자 목록 조회 API
      * @request GET:/api/clubs/{clubId}/apply
      * @secure
      */
-    findApplyList: (clubId: number, params: RequestParams = {}) =>
+    findApplyList1: (clubId: number, params: RequestParams = {}) =>
       this.request<ApiResponseListClubApplyResponseDto, any>({
         path: `/api/clubs/${clubId}/apply`,
         method: 'GET',
@@ -1502,12 +1468,12 @@ export class Api<
      * @description 동아리 멤버 지원을 승인하는 API 입니다.
      *
      * @tags ClubUserController
-     * @name AcceptApply
+     * @name AcceptApply1
      * @summary 동아리 멤버 지원 승인 API
      * @request POST:/api/clubs/{clubId}/apply/{applyId}/accept
      * @secure
      */
-    acceptApply: (
+    acceptApply1: (
       clubId: number,
       applyId: number,
       params: RequestParams = {},
@@ -1712,6 +1678,75 @@ export class Api<
       }),
 
     /**
+     * @description 동아리 게시글을 조회하는 API 입니다.
+     *
+     * @tags ClubPostController
+     * @name FindClubPost
+     * @summary 동아리 게시글 단건 조회 API
+     * @request GET:/api/clubs/{clubId}/posts/{postId}
+     * @secure
+     */
+    findClubPost: (
+      postId: number,
+      clubId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseClubPostDto, any>({
+        path: `/api/clubs/${clubId}/posts/${postId}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리 게시글을 삭제하는 API 입니다.
+     *
+     * @tags ClubPostController
+     * @name DeleteClubPost
+     * @summary 동아리 게시글 삭제 API
+     * @request DELETE:/api/clubs/{clubId}/posts/{postId}
+     * @secure
+     */
+    deleteClubPost: (
+      clubId: number,
+      postId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponse, any>({
+        path: `/api/clubs/${clubId}/posts/${postId}`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리 게시글을 수정하는 API 입니다.
+     *
+     * @tags ClubPostController
+     * @name UpdateClubPost
+     * @summary 동아리 게시글 수정 API
+     * @request PATCH:/api/clubs/{clubId}/posts/{postId}
+     * @secure
+     */
+    updateClubPost: (
+      clubId: number,
+      postId: number,
+      data: {
+        request: ClubPostRequestDto;
+        imageFiles: File[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseClubPostResponseDto, any>({
+        path: `/api/clubs/${clubId}/posts/${postId}`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * @description 모임을 검색하는 API 입니다.
      *
      * @tags SearchController
@@ -1787,6 +1822,40 @@ export class Api<
       }),
 
     /**
+     * @description 모임 멤버를 조회하는 API입니다.
+     *
+     * @tags MeetingUserController
+     * @name GetMemberList
+     * @summary 모임 멤버 조회 API
+     * @request GET:/api/meetings/{meetingId}/members
+     * @secure
+     */
+    getMemberList: (meetingId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseListMeetingUserResponse, any>({
+        path: `/api/meetings/${meetingId}/members`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 모임에 대한 사용자의 권한을 확인할 수 있는 API 입니다.
+     *
+     * @tags MeetingUserController
+     * @name CheckMeetingAuthority
+     * @summary 모임에 대한 사용자 권한 확인 API
+     * @request GET:/api/meetings/{meetingId}/members/authority
+     * @secure
+     */
+    checkMeetingAuthority: (meetingId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseMeetingUserAuthorityResponse, any>({
+        path: `/api/meetings/${meetingId}/members/authority`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description 나의 운영중인 모임 목록을 조회할 수 있는 API 입니다.
      *
      * @tags MeetingController
@@ -1812,7 +1881,7 @@ export class Api<
     /**
      * @description 나의 승인대기 모임 목록을 조회할 수 있는 API 입니다.
      *
-     * @tags MeetingController
+     * @tags MeetingApplyUserController
      * @name FindPendingMeetings
      * @summary 나의 승인대기 모임 목록 조회 API
      * @request GET:/api/meetings/pending
@@ -1908,6 +1977,23 @@ export class Api<
       this.request<ApiResponse, any>({
         path: `/api/clubs/${clubId}/members`,
         method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리에 대한 사용자의 권한을 확인할 수 있는 API 입니다.
+     *
+     * @tags ClubUserController
+     * @name CheckMeetingAuthority1
+     * @summary 동아리에 대한 사용자 권한 확인 API
+     * @request GET:/api/clubs/{clubId}/members/authority
+     * @secure
+     */
+    checkMeetingAuthority1: (clubId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseClubUserAuthorityResponse, any>({
+        path: `/api/clubs/${clubId}/members/authority`,
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -2077,15 +2163,49 @@ export class Api<
       }),
 
     /**
+     * @description 모임을 추방하는 API입니다.
+     *
+     * @tags MeetingUserController
+     * @name MemberExpel
+     * @summary 모임 추방 API
+     * @request DELETE:/api/meetings/members/{meetingUserId}/expel
+     * @secure
+     */
+    memberExpel: (meetingUserId: number, params: RequestParams = {}) =>
+      this.request<ApiResponse, any>({
+        path: `/api/meetings/members/${meetingUserId}/expel`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 모임 참여 신청을 거부하는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name RejectApply
+     * @summary 모임 참여 거부 API
+     * @request DELETE:/api/meetings/apply/{applyId}/reject
+     * @secure
+     */
+    rejectApply: (applyId: number, params: RequestParams = {}) =>
+      this.request<ApiResponse, any>({
+        path: `/api/meetings/apply/${applyId}/reject`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description 동아리 멤버를 추방하는 API 입니다.
      *
      * @tags ClubUserController
-     * @name MemberExpel
+     * @name MemberExpel1
      * @summary 동아리 멤버 추방 API
      * @request DELETE:/api/clubs/{clubId}/members/{clubUserId}/expel
      * @secure
      */
-    memberExpel: (
+    memberExpel1: (
       clubId: number,
       clubUserId: number,
       params: RequestParams = {},
@@ -2101,12 +2221,12 @@ export class Api<
      * @description 동아리 멤버 지원을 거절하는 API 입니다.
      *
      * @tags ClubUserController
-     * @name RejectApply
+     * @name RejectApply1
      * @summary 동아리 멤버 지원 거절 API
      * @request DELETE:/api/clubs/{clubId}/apply/{applyId}/reject
      * @secure
      */
-    rejectApply: (
+    rejectApply1: (
       clubId: number,
       applyId: number,
       params: RequestParams = {},

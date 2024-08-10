@@ -116,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({
                     ref={profileRef}
                     src={profileImage}
                     alt="Profile"
-                    className="h-8 w-8 rounded-full cursor-pointer"
+                    className="h-8 w-8 rounded-full object-cover cursor-pointer"
                   />
                 </button>
               </div>
