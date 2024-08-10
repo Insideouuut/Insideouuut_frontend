@@ -36,7 +36,7 @@ const MemberApproval: React.FC = () => {
     const fetchMembers = async () => {
       try {
         const token = localStorage.getItem('accessToken') || '';
-        const applicants: MeetingApplicant[][] = await getMeetingApplicants(
+        const applicants: MeetingApplicant[] = await getMeetingApplicants(
           clubId!,
           token,
         );
