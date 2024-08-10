@@ -93,7 +93,7 @@ const ClubPage: React.FC = () => {
           const api = new Api(); // API 클래스 인스턴스 생성
           const profileResponse = await api.api.getMyProfile();
 
-          const loggedInUserId = profileResponse.data.results?.[0]?.userId;
+          const loggedInUserId = profileResponse.results?.[0]?.userId; // ProfileResponse의 userId 가져오기
           console.log('Logged in user ID:', loggedInUserId);
           console.log('Club host ID:', data.host.id);
 

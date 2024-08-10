@@ -35,74 +35,120 @@ const Header: React.FC<HeaderProps> = ({
     <nav className="bg-white px-4 py-3.5 relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
-          <Link to="/main">
-            <img src={logo} alt="Logo" className="h-8 w-32" />
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/main">
+              <img src={logo} alt="Logo" className="h-8 w-32" />
+            </Link>
+          ) : (
+            <Link to="/">
+              <img src={logo} alt="Logo" className="h-8 w-32" />
+            </Link>
+          )}
         </div>
         <div className="hidden lg:flex items-center space-x-4 relative">
-          {isLoggedIn && (
-            <ul className="flex gap-10">
-              <li>
-                <Link
-                  to="/setlocation"
-                  className="flex font-neoExtraBold gap-1"
+          {isLoggedIn ? (
+            <>
+              <ul className="flex gap-10">
+                <li>
+                  <Link
+                    to="/setlocation"
+                    className="flex font-neoExtraBold gap-1"
+                  >
+                    내 위치
+                    <img src={location} alt="setlocation" />
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/create-meeting" className="font-neoExtraBold">
+                    모임 생성
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/create-club" className="font-neoExtraBold">
+                    동아리 생성
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/chatroom" className="font-neoExtraBold">
+                    채팅
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/landing" className="font-neoExtraBold text-xs">
+                    서비스 소개
+                  </Link>
+                </li>
+              </ul>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="text"
+                  placeholder="모임,동아리를 검색해보세요"
+                  className="text-xs border rounded px-5 py-2 "
+                />
+                <Button className="hover:text-neutral-100 hover:bg-green-700">
+                  검색
+                </Button>
+                <button
+                  onClick={toggleNotificationModal}
+                  className="focus:outline-none"
                 >
-                  내 위치
-                  <img src={location} alt="setlocation" />
+                  <img
+                    src={
+                      hasNotifications
+                        ? notification_active
+                        : notification_default
+                    }
+                    alt="Notifications"
+                    className="h-8 w-8 cursor-pointer"
+                  />
+                </button>
+                <button
+                  onClick={toggleProfileModal}
+                  className="focus:outline-none"
+                >
+                  <img
+                    ref={profileRef}
+                    src={profileImage}
+                    alt="Profile"
+                    className="h-8 w-8 rounded-full cursor-pointer"
+                  />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="hidden lg:flex items-center space-x-4 relative justify-between ">
+              <ul className="flex gap-10 lg:mr-70">
+                <li>
+                  <Link to="/" className="font-neoExtraBold">
+                    모임 둘러보기
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/" className="font-neoExtraBold">
+                    동아리 둘러보기
+                  </Link>
+                </li>
+              </ul>
+              <div className="flex space-x-2">
+                <Link to="/signup" onClick={toggleMenu}>
+                  <Button
+                    variant={'outline'}
+                    className="font-neoBold border-green-600 text-green-600 hover:text-green-800 hover:bg-neutral-100 w-full"
+                  >
+                    회원가입 하러가기
+                  </Button>
                 </Link>
-              </li>
-              <li>
-                <Link to="/create-meeting" className="font-neoExtraBold">
-                  모임 생성
+                <Link to="/login" onClick={toggleMenu}>
+                  <Button
+                    onClick={handleLoginLogout}
+                    className="font-neoBold hover:text-neutral-100 hover:bg-green-700 w-full"
+                  >
+                    로그인 하러가기
+                  </Button>
                 </Link>
-              </li>
-              <li>
-                <Link to="/create-club" className="font-neoExtraBold">
-                  동아리 생성
-                </Link>
-              </li>
-              <li>
-                <Link to="/chatroom" className="font-neoExtraBold">
-                  채팅
-                </Link>
-              </li>
-              <li>
-                <Link to="/landing" className="font-neoExtraBold text-xs">
-                  서비스 소개
-                </Link>
-              </li>
-            </ul>
+              </div>
+            </div>
           )}
-          <div className="flex items-center space-x-4">
-            <input
-              type="text"
-              placeholder="검색"
-              className="text-sm border rounded px-5 py-2"
-            />
-            <Button className="hover:text-neutral-100 hover:bg-green-700">
-              검색
-            </Button>
-            <button
-              onClick={toggleNotificationModal}
-              className="focus:outline-none"
-            >
-              <img
-                src={
-                  hasNotifications ? notification_active : notification_default
-                }
-                alt="Notifications"
-                className="h-8 w-8 cursor-pointer"
-              />
-            </button>
-            <button onClick={toggleProfileModal} className="focus:outline-none">
-              <img
-                ref={profileRef}
-                src={profileImage}
-                alt="Profile"
-                className="h-8 w-8 rounded-full cursor-pointer"
-              />
-            </button>
-          </div>
         </div>
         <div className="lg:hidden flex items-center">
           <button onClick={toggleMenu} className="focus:outline-none">
