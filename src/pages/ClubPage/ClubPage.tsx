@@ -127,8 +127,6 @@ const ClubPage: React.FC = () => {
       {clubData && (
         <ClubHero
           clubData={clubData}
-          onImageChange={handleImageChange}
-          isLoggedIn={isLoggedIn}
           userProfile={userProfile}
           userAuthority={userAuthority}
         />
