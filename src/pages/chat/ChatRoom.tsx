@@ -12,16 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useUserStore } from '@/store/userStore';
 import { Bell, UsersRound } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 const apiInstance = new Api();
 
 const ChatRoom: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
 
   const [profileCoords, setProfileCoords] = useState<{
@@ -58,8 +58,10 @@ const ChatRoom: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
   // 채팅방 목록 조회
@@ -151,7 +153,7 @@ const ChatRoom: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mr-10 flex items-center space-x-3 bg-blue-200 justify-center ">
+              <div className="mr-10 flex items-center space-x-3  justify-center ">
                 <div className="flex flex-col items-center  text-xs font-neoExtraBold text-red-600  ">
                   <Bell />
                   {room.unreadMessageCnt}
@@ -174,7 +176,7 @@ const ChatRoom: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
