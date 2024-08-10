@@ -1,43 +1,44 @@
 export interface Host {
-  id: number;
   nickname: string;
-  profileImage: string;
-}
-
-export interface Place {
-  name: string;
-  placeUrl: string;
-  kakaoMapId: number;
-  latitude: number;
-  longitude: number;
+  profileImageUrl: string;
 }
 
 export interface Image {
-  uploadName: string;
-  storeName: string;
+  name: string;
+  url: string;
+}
+
+export interface MeetingPlace {
+  name: string;
+  placeUrl: string;
+  kakaoMapId: string;
+  address_name: string;
+  road_address_name: string;
+  latitude: string;
+  longitude: string;
 }
 
 export interface MeetingListResponse {
   title: string;
   description: string;
-  rule: string;
+  category: string;
+  categoryDetails: string;
   view: number;
   like: number;
-  hasMembershipFee: boolean;
-  membershipFee: number;
   progress: string;
   level: string;
-  hobby: string;
-  category: string;
-  schedule: string; // ISO 8601 formatted date string
+  schedule: string;
+  hasMembershipFee: boolean;
+  membershipFee: number;
   participantsNumber: number;
   participantLimit: number;
-  maleRatio: number;
-  femaleRatio: number;
+  MaleRatio: number;
+  FemaleRatio: number;
   minimumAge: number;
   maximumAge: number;
-  joinQuestion: string;
+  rule: string;
+  joinquestion: string;
   host: Host;
-  place: Place;
   images: Image[];
+  meetingPlace: MeetingPlace;
 }
