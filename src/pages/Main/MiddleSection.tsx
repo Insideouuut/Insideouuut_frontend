@@ -6,7 +6,7 @@ import { MoveRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
-import ModongCard from './ModongCard';
+import NewCard from './NewCard';
 
 const MiddleSection: React.FC = () => {
   const [data, setData] = useState<Result[]>([]);
@@ -100,23 +100,22 @@ const MiddleSection: React.FC = () => {
         </div>
 
         <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-2 z-30 overflow-y-auto">
-          {data.length > 0 ? (
-            data.map((item) => (
-              <ModongCard
-                clubTypes={[]}
-                meetingTypes={[]}
-                imageUrl={''}
-                description={''}
-                createdAt={''}
-                memberCount={0}
-                memberLimit={0}
-                key={item.id}
-                {...item}
-              />
-            ))
-          ) : (
-            <p>모임 데이터를 불러올 수 없습니다.</p>
-          )}
+          {data.map((item) => (
+            <NewCard
+              key={item.id}
+              {...item}
+              id={item.id}
+              type={item.type}
+              imageUrl={item.images[0]?.url || ''}
+              name={item.name}
+              introduction={item.introduction}
+              date={item.date}
+              location={item.place.name}
+              participantsNumber={item.participantsNumber}
+              participantLimit={item.participantLimit}
+              category={item.category}
+            />
+          ))}
         </div>
       </div>
     </div>

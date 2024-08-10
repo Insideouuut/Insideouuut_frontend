@@ -7,7 +7,7 @@ interface GroupCardProps {
   type: string;
   imageUrl: string;
   name: string;
-  introduction: string | undefined;
+  introduction: string;
   date: string;
   location: string;
   participantsNumber: number;
@@ -15,13 +15,12 @@ interface GroupCardProps {
   category: string;
 }
 
-const GroupCard: React.FC<GroupCardProps> = ({
+const NewCard: React.FC<GroupCardProps> = ({
   id,
   type,
   imageUrl,
   name,
-  introduction = '', // 기본값을 빈 문자열로 설정
-  date,
+  introduction,
   location,
   participantsNumber,
   participantLimit,
@@ -70,54 +69,51 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
   return (
     <Link
-      to={`/club/${id}`}
+      to={`/${type}/${id}`}
       className="flex mx-auto mb-1 items-center bg-white border border-gray-200 rounded-lg p-4 shadow-md w-[360px] h-[160px] hover:scale-[103%] hover:duration-300 hover:cursor-pointer"
     >
-      <div className="w-[140px] h-[135px]">
+      <div className="w-[100px] h-[100px]">
         <img
           src={mainImage}
           alt={name}
-          className="w-full h-full rounded-lg object-cover"
+          className="w-full h-full rounded-full object-cover"
         />
       </div>
       <div className="ml-6 flex flex-col justify-between w-[60%]">
         <div>
-          <div className="flex items-center space-x-2 mb-2">
-            <span
-              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByType(type)}`}
-            >
-              {type}
-            </span>
-            <span
-              className={`flex px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(category)}`}
-            >
-              {category}
-            </span>
-            {isAlmostFull && (
-              <span className="flex items-center justify-center h-5 px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
-                마감임박
-              </span>
-            )}
-          </div>
           <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">
             {introduction.length > 10
-              ? `${introduction.slice(0, 10)}...`
+              ? `${introduction.slice(0, 40)}...`
               : introduction}
           </p>
         </div>
-        <div className="text-gray-500 font-neoBold text-[12px] mt-1">
-          <p>{date}</p>
-          <div className="flex mt-1 items-center">
-            <MapPin className="w-4 mr-1" />
-            <p className="mr-4">{location}</p>
-            <Users className="w-4 mr-1" />
-            <p>{`${participantsNumber}/${participantLimit}`}</p>
-          </div>
+        <div className="flex items-center space-x-2 mb-2 mt-4">
+          <span
+            className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByType(type)}`}
+          >
+            {type}
+          </span>
+          <span
+            className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByMeetingType(category)}`}
+          >
+            {category}
+          </span>
+          {isAlmostFull && (
+            <span className="flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
+              마감임박
+            </span>
+          )}
+        </div>
+        <div className="flex mt-1 items-center text-gray-500 font-neoBold text-[12px]">
+          <MapPin className="w-4 mr-1" />
+          <p className="mr-4">{location}</p>
+          <Users className="w-4 mr-1" />
+          <p>{`${participantsNumber}/${participantLimit}`}</p>
         </div>
       </div>
     </Link>
   );
 };
 
-export default GroupCard;
+export default NewCard;
