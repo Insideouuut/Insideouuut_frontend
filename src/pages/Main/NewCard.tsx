@@ -1,7 +1,9 @@
 import {
+  getColorByLevel,
   getColorByMeetingType,
   getColorByType,
   getDefaultImageByCategory,
+  getLevel,
   getLinkByType,
 } from '@/utils/cardUtils'; // 카드 관련 유틸리티 함수 임포트
 import { formatClubTime, formatEventTime } from '@/utils/timeUtils'; // 시간 관련 유틸리티 함수 임포트
@@ -15,6 +17,7 @@ interface NewCardProps {
   imageUrl: string;
   name: string;
   introduction: string;
+  level: string;
   date: string;
   location: string;
   participantsNumber: number;
@@ -28,6 +31,7 @@ const NewCard: React.FC<NewCardProps> = ({
   type,
   imageUrl,
   name,
+  level,
   date,
   introduction,
   location,
@@ -42,8 +46,8 @@ const NewCard: React.FC<NewCardProps> = ({
     type === '동아리' ? formatClubTime(createdAt) : formatEventTime(date);
 
   const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
-  console.log(category);
 
+  const levelInKorean = getLevel(level);
   return (
     <Link
       to={`/${getLinkByType(type)}/${id}`}
@@ -76,6 +80,13 @@ const NewCard: React.FC<NewCardProps> = ({
           >
             {category}
           </span>
+          {category === '운동' && (
+            <span
+              className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByLevel(levelInKorean)}`}
+            >
+              {levelInKorean}
+            </span>
+          )}
           {isAlmostFull && (
             <span className="flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
               마감임박

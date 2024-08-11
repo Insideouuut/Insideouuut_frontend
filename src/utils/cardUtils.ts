@@ -50,3 +50,30 @@ export const getLinkByType = (type: string) => {
       return '';
   }
 };
+
+export const getLevel = (level: string) => {
+  switch (level) {
+    case 'BEGINNER':
+      return '하';
+    case 'INTERMEDIATE':
+      return '중';
+    case 'ADVANCED':
+      return '상';
+    default:
+      return '무관';
+  }
+};
+
+// 타입에 따른 색상 반환
+export const getColorByLevel = (level: string): string => {
+  switch (level) {
+    case '상':
+      return 'bg-red-300 text-red-800';
+    case '중':
+      return 'bg-orange-300 text-orange-800';
+    case '하':
+      return 'bg-green-300 text-green-800';
+    default:
+      return 'bg-gray-300 text-gray-800';
+  }
+};

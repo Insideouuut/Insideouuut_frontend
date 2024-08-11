@@ -1,9 +1,11 @@
 // src/components/GroupCard.tsx
 
 import {
+  getColorByLevel,
   getColorByMeetingType,
   getColorByType,
   getDefaultImageByCategory,
+  getLevel,
   getLinkByType,
 } from '@/utils/cardUtils';
 import { MapPin, Users } from 'lucide-react';
@@ -15,6 +17,7 @@ interface GroupCardProps {
   type: string;
   imageUrl: string;
   name: string;
+  level?: string;
   introduction: string | undefined;
   date: string;
   location: string;
@@ -27,6 +30,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   id,
   type,
   imageUrl,
+  level = '무관', // level이 undefined일 때 기본값 설정
   name = '',
   introduction = '',
   date,
@@ -40,7 +44,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
   // type에 따라 링크를 다르게 설정
   const linkTo = `/${getLinkByType(type)}/${id}`;
-
+  const levelInKorean = getLevel(level);
   return (
     <Link
       to={linkTo}
@@ -66,6 +70,13 @@ const GroupCard: React.FC<GroupCardProps> = ({
             >
               {category}
             </span>
+            {category === '운동' && (
+              <span
+                className={`flex items-center justify-center px-2 py-[1.5px] rounded-lg text-[10.2px] ${getColorByLevel(levelInKorean)}`}
+              >
+                {levelInKorean}
+              </span>
+            )}
             {isAlmostFull && (
               <span className="flex items-center justify-center h-5 px-2 py-[1.5px] rounded-lg text-[10.2px] bg-red-200 text-red-800">
                 마감임박
