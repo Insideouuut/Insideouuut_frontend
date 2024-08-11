@@ -27,6 +27,108 @@ import Landing from '../pages/LandingPage/LandingPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
 
+const boardRoutes = {
+  path: 'board',
+  children: [
+    {
+      path: ':type',
+      element: <BoardList />,
+    },
+    {
+      path: ':type/:postId',
+      element: <PostDetail />,
+    },
+    {
+      path: ':type/:postId/edit',
+      element: <PostForm />,
+    },
+    {
+      path: 'new',
+      element: <PostForm />,
+    },
+  ],
+};
+
+const clubRoutes = {
+  path: '/club/:id',
+  element: <ClubPage />,
+  children: [
+    boardRoutes,
+    {
+      path: 'members',
+      element: <MemberList />,
+    },
+    {
+      path: 'meetingList',
+      element: <MeetingList />,
+    },
+    {
+      path: 'createMeeting',
+      element: <CreateMeetinginClub />,
+    },
+    {
+      path: 'meetingListSettings',
+      element: <Mymeeting />,
+    },
+    {
+      path: 'manageClub',
+      element: <ClubManagement />,
+    },
+    {
+      path: 'memberRequests',
+      element: <MemberApproval />,
+    },
+    {
+      path: 'manageMembers',
+      element: <MemberManagement />,
+    },
+    {
+      path: 'chatRooms',
+      element: <Chat />,
+    },
+  ],
+};
+
+const meetingRoutes = {
+  path: '/meeting/:id',
+  element: <ClubPage />, // ClubPage를 재활용하여 미팅 페이지를 사용
+  children: [
+    boardRoutes,
+    {
+      path: 'members',
+      element: <MemberList />,
+    },
+    {
+      path: 'meetingList',
+      element: <MeetingList />,
+    },
+    {
+      path: 'createMeeting',
+      element: <CreateMeetinginClub />,
+    },
+    {
+      path: 'meetingListSettings',
+      element: <Mymeeting />,
+    },
+    {
+      path: 'manageClub',
+      element: <ClubManagement />,
+    },
+    {
+      path: 'memberRequests',
+      element: <MemberApproval />,
+    },
+    {
+      path: 'manageMembers',
+      element: <MemberManagement />,
+    },
+    {
+      path: 'chatRooms',
+      element: <Chat />,
+    },
+  ],
+};
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -64,115 +166,8 @@ const router = createBrowserRouter([
     path: '/search',
     element: <SearchPage />,
   },
-  {
-    path: '/club/:id',
-    element: <ClubPage />,
-    children: [
-      {
-        path: 'board/:type',
-        element: <BoardList />,
-      },
-      {
-        path: 'board/:type/:id',
-        element: <PostDetail />,
-      },
-      {
-        path: 'board/:type/:id/edit',
-        element: <PostForm />,
-      },
-      {
-        path: 'board/new',
-        element: <PostForm />,
-      },
-      {
-        path: 'members',
-        element: <MemberList />,
-      },
-      {
-        path: 'meetingList',
-        element: <MeetingList />,
-      },
-      {
-        path: 'createMeeting',
-        element: <CreateMeetinginClub />,
-      },
-      {
-        path: 'meetingListSettings',
-        element: <Mymeeting />,
-      },
-      {
-        path: 'manageClub',
-        element: <ClubManagement />,
-      },
-      {
-        path: 'memberRequests',
-        element: <MemberApproval />,
-      },
-      {
-        path: 'manageMembers',
-        element: <MemberManagement />,
-      },
-      {
-        path: 'chatRooms/:clubId/:roomId',
-        element: <Chat />,
-      },
-    ],
-  },
-  // Meeting 라우트 추가
-  {
-    path: '/meeting/:id',
-    element: <ClubPage />, // ClubPage를 재활용
-    children: [
-      {
-        path: 'board/:type',
-        element: <BoardList />,
-      },
-      {
-        path: 'board/:type/:id',
-        element: <PostDetail />,
-      },
-      {
-        path: 'board/:type/:id/edit',
-        element: <PostForm />,
-      },
-      {
-        path: 'board/new',
-        element: <PostForm />,
-      },
-      {
-        path: 'members',
-        element: <MemberList />,
-      },
-      {
-        path: 'meetingList',
-        element: <MeetingList />,
-      },
-      {
-        path: 'createMeeting',
-        element: <CreateMeetinginClub />,
-      },
-      {
-        path: 'meetingListSettings',
-        element: <Mymeeting />,
-      },
-      {
-        path: 'manageClub',
-        element: <ClubManagement />,
-      },
-      {
-        path: 'memberRequests',
-        element: <MemberApproval />,
-      },
-      {
-        path: 'manageMembers',
-        element: <MemberManagement />,
-      },
-      {
-        path: 'chatRooms/:meetingId/:roomId',
-        element: <Chat />,
-      },
-    ],
-  },
+  clubRoutes, // 클럽 라우트 추가
+  meetingRoutes, // 미팅 라우트 추가
   {
     path: '/create-club',
     element: <CreateClub />,
