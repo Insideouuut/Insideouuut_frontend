@@ -1,4 +1,4 @@
-import { Api, ApiResponseMyProfileResponse } from '@/api/Apis';
+import { Api } from '@/api/Apis';
 import {
   Popover,
   PopoverContent,
@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { useFetchProfile } from './useFetchProfile'; // 가져온 useFetchProfile 훅
 
 const apiInstance = new Api();
 
@@ -73,6 +74,9 @@ const UpdateUser: React.FC = () => {
     boolean | null
   >(null);
 
+  // 프로필 데이터를 가져오기 위해 useFetchProfile 훅 사용
+  const { loading, error } = useFetchProfile();
+
   const onSubmit = async (data: ProfileFormValues) => {
     console.log('Submitted Data:', data); // 데이터 확인
     try {
@@ -87,6 +91,7 @@ const UpdateUser: React.FC = () => {
       console.error('프로필 업데이트 중 오류가 발생했습니다.', error);
     }
   };
+
   useEffect(() => {
     // 로컬 스토리지에서 동네 목록 가져오기
     const storedNeighborhoods = localStorage.getItem('neighborhoods');
@@ -94,47 +99,6 @@ const UpdateUser: React.FC = () => {
       setLocations(JSON.parse(storedNeighborhoods));
     }
   }, []);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response: ApiResponseMyProfileResponse =
-          await apiInstance.api.getMyProfile();
-
-        console.log(response); // 가져온 데이터를 콘솔에 출력
-
-        // response.results가 존재하고 배열이 아닐 경우 대비
-        const userProfile =
-          response.results && Array.isArray(response.results)
-            ? response.results[0]
-            : {};
-
-        // 프로필 데이터를 useUserStore에 저장
-        setUser({
-          nickname: userProfile.nickname || '',
-          phoneNumber: userProfile.phoneNumber || '',
-          location: userProfile.locations?.[0] || '', // locations를 사용하여 location 설정
-          interests:
-            userProfile.interests?.map((interest) => interest.toString()) || [], // interests를 문자열 배열로 변환
-          email: userProfile.email || '', // 이메일
-          imageUrl: userProfile.profileImage || '', // 프로필 이미지 URL
-        });
-
-        // Set default values in the form
-        setValue('nickname', userProfile.nickname || '');
-        setValue('phoneNumber', userProfile.phoneNumber || '');
-        setValue('location', userProfile.locations?.[0] || '');
-        setValue(
-          'interests',
-          userProfile.interests?.map((interest) => interest.toString()) || [],
-        );
-      } catch (error) {
-        console.error('Failed to fetch profile:', error); // 에러 처리
-      }
-    };
-
-    fetchProfile(); // 함수 호출
-  }, [setUser, setValue]);
 
   const checkNicknameAvailability = async () => {
     try {
@@ -162,6 +126,9 @@ const UpdateUser: React.FC = () => {
     setUser({ interests: newInterests });
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading profile: {error}</div>;
+
   return (
     <div className="container mx-auto p-4">
       {isUpdated && (
@@ -177,7 +144,7 @@ const UpdateUser: React.FC = () => {
               id="email"
               type="text"
               value={email}
-              className="mt-1 block w-full bg-gray-100 border border-gray-200 p-2 "
+              className="mt-1 block w-full bg-gray-100 border border-gray-200 p-2"
               readOnly
             />
           </div>
@@ -190,7 +157,7 @@ const UpdateUser: React.FC = () => {
                 id="nickname"
                 type="text"
                 {...register('nickname')}
-                className="mt-1 block w-full border border-gray-200 p-2 "
+                className="mt-1 block w-full border border-gray-200 p-2"
               />
               {errors.nickname && (
                 <span className="text-red-500">{errors.nickname.message}</span>
@@ -205,7 +172,9 @@ const UpdateUser: React.FC = () => {
             </button>
             {isNicknameAvailable !== null && (
               <span
-                className={`text-sm mt-7 ${isNicknameAvailable ? 'text-green-500' : 'text-red-500'}`}
+                className={`text-sm mt-7 ${
+                  isNicknameAvailable ? 'text-green-500' : 'text-red-500'
+                }`}
               >
                 {isNicknameAvailable
                   ? '사용 가능한 닉네임입니다.'
@@ -221,7 +190,7 @@ const UpdateUser: React.FC = () => {
               id="password"
               type="password"
               {...register('password')}
-              className="mt-1 block w-full border border-gray-200 p-2 "
+              className="mt-1 block w-full border border-gray-200 p-2"
             />
             {errors.password && (
               <span className="text-red-500">{errors.password.message}</span>
@@ -238,7 +207,7 @@ const UpdateUser: React.FC = () => {
               id="confirmPassword"
               type="password"
               {...register('confirmPassword')}
-              className="mt-1 block w-full border border-gray-200 p-2 "
+              className="mt-1 block w-full border border-gray-200 p-2"
             />
             {errors.confirmPassword && (
               <span className="text-red-500">
@@ -255,7 +224,7 @@ const UpdateUser: React.FC = () => {
                 id="location"
                 type="text"
                 {...register('location')}
-                className="mt-1 block w-full border border-gray-200 p-2 "
+                className="mt-1 block w-full border border-gray-200 p-2"
               />
               {errors.location && (
                 <span className="text-red-500">{errors.location.message}</span>
@@ -306,7 +275,7 @@ const UpdateUser: React.FC = () => {
             <label htmlFor="interests" className="block text-sm font-medium">
               관심사
             </label>
-            <div id="interests" className="flex gap-2 ">
+            <div id="interests" className="flex gap-2">
               {['SOCIAL', 'SPORTS', 'STUDY'].map((interest) => (
                 <button
                   type="button"

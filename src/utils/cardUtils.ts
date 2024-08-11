@@ -10,17 +10,18 @@ export const getColorByType = (type: string): string => {
   }
 };
 
-// 모임 카테고리에 따른 색상 반환
 export const getColorByMeetingType = (category: string): string => {
-  switch (category) {
-    case '사교/취미':
-      return 'bg-yellow-200 text-yellow-800';
-    case '운동':
-      return 'bg-blue-200 text-blue-800';
-    case '스터디':
-      return 'bg-purple-200 text-purple-800';
-    default:
-      return '';
+  const trimmedCategory = category.trim();
+
+  if (trimmedCategory.includes('사교') || trimmedCategory.includes('취미')) {
+    return 'bg-yellow-200 text-yellow-800';
+  } else if (trimmedCategory.includes('운동')) {
+    return 'bg-blue-200 text-blue-800';
+  } else if (trimmedCategory.includes('스터디')) {
+    return 'bg-purple-200 text-purple-800';
+  } else {
+    console.log(`No match found for category: '${trimmedCategory}'`);
+    return '';
   }
 };
 
