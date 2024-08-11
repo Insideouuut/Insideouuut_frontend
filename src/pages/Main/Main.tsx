@@ -12,7 +12,7 @@ import MiddleSection from './MiddleSection';
 const Main: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const { isLoggedIn, setUser, clearUser } = useUserStore();
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -46,13 +46,11 @@ const Main: React.FC = () => {
     setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
-  const handleLoginLogout = () => {
-    if (isLoggedIn) {
-      clearUser();
-    } else {
-      // 로그인 로직 추가
-      setUser({ isLoggedIn: true });
-    }
+  const handleLogout = () => {
+    clearUser();
+    setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
   return (
@@ -61,7 +59,7 @@ const Main: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={handleLoginLogout}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
@@ -85,7 +83,7 @@ const Main: React.FC = () => {
       {isProfileModalOpen && (
         <ProfileModal
           toggleProfileModal={toggleProfileModal}
-          handleLogout={handleLoginLogout}
+          handleLogout={handleLogout}
           coords={profileCoords}
         />
       )}
