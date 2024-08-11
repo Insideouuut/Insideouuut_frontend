@@ -19,3 +19,11 @@ export const getClubMemberList = async (clubId: string) => {
   const response = await axiosInstance.get(`/api/clubs/${clubId}/members`);
   return response;
 };
+
+// 모임 멤버 조회
+export const getMeetingMemberList = async (meetingId: string) => {
+  const response = await axiosInstance.get(
+    `/api/meetings/${meetingId}/members`,
+  );
+  return response;
+};
