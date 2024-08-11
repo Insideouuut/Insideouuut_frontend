@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
+import { MeetingPlace } from '@/types/Modong';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Slider from '@radix-ui/react-slider';
 import { format } from 'date-fns';
@@ -27,12 +28,23 @@ import { CalendarIcon, Camera, Clock4, Info } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import Map from './Map';
 
 const CATEGORY_DETAIL = ['사교/취미 종류', '운동 종류', '스터디 목표'];
 const LEVEL_DETAIL = [
   ['운동 상 실력', '운동 중 실력', '운동 하 실력'],
   ['스터디 상 실력', '스터디 중 실력', '스터디 하 실력'],
 ];
+
+const MeetingPlaceSchema = z.object({
+  kakaoMapId: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  name: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  addressName: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  roadAddressName: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  latitude: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  longitude: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  placeUrl: z.string().url().min(1, { message: '필수 입력 항목입니다.' }),
+});
 
 const MeetingSchema = z.object({
   category: z.enum(['SOCIAL', 'SPORTS', 'STUDY']),
@@ -43,7 +55,7 @@ const MeetingSchema = z.object({
     (val) => Number(val),
     z.number().optional(),
   ),
-  meetingPlace: z.string().min(1, { message: '필수 입력 항목입니다.' }),
+  meetingPlace: z.union([MeetingPlaceSchema, z.null()]),
   meetingDate: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   meetingTime: z.string().min(1, { message: '필수 입력 항목입니다.' }),
   participantLimit: z.preprocess(
@@ -68,7 +80,7 @@ const initialValues: MeetingFormData = {
   level: 'INTERMEDIATE',
   hasMembershipFee: false,
   membershipFeeAmount: 0,
-  meetingPlace: '',
+  meetingPlace: null,
   meetingDate: '',
   meetingTime: '',
   participantLimit: 1,
@@ -105,6 +117,8 @@ const CreateMeetingForm = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | ''>('');
 
+  const [meetingPlace, setMeetingPlace] = useState<MeetingPlace | null>(null);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || '';
     setSelectedFile(file);
@@ -135,21 +149,18 @@ const CreateMeetingForm = () => {
   }, [category]);
 
   const onSubmit = async (data: MeetingFormData) => {
+    if (!meetingPlace) {
+      alert('모임 장소는 필수 입력 값입니다.');
+      return;
+    }
+
     const request = {
       category: data.category,
       categoryDetail: data.categoryDetail,
       level: data.category === 'SOCIAL' ? '' : data.level || '',
       hasMembershipFee: data.hasMembershipFee,
       membershipFeeAmount: data.membershipFeeAmount || 0,
-      meetingPlace: {
-        name: 'string',
-        placeUrl: 'string',
-        kakaoMapId: 'string',
-        addressName: 'string',
-        roadAddressName: 'string',
-        latitude: 'string',
-        longitude: 'string',
-      },
+      meetingPlace: meetingPlace,
       date: data.meetingDate + ' ' + data.meetingTime,
       participantLimit: data.participantLimit,
       hasGenderRatio: data.hasGenderRatio,
@@ -162,6 +173,8 @@ const CreateMeetingForm = () => {
         .split(',')
         .map((joinQuestion) => joinQuestion.trim()),
     };
+
+    console.log('meeting request:', request);
 
     const formData = new FormData();
     formData.append(
@@ -367,18 +380,16 @@ const CreateMeetingForm = () => {
         <Label htmlFor="meetingPlace">
           모임 장소 <span className="text-primary font-neoBold">*</span>
         </Label>
-        <Controller
-          name="meetingPlace"
-          control={control}
-          render={({ field }) => (
-            <Input id="meetingPlace" placeholder="장소" {...field} />
-          )}
-        />
-        {errors.meetingPlace && (
-          <span className="text-red-500 text-sm">
-            {errors.meetingPlace?.message}
-          </span>
+        {meetingPlace !== null && (
+          <div className="text-sm">
+            <p className="font-neoBold">{meetingPlace.name}</p>
+            <p className="text-sm text-gray-500">
+              {meetingPlace.addressName || meetingPlace.roadAddressName}
+            </p>
+          </div>
         )}
+
+        <Map setMeetingPlace={setMeetingPlace} />
       </div>
 
       <div className="flex flex-col gap-4 items-start">

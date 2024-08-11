@@ -14,16 +14,18 @@ export interface Group {
   joinQuestions: string[];
 }
 
+export interface MeetingPlace {
+  name: string;
+  placeUrl: string;
+  kakaoMapId: string;
+  addressName: string;
+  roadAddressName: string;
+  latitude: string;
+  longitude: string;
+}
+
 export interface Meeting extends Group {
-  meetingPlace: {
-    name: string;
-    placeUrl: string;
-    kakaoMapId: string;
-    addressName: string;
-    roadAddressName: string;
-    latitude: string;
-    longitude: string;
-  };
+  meetingPlace: MeetingPlace;
   ageRange: number[];
 }
 
