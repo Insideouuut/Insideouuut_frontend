@@ -1,3 +1,4 @@
+import axiosInstance from '@/api/axiosConfig';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -6,19 +7,50 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const PostForm: React.FC = () => {
   const navigate = useNavigate();
+  const { id, postId } = useParams<{ id: string; postId: string }>(); // 클럽 ID와 게시글 ID를 가져옴
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  // const { id } = useParams<{ id: string }>();
+  const [imageError, setImageError] = useState('');
+  const isEditMode = !!postId; // postId가 존재하면 수정 모드임
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isEditMode) {
+      const fetchPostData = async () => {
+        try {
+          const response = await axiosInstance.get(
+            `/api/clubs/${id}/posts/${postId}`,
+          );
+          const post = response.data.results[0];
+
+          setTitle(post.title);
+          setDescription(post.content);
+          setCategory(post.category);
+
+          // 기존 이미지 처리
+          const existingImagePreviews = post.images.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (image: any) => image.url,
+          );
+          setImagePreviews(existingImagePreviews);
+        } catch (error) {
+          console.error('Failed to load post data:', error);
+        }
+      };
+      fetchPostData();
+    }
+  }, [id, postId, isEditMode]);
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
 
     if (!category) {
@@ -26,20 +58,75 @@ const PostForm: React.FC = () => {
       return;
     }
 
-    // 여기에 API 호출 코드를 추가하여 글을 작성합니다.
-    console.log({ category, title, description, images });
-    navigate(`/club/board/${category}`);
+    if (images.length === 0 && !isEditMode) {
+      setImageError('이미지를 추가해주세요.');
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+
+    const clubPostRequestDto = {
+      postTitle: title,
+      category: category,
+      postContent: description,
+    };
+
+    const formData = new FormData();
+    formData.append(
+      'request',
+      new Blob([JSON.stringify(clubPostRequestDto)], {
+        type: 'application/json',
+      }),
+    );
+
+    images.forEach((image) => {
+      formData.append('imageFiles', image);
+    });
+
+    try {
+      if (isEditMode) {
+        // 수정 모드일 때는 PATCH 요청
+        const response = await axiosInstance.patch(
+          `/api/clubs/${id}/posts/${postId}`,
+          formData,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        );
+        console.log('Post updated:', response.data);
+      } else {
+        // 새 글 작성 모드일 때는 POST 요청
+        const response = await axiosInstance.post(
+          `/api/clubs/${id}/posts`,
+          formData,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        );
+        console.log('Post created:', response.data);
+      }
+
+      navigate(`/club/${id}/board/${category}`);
+    } catch (error) {
+      console.error('Failed to submit post:', error);
+      alert('게시글 처리에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = Array.from(e.target.files || []);
-    setImages(files);
-
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    const filePreviews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...filePreviews]);
+    setImages([...images, ...files]);
   };
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = (index: number): void => {
     const newImages = images.filter((_, i) => i !== index);
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
     setImages(newImages);
@@ -48,7 +135,9 @@ const PostForm: React.FC = () => {
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200 bg-white">
-      <h1 className="text-2xl font-bold mb-4">새 글 작성</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        {isEditMode ? '게시글 수정' : '새 글 작성'}
+      </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Select onValueChange={setCategory} value={category} required>
@@ -93,6 +182,9 @@ const PostForm: React.FC = () => {
             onChange={handleImageChange}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
           />
+          {imageError && (
+            <p className="text-red-500 text-sm mt-1">{imageError}</p>
+          )}
           <div className="mt-2 flex flex-wrap gap-2">
             {imagePreviews.map((preview, index) => (
               <div key={index} className="relative">
@@ -114,7 +206,7 @@ const PostForm: React.FC = () => {
         </div>
         <div className="flex justify-end">
           <Button type="submit" className="hover:bg-green-600">
-            작성 완료
+            {isEditMode ? '수정 완료' : '작성 완료'}
           </Button>
         </div>
       </form>
