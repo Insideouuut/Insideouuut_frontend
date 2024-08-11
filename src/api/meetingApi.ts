@@ -2,7 +2,12 @@ import {
   MeetingApplicant,
   MeetingApplicantsApiResponse,
 } from '@/types/MeetingApplicantsTypes';
-import { ApiResponse as MeetingApiResponse, Result } from '@/types/Meetings';
+import {
+  ApplyForMeetingRequest,
+  ApiResponse as MeetingApiResponse,
+  Result,
+  UpdateMeetingData,
+} from '@/types/Meetings';
 import { Member, ApiResponse as MemberApiResponse } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
@@ -41,19 +46,37 @@ export const deleteMeetingData = async (
 // 모임 정보 수정 API
 export const updateMeetingData = async (
   id: string,
-  data: Partial<Result>,
+  data: UpdateMeetingData,
+  imageFile: File | null, // 이미지 파일을 추가할 수 있도록 파라미터 추가
   token: string,
 ): Promise<Result> => {
   try {
+    const formData = new FormData();
+
+    // JSON 데이터를 포함한 폼 데이터 생성
+    formData.append(
+      'request',
+      new Blob([JSON.stringify(data)], {
+        type: 'application/json',
+      }),
+    );
+
+    // 이미지 파일이 있으면 FormData에 추가
+    if (imageFile) {
+      formData.append('imageFiles', imageFile);
+    }
+
     const response = await axiosInstance.patch<MeetingApiResponse>(
       `/api/meetings/${id}`,
-      data,
+      formData,
       {
         headers: {
           Authorization: `${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       },
     );
+
     return response.data.results[0];
   } catch (error) {
     console.error('Error updating meeting data:', error);
@@ -111,25 +134,28 @@ export const getMeetingApplicants = async (
         },
       },
     );
-    // 결과 배열 중 첫 번째 배열을 반환
-    return response.data.results[0];
+    return response.data.results[0]; // 결과 배열 중 첫 번째 배열을 반환
   } catch (error) {
     console.error('Error fetching meeting applicants:', error);
     throw error;
   }
 };
 
-// 모임 참여 신청 API
 export const applyForMeeting = async (
   id: string,
   token: string,
+  answers: ApplyForMeetingRequest['answers'],
 ): Promise<void> => {
   try {
-    await axiosInstance.post(`/api/meetings/${id}/apply`, null, {
-      headers: {
-        Authorization: `${token}`,
+    await axiosInstance.post(
+      `/api/meetings/${id}/apply`,
+      { answers },
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
       },
-    });
+    );
     console.log('모임 참여 신청이 성공적으로 이루어졌습니다.');
   } catch (error) {
     console.error('Error applying for meeting:', error);

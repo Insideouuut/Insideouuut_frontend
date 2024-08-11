@@ -1,9 +1,8 @@
 import { searchMeetings } from '@/api/searchApi';
-import { Result } from '@/types/Search';
+import { ClubResult, MeetingResult } from '@/types/Search';
 import React, { useEffect, useState } from 'react';
 import GroupCard from '../../components/GroupCard';
 
-// 로딩 스피너 컴포넌트
 const Spinner: React.FC = () => (
   <div className="w-full flex justify-center items-center h-[1000px]">
     <div
@@ -30,7 +29,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const [filteredData, setFilteredData] = useState<Result[]>([]);
+  const [filteredData, setFilteredData] = useState<
+    (ClubResult | MeetingResult)[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<string>('date');
@@ -48,7 +49,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           token,
         );
 
-        // 필터링 로직 추가: name 또는 introduction 속성에서 searchQuery와 일치하는 결과 필터링
         const filteredResults = results.filter(
           (item) =>
             item.name.includes(searchQuery) ||
@@ -59,7 +59,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       } catch (err) {
         setError('Error fetching data');
         console.error(err);
-        setFilteredData([]); // API 호출 실패 시 빈 배열로 설정
+        setFilteredData([]);
       } finally {
         setLoading(false);
       }
@@ -69,7 +69,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   }, [searchQuery, activeBottomTab, sort, activeTopTab, token]);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchQuery, activeBottomTab]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -137,19 +137,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           <>
             <div className="w-[900px] mx-auto grid grid-cols-2 gap-4 pb-5">
               {currentItems.map((item) => (
-                <GroupCard
-                  key={item.id}
-                  id={item.id}
-                  type={item.type}
-                  imageUrl={item.images?.[0]?.url || ''}
-                  name={item.name}
-                  introduction={item.introduction}
-                  date={item.date}
-                  location={item.place?.name || ''}
-                  participantsNumber={item.participantsNumber}
-                  participantLimit={item.participantLimit}
-                  category={item.category}
-                />
+                <GroupCard key={item.id} data={item} />
               ))}
             </div>
 
@@ -168,11 +156,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     setCurrentPage(index + 1);
                     window.scrollTo({ top: 484, behavior: 'smooth' });
                   }}
-                  className={`mx-1 px-2 py-1 rounded ${
-                    currentPage === index + 1
-                      ? 'bg-primary text-white'
-                      : 'hover:bg-stone-200'
-                  }`}
+                  className={`mx-1 px-2 py-1 rounded ${currentPage === index + 1 ? 'bg-primary text-white' : 'hover:bg-stone-200'}`}
                 >
                   {index + 1}
                 </button>

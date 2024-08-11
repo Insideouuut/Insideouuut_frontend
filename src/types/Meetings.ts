@@ -1,3 +1,5 @@
+// src/types/Meetings.ts
+
 export interface Image {
   name: string;
   url: string;
@@ -18,8 +20,8 @@ export interface Place {
   name: string;
   placeUrl: string;
   kakaoMapId: string;
-  addressName: string | null;
-  roadAddressName: string | null;
+  addressName: string;
+  roadAddressName: string;
   latitude: number;
   longitude: number;
 }
@@ -51,7 +53,7 @@ export interface Result {
 
 export interface Metadata {
   resultCount: number;
-  pageable: unknown | null; // `unknown` 타입을 사용하여 유연성을 유지합니다.
+  pageable: unknown | null;
 }
 
 export interface ApiResponse {
@@ -61,4 +63,41 @@ export interface ApiResponse {
   };
   metadata: Metadata;
   results: Result[];
+}
+
+// 수정된 UpdateMeetingData 인터페이스
+export interface UpdateMeetingData {
+  name: string;
+  introduction: string;
+  category: string;
+  categoryDetail: string;
+  meetingPlace: {
+    name: string;
+    placeUrl: string;
+    kakaoMapId: string;
+    addressName: string;
+    roadAddressName: string;
+    latitude: number;
+    longitude: number;
+  };
+  participantLimit: number;
+  rules: string[];
+  joinQuestions: string[];
+  date: string;
+  level: string;
+  ageRange: number[];
+  hasGenderRatio: string;
+  ratio: string;
+  hasMembershipFee: boolean;
+  membershipFeeAmount: number;
+  imageFiles: string[];
+}
+
+export interface Answer {
+  question: string;
+  answer: string;
+}
+
+export interface ApplyForMeetingRequest {
+  answers: Answer[];
 }

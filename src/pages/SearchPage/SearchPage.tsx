@@ -2,8 +2,8 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
-import React, { useRef, useState } from 'react';
-import Search from './searchHero'; // Make sure this import points to your Search component
+import React, { useEffect, useState } from 'react';
+import Search from './searchHero';
 
 const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -18,7 +18,12 @@ const SearchPage: React.FC = () => {
     top: number;
     left: number;
   }>({ top: 0, left: 0 });
-  const profileRef = useRef<HTMLImageElement>(null);
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken') || '';
+    setToken(accessToken);
+  }, []);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -41,8 +46,6 @@ const SearchPage: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
-  const token = localStorage.getItem('accessToken') || '';
-
   return (
     <div className="relative">
       <Header
@@ -50,8 +53,8 @@ const SearchPage: React.FC = () => {
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
         handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
-        profileRef={profileRef}
         hasNotifications={hasNotifications}
+        profileRef={null}
       />
       <Search token={token} />
       <Footer />

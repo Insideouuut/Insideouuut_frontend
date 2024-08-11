@@ -24,9 +24,32 @@ export interface Place {
   longitude: number;
 }
 
-export interface Result {
-  clubSearchResults: never[];
-  meetingSearchResults: never[];
+export interface ClubResult {
+  id: number;
+  name: string;
+  introduction: string;
+  type: string;
+  view: number;
+  like: number;
+  hasMembershipFee: boolean;
+  membershipFeeAmount: number;
+  isRecruiting: boolean;
+  level: string;
+  categoryDetail: string;
+  category: string;
+  date: string;
+  participantNumber: number;
+  participantLimit: number;
+  genderRatio: string;
+  ageRange: number[];
+  rules: string[];
+  joinQuestions: string[];
+  host: Host;
+  activityRegion: string;
+  images: Image[];
+}
+
+export interface MeetingResult {
   id: number;
   name: string;
   introduction: string;
@@ -63,8 +86,8 @@ export interface ApiResponseForAll {
   };
   metadata: Metadata;
   results: {
-    clubSearchResults: Result[];
-    meetingSearchResults: Result[];
+    clubSearchResults: ClubResult[];
+    meetingSearchResults: MeetingResult[];
   };
 }
 
@@ -74,5 +97,5 @@ export interface ApiResponseForSpecific {
     message: string;
   };
   metadata: Metadata;
-  results: Result[];
+  results: (ClubResult | MeetingResult)[];
 }
