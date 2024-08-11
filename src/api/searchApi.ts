@@ -67,16 +67,20 @@ export const searchMeetings = async (
 
     const { results } = response.data;
 
-    if (topTab === '전체' && Array.isArray(results) && results.length > 0) {
+    if (topTab === '전체') {
       // 전체 탭일 경우 결과를 합쳐서 반환
-      const combinedResults: Result[] = [
-        ...(results[0].clubSearchResults || []),
-        ...(results[0].meetingSearchResults || []),
-      ];
-      return combinedResults;
+      if ('clubSearchResults' in results && 'meetingSearchResults' in results) {
+        const combinedResults: Result[] = [
+          ...results.clubSearchResults,
+          ...results.meetingSearchResults,
+        ];
+        return combinedResults;
+      } else {
+        throw new Error('Unexpected response structure');
+      }
     } else if (Array.isArray(results)) {
       // 모임 또는 동아리 탭일 경우 결과 반환
-      return results;
+      return results as Result[];
     } else {
       throw new Error('Unexpected response structure');
     }
