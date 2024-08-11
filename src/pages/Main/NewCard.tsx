@@ -1,6 +1,5 @@
 // src/components/NewCard.tsx
 
-import React from 'react';
 import {
   getColorByLevel,
   getColorByMeetingType,
@@ -11,6 +10,7 @@ import {
 } from '@/utils/cardUtils';
 import { formatClubTime, formatEventTime } from '@/utils/timeUtils';
 import { MapPin, Users } from 'lucide-react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface NewCardProps {
