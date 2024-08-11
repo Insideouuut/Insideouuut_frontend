@@ -8,7 +8,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { useUserStore } from '@/store/userStore';
 import { boardMapping } from '@/utils/boardMapping';
+import { formatClubTime } from '@/utils/timeUtils'; // 상대 시간 포맷 함수 불러오기
 import { SquarePen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -16,8 +18,14 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 const apiInstance = new Api();
 
 const BoardList: React.FC = () => {
-  const { type } = useParams<{ type: string }>();
-  const { id } = useParams<{ id: string }>(); // URL에서 id를 추출
+  const { type } = useParams<{ type: string }>(); // 게시판 종류를 URL 파라미터로 받음
+  const { id } = useParams<{ id: string }>();
+
+  const { profileImage } = useUserStore((state) => ({
+    profileImage:
+      state.imageUrl ||
+      'https://w7.pngwing.com/pngs/665/132/png-transparent-user-defult-avatar.png',
+  }));
 
   const [boards, setBoards] = useState<ClubPostListResponseDto[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,19 +39,31 @@ const BoardList: React.FC = () => {
           const response = await apiInstance.api.findByPostType(Number(id));
           console.log(response); // 응답 구조 확인
 
-          // results가 2차원 배열인 경우 1차원 배열로 변환
           const results = response.results?.flat() || [];
 
-          setBoards(results);
+          // allBoard일 경우 모든 게시물을 표시, 아니면 선택된 카테고리의 게시물만 필터링
+          const filteredAndSortedResults =
+            type === 'allBoard'
+              ? results
+              : results.filter((post) => post.category === type);
+
+          // 최신 글이 위로 오도록 정렬
+          filteredAndSortedResults.sort(
+            (a, b) =>
+              new Date(b.createTime!).getTime() -
+              new Date(a.createTime!).getTime(),
+          );
+
+          setBoards(filteredAndSortedResults);
         }
       } catch (error) {
         console.error('Failed to fetch boards:', error);
-        setBoards([]); // 오류 발생 시 빈 배열로 설정
+        setBoards([]);
       }
     };
 
-    fetchBoards(); // 함수 호출
-  }, [id]); // id가 변경될 때마다 useEffect 호출
+    fetchBoards();
+  }, [id, type]);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -93,32 +113,25 @@ const BoardList: React.FC = () => {
             <li key={index} className="mb-4 flex flex-col">
               <Link to={`/club/board/${post.category}/${index}`}>
                 <div className="flex items-center">
-                  {/* 데이터가 없을 경우를 대비한 기본 이미지 URL 사용 */}
                   <img
-                    src="default-profile-image-url" // 기본 프로필 이미지 URL
+                    src={profileImage}
                     alt={post.writer || 'Author'}
-                    className="w-6 h-6 rounded-full mr-2"
+                    className="w-6 h-6 rounded-full mr-2 object-cover"
                   />
                   <p className="mr-4 text-sm">{post.writer || 'Unknown'}</p>
                 </div>
                 <div className="flex justify-between mt-4">
                   <div>
-                    <h3 className="font-neoBold">
-                      {post.postTitle || 'No Title'}
-                    </h3>
+                    <h3 className="font-neoBold">{post.title || 'No Title'}</h3>
                     <p className="text-xs pr-3">
                       {post.content || 'No Content'}
                     </p>
                   </div>
-                </div>
-
-                <div className="bg-gray-200 w-[70px] justify-center items-center flex rounded-md">
                   <p className="text-xs text-gray-700">
-                    {post.category && boardMapping[post.category]
-                      ? boardMapping[post.category]
-                      : 'Unknown Category'}
+                    {formatClubTime(post.createTime!)} {/* 상대 시간 표시 */}
                   </p>
                 </div>
+                <span className="my-2 block w-full h-[1px] bg-gray-200"></span>
               </Link>
             </li>
           ))}
