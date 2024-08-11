@@ -15,7 +15,7 @@ export const getClubData = async (id: string): Promise<ClubData> => {
 };
 
 // 동아리 멤버 조회
-export const getMemberList = async (clubId: string) => {
+export const getClubMemberList = async (clubId: string) => {
   const response = await axiosInstance.get(`/api/clubs/${clubId}/members`);
   return response;
 };

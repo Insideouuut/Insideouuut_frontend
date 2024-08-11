@@ -1,4 +1,4 @@
-import { getMemberList } from '@/api/clubApi';
+import { getClubMemberList } from '@/api/clubApi';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 import Member from './ClubMember';
@@ -20,7 +20,7 @@ const ClubMemberList = () => {
 
     const fetchData = async () => {
       try {
-        const response = await getMemberList(clubId);
+        const response = await getClubMemberList(clubId);
         setMembers(response.data.results[0]);
       } catch (error) {
         console.error(error);
