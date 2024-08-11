@@ -18,7 +18,7 @@ export const getColorByMeetingType = (category: string): string => {
   } else if (trimmedCategory.includes('운동')) {
     return 'bg-blue-200 text-blue-800';
   } else if (trimmedCategory.includes('스터디')) {
-    return 'bg-purple-200 text-purple-800';
+    return 'bg-red-200 text-red-800';
   } else {
     console.log(`No match found for category: '${trimmedCategory}'`);
     return '';
@@ -48,5 +48,32 @@ export const getLinkByType = (type: string) => {
       return 'meeting';
     default:
       return '';
+  }
+};
+
+export const getLevel = (level: string) => {
+  switch (level) {
+    case 'BEGINNER':
+      return '하';
+    case 'INTERMEDIATE':
+      return '중';
+    case 'ADVANCED':
+      return '상';
+    default:
+      return '무관';
+  }
+};
+
+// 타입에 따른 색상 반환
+export const getColorByLevel = (level: string): string => {
+  switch (level) {
+    case '상':
+      return 'bg-red-200 text-red-800';
+    case '중':
+      return 'bg-orange-200 text-orange-800';
+    case '하':
+      return 'bg-yellow-200 text-orange-800';
+    default:
+      return 'bg-gray-200 text-gray-800';
   }
 };
