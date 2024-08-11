@@ -13,7 +13,13 @@ const Bubble: React.FC<BubbleProps> = ({
   sendTime,
   senderImage,
 }) => {
-  return (
+  const renderSystemMessage = () => (
+    <div className="text-primary justify-center flex w-full items-center mb-">
+      <p className="text-xs">{message}</p>
+    </div>
+  );
+
+  const renderUserMessage = () => (
     <div
       className={`flex items-end ${isCurrentUser ? 'justify-end' : ''} mb-4`}
     >
@@ -42,6 +48,12 @@ const Bubble: React.FC<BubbleProps> = ({
       </div>
     </div>
   );
+
+  if (sender === 'SYSTEM') {
+    return renderSystemMessage();
+  }
+
+  return renderUserMessage();
 };
 
 export default Bubble;
