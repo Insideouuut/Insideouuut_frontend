@@ -26,6 +26,7 @@ const MiddleSection: React.FC = () => {
             sort: 'date',
           },
         });
+
         setData(response.data.results || []); // 빈 배열을 기본값으로 설정
       } catch (error) {
         console.error('Failed to fetch meetings:', error);
@@ -171,6 +172,7 @@ const MiddleSection: React.FC = () => {
                 type={item.type}
                 imageUrl={item.images[0]?.url || ''}
                 name={item.name}
+                level={item.level}
                 introduction={item.introduction}
                 date={item.date}
                 createdAt={''}
@@ -204,6 +206,7 @@ const MiddleSection: React.FC = () => {
                   key={item.id}
                   id={item.id ?? 0}
                   type={item.type ?? ''}
+                  level={item.level}
                   imageUrl={item.images?.[0]?.url ?? ''}
                   name={item.name ?? ''}
                   introduction={item.introduction ?? ''}
