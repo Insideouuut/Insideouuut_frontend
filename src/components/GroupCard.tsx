@@ -31,7 +31,6 @@ const categoryMap: Record<string, string> = {
 
 const GroupCard: React.FC<GroupCardProps> = ({ data }) => {
   if (!data) {
-    // data가 없을 경우 null을 반환하여 컴포넌트가 렌더링되지 않도록 함
     return null;
   }
 

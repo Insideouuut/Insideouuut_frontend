@@ -124,56 +124,16 @@ const MiddleSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filteredData.length > 0 ? (
           filteredData.map((item) => (
-            <GroupCard
-              key={item.id}
-              id={item.id}
-              type={item.type}
-              imageUrl={item.images[0]?.url || ''}
-              name={item.name}
-              introduction={item.introduction}
-              date={item.date}
-              location={item.place?.name || ''}
-              participantsNumber={item.participantsNumber}
-              participantLimit={item.participantLimit}
-              category={item.category}
-            />
+            <GroupCard key={item.id} data={item} />
           ))
         ) : (
           <p>모임: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}
-        {filteredClubs.length > 0 ? (
-          filteredClubs.map((item) => {
-            // category 변환 함수
-            const getCategory = (category: string | undefined): string => {
-              switch (category) {
-                case 'SPORTS':
-                  return '운동';
-                case 'SOCIAL':
-                  return '사교/취미';
-                case 'STUDY':
-                  return '스터디';
-                default:
-                  return '';
-              }
-            };
-
-            return (
-              <GroupCard
-                key={item.id}
-                id={item.id ?? 0}
-                type={item.type ?? ''}
-                imageUrl={item.images?.[0]?.url ?? ''}
-                name={item.name ?? ''}
-                introduction={item.introduction ?? ''}
-                date={item.date ?? ''}
-                location={item.activityRegion ?? ''}
-                participantsNumber={item.participantNumber ?? 0}
-                participantLimit={item.participantLimit ?? 0}
-                category={getCategory(item.category) ?? ''}
-              />
-            );
-          })
-        ) : (
+        {filteredData.length > 0 ? (
+          filteredData.map((item) => (
+            <GroupCard key={item.id} data={item} />
+          )))
+         : (
           <p>동아리: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}
       </div>

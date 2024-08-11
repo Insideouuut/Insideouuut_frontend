@@ -99,3 +99,5 @@ export interface ApiResponseForSpecific {
   metadata: Metadata;
   results: (ClubResult | MeetingResult)[];
 }
+
+export type Result = ClubResult | MeetingResult;
