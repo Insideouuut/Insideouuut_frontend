@@ -111,7 +111,7 @@ const BoardList: React.FC = () => {
         <ul>
           {currentPosts.map((post, index) => (
             <li key={index} className="mb-4 flex flex-col">
-              <Link to={`/club/board/${post.category}/${index}`}>
+              <Link to={`/club/${id}/board/${post.category}/${index}`}>
                 <div className="flex items-center">
                   <img
                     src={profileImage}
