@@ -42,6 +42,7 @@ const NewCard: React.FC<NewCardProps> = ({
     type === '동아리' ? formatClubTime(createdAt) : formatEventTime(date);
 
   const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
+  console.log(category);
 
   return (
     <Link
@@ -55,7 +56,7 @@ const NewCard: React.FC<NewCardProps> = ({
           className="w-full h-full rounded-full object-cover"
         />
       </div>
-      <div className="ml-6 flex flex-col justify-between w-[60%]">
+      <div className="ml-6 flex flex-col justify-between w-[70%]">
         <div>
           <h2 className="text-base font-neoBold mb-1">{name}</h2>
           <p className="text-gray-500 text-[12px]">
@@ -81,9 +82,11 @@ const NewCard: React.FC<NewCardProps> = ({
             </span>
           )}
         </div>
-        <div className="flex mt-1 items-center text-gray-500 font-neoBold text-[12px]">
+        <div className="flex mt-1 items-center w-full text-gray-500 font-neoBold text-[12px]">
           <MapPin className="w-4 mr-1" />
-          <p className="mr-4">{location}</p>
+          <p className="mr-4">
+            {location.length > 10 ? `${location.slice(0, 10)}...` : location}
+          </p>
           <Users className="w-4 mr-" />
           <p className="mr-2">{`${participantsNumber}/${participantLimit}`}</p>
           <p className="text-gray-600">{timeDisplay}</p> {/* 시간 표시 */}
