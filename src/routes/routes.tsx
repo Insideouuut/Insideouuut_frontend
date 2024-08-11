@@ -8,7 +8,7 @@ import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
 import Chat from '@/pages/chat/Chat';
 import ChatRoom from '@/pages/chat/ChatRoom';
-import MemberList from '@/pages/ClubPage/MemberList';
+import ClubMemberList from '@/pages/ClubPage/ClubMemberList';
 import CreateClub from '@/pages/CreateModong/CreateClub';
 import CreateMeeting from '@/pages/CreateModong/CreateMeeting';
 import Main from '@/pages/Main/Main';
@@ -56,7 +56,7 @@ const clubRoutes = {
     boardRoutes,
     {
       path: 'members',
-      element: <MemberList />,
+      element: <ClubMemberList />,
     },
     {
       path: 'meetingList',
@@ -94,10 +94,10 @@ const meetingRoutes = {
   element: <ClubPage />, // ClubPage를 재활용하여 미팅 페이지를 사용
   children: [
     boardRoutes,
-    {
-      path: 'members',
-      element: <MemberList />,
-    },
+    // {
+    //   path: 'members',
+    //   element: <MemberList />,
+    // },
     {
       path: 'meetingList',
       element: <MeetingList />,

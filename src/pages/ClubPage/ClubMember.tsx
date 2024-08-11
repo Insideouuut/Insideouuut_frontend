@@ -10,29 +10,29 @@ import { EllipsisVertical, Thermometer } from 'lucide-react';
 import React from 'react';
 
 interface MemberProps {
-  profileImage: string;
-  nickname: string;
-  temperature: number;
+  userName: string;
+  profileImgUrl: string;
+  mannerTemp: number;
 }
 
-const Member: React.FC<MemberProps> = ({
-  profileImage,
-  nickname,
-  temperature,
+const ClubMember: React.FC<MemberProps> = ({
+  userName,
+  profileImgUrl,
+  mannerTemp,
 }) => {
   return (
     <div className="flex justify-between w-full items-center py-4">
       <div className="flex items-center gap-4">
         <Avatar>
-          <AvatarImage src={profileImage} alt={nickname} />
-          <AvatarFallback>{nickname}</AvatarFallback>
+          <AvatarImage src={profileImgUrl} alt={userName} />
+          <AvatarFallback>{userName}</AvatarFallback>
         </Avatar>
-        <span>{nickname}</span>
+        <span>{userName}</span>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center">
           <Thermometer size={30} color="#333333" strokeWidth={1} />
-          <span>{temperature}°C</span>
+          <span>{mannerTemp}°C</span>
         </div>
         <Popover>
           <PopoverTrigger asChild className="cursor-pointer">
@@ -53,4 +53,4 @@ const Member: React.FC<MemberProps> = ({
   );
 };
 
-export default Member;
+export default ClubMember;
