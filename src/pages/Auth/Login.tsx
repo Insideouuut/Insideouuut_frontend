@@ -49,7 +49,7 @@ const Login = () => {
 
         alert('로그인에 성공했습니다.');
         localStorage.setItem('accessToken', token);
-        setUser(data);
+        setUser(response.data.results[0]);
         navigate('/main');
       } else {
         console.error(statusMessage);
