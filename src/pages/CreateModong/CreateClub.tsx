@@ -4,13 +4,14 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { useUserStore } from '@/store/userStore';
 import { useRef, useState } from 'react';
 import CreateClubForm from './CreateClubForm';
 
 const CreateClub = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -45,8 +46,9 @@ const CreateClub = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
   };
 
   return (
@@ -55,7 +57,7 @@ const CreateClub = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
