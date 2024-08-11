@@ -33,7 +33,6 @@ export interface Club {
   content?: string;
   date?: string;
   region?: string;
-  /** @uniqueItems true */
   joinQuestions?: string[];
   /** @format int32 */
   memberLimit?: number;
@@ -54,6 +53,7 @@ export interface Club {
   images?: ClubImage[];
   likes?: ClubLike[];
   chatRoom?: ChatRoom;
+  meetings?: Meeting[];
   /** @format int64 */
   chat_room_id?: number;
 }
@@ -92,7 +92,6 @@ export interface ClubRequestDto {
   introduction?: string;
   /** @uniqueItems true */
   rules?: string[];
-  /** @uniqueItems true */
   joinQuestions?: string[];
   activityRegion?: string;
   enum?: Club;
@@ -115,6 +114,80 @@ export interface Image {
   uploadName?: string;
   storeName?: string;
   url?: string;
+}
+
+export interface Meeting {
+  /** @format int64 */
+  id?: number;
+  type?: MeetingTypeEnum;
+  title?: string;
+  description?: string;
+  /** @uniqueItems true */
+  rules?: string[];
+  joinQuestions?: string[];
+  /** @format date-time */
+  schedule?: string;
+  progress?: MeetingProgressEnum;
+  level?: MeetingLevelEnum;
+  /** @format int32 */
+  participantsNumber?: number;
+  /** @format int32 */
+  participantLimit?: number;
+  /** @format int32 */
+  minimumAge?: number;
+  /** @format int32 */
+  maximumAge?: number;
+  genderRatio?: MeetingGenderRatioEnum;
+  hasMembershipFee?: boolean;
+  /** @format int32 */
+  membershipFee?: number;
+  category?: MeetingCategoryEnum;
+  categoryDetail?: string;
+  /** @format int32 */
+  view?: number;
+  images?: MeetingImage[];
+  likes?: MeetingLike[];
+  host?: User;
+  meetingUsers?: MeetingUser[];
+  meetingPlace?: MeetingPlace;
+  chatRoom?: ChatRoom;
+  club?: Club;
+}
+
+export interface MeetingImage {
+  /** @format int64 */
+  id?: number;
+  image?: Image;
+  meeting?: Meeting;
+}
+
+export interface MeetingLike {
+  /** @format int64 */
+  id?: number;
+  user?: User;
+  meeting?: Meeting;
+}
+
+export interface MeetingPlace {
+  /** @format int64 */
+  id?: number;
+  name?: string;
+  placeUrl?: string;
+  kakaoMapId?: string;
+  addressName?: string;
+  roadAddressName?: string;
+  /** @format double */
+  latitude?: number;
+  /** @format double */
+  longitude?: number;
+}
+
+export interface MeetingUser {
+  /** @format int64 */
+  id?: number;
+  role?: MeetingUserRoleEnum;
+  meeting?: Meeting;
+  user?: User;
 }
 
 export interface ProfileImage {
@@ -227,6 +300,7 @@ export interface SocialJoinRequest {
 }
 
 export interface MeetingCreateRequest {
+  type?: string;
   name?: string;
   introduction?: string;
   category?: string;
@@ -236,7 +310,6 @@ export interface MeetingCreateRequest {
   participantLimit?: number;
   /** @uniqueItems true */
   rules?: string[];
-  /** @uniqueItems true */
   joinQuestions?: string[];
   /** @format date-time */
   date?: string;
@@ -265,6 +338,15 @@ export interface ApiResponseString {
   status?: Status;
   metadata?: Metadata;
   results?: string[];
+}
+
+export interface AnswerDto {
+  question?: string;
+  answer?: string;
+}
+
+export interface MeetingApplyRequest {
+  answers?: AnswerDto[];
 }
 
 export interface UserJoinRequestDTO {
@@ -299,7 +381,7 @@ export interface ClubPostResponseDto {
 }
 
 export interface ClubApplyRequestDto {
-  answer?: string;
+  answers?: AnswerDto[];
 }
 
 export interface ProfileUpdateRequest {
@@ -333,6 +415,7 @@ export interface ProfileResponse {
 }
 
 export interface MeetingUpdateRequest {
+  type?: string;
   name?: string;
   introduction?: string;
   category?: string;
@@ -342,7 +425,6 @@ export interface MeetingUpdateRequest {
   participantLimit?: number;
   /** @uniqueItems true */
   rules?: string[];
-  /** @uniqueItems true */
   joinQuestions?: string[];
   /** @format date-time */
   date?: string;
@@ -412,9 +494,9 @@ export interface MeetingPlaceResponse {
 export interface MeetingResponse {
   /** @format int64 */
   id?: number;
+  type?: string;
   name?: string;
   introduction?: string;
-  type?: string;
   /** @format int32 */
   view?: number;
   /** @format int32 */
@@ -480,6 +562,7 @@ export interface ClubBoardResponseDto {
   joinQuestions?: string[];
   host?: HostResponse;
   images?: ImageResponse[];
+  meetings?: MeetingResponse[];
 }
 
 export interface ApiResponseUnifiedSearchResponse {
@@ -535,7 +618,6 @@ export interface MeetingApplyResponse {
   basicUserResponse?: BasicUserResponse;
   /** @format int64 */
   applyId?: number;
-  answer?: string;
 }
 
 export interface Pageable {
@@ -552,6 +634,19 @@ export interface Pageable {
   sort?: string[];
 }
 
+export interface ApiResponseListMeetingQuestionAnswerResponse {
+  status?: Status;
+  metadata?: Metadata;
+  results?: MeetingQuestionAnswerResponse[][];
+}
+
+export interface MeetingQuestionAnswerResponse {
+  /** @format int64 */
+  applyId?: number;
+  question?: string;
+  answer?: string;
+}
+
 export interface ApiResponseListClubPostListResponseDto {
   status?: Status;
   metadata?: Metadata;
@@ -559,10 +654,15 @@ export interface ApiResponseListClubPostListResponseDto {
 }
 
 export interface ClubPostListResponseDto {
-  postTitle?: string;
+  /** @format int64 */
+  postId?: number;
+  title?: string;
   category?: string;
+  /** @format date-time */
+  createTime?: string;
   writer?: string;
   content?: string;
+  images?: ImageResponse[];
 }
 
 export interface ApiResponseClubPostDto {
@@ -575,7 +675,7 @@ export interface ClubPostDto {
   title: string;
   category?: string;
   /** @format date-time */
-  dateTime?: string;
+  createTime?: string;
   writer?: string;
   content: string;
   images?: ImageResponse[];
@@ -603,6 +703,8 @@ export interface ApiResponseListClubMembersResponseDto {
 }
 
 export interface ClubMembersResponseDto {
+  /** @format int64 */
+  clubUserId?: number;
   role?: string;
   userName?: string;
   profileImgUrl?: string;
@@ -632,6 +734,18 @@ export interface ClubApplyResponseDto {
   userName?: string;
   profileImgUrl?: string;
   mannerTemp?: number;
+}
+
+export interface ApiResponseListClubQuestionAnswerResponseDto {
+  status?: Status;
+  metadata?: Metadata;
+  results?: ClubQuestionAnswerResponseDto[][];
+}
+
+export interface ClubQuestionAnswerResponseDto {
+  /** @format int64 */
+  applyId?: number;
+  question?: string;
   answer?: string;
 }
 
@@ -642,6 +756,8 @@ export interface ApiResponseListChatRoomResponseDTO {
 }
 
 export interface ChatRoomResponseDTO {
+  /** @format int64 */
+  associatedId?: number;
   title?: string;
   type?: ChatRoomResponseDtoTypeEnum;
   lastMessageContent?: string;
@@ -720,6 +836,50 @@ export enum ClubGenderRatioEnum {
 }
 
 export enum ClubUserRoleEnum {
+  HOST = 'HOST',
+  MEMBER = 'MEMBER',
+  NONE = 'NONE',
+}
+
+export enum MeetingTypeEnum {
+  MEETING = 'MEETING',
+  CLUB_MEETING = 'CLUB_MEETING',
+}
+
+export enum MeetingProgressEnum {
+  ONGOING = 'ONGOING',
+  ENDED = 'ENDED',
+}
+
+export enum MeetingLevelEnum {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  NONE = 'NONE',
+}
+
+export enum MeetingGenderRatioEnum {
+  ONLY_MALE = 'ONLY_MALE',
+  ONLY_FEMALE = 'ONLY_FEMALE',
+  ONE_TO_NINE = 'ONE_TO_NINE',
+  TWO_TO_EIGHT = 'TWO_TO_EIGHT',
+  THREE_TO_SEVEN = 'THREE_TO_SEVEN',
+  FOUR_TO_SIX = 'FOUR_TO_SIX',
+  FIVE_TO_FIVE = 'FIVE_TO_FIVE',
+  SIX_TO_FOUR = 'SIX_TO_FOUR',
+  SEVEN_TO_THREE = 'SEVEN_TO_THREE',
+  EIGHT_TO_TWO = 'EIGHT_TO_TWO',
+  NINE_TO_ONE = 'NINE_TO_ONE',
+  IRRELEVANT = 'IRRELEVANT',
+}
+
+export enum MeetingCategoryEnum {
+  SOCIAL = 'SOCIAL',
+  SPORTS = 'SPORTS',
+  STUDY = 'STUDY',
+}
+
+export enum MeetingUserRoleEnum {
   HOST = 'HOST',
   MEMBER = 'MEMBER',
   NONE = 'NONE',
@@ -1028,7 +1188,7 @@ export class Api<
      * @tags ClubCommentController
      * @name UpdateClubComment
      * @summary 동아리 게시글 댓글 수정 API
-     * @request PUT:/api/clubs/{clubId}/post/{postId}/comment/{commentId}
+     * @request PUT:/api/clubs/{clubId}/posts/{postId}/comment/{commentId}
      * @secure
      */
     updateClubComment: (
@@ -1039,7 +1199,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseClubCommentResponseDto, any>({
-        path: `/api/clubs/${clubId}/post/${postId}/comment/${commentId}`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comment/${commentId}`,
         method: 'PUT',
         body: data,
         secure: true,
@@ -1053,7 +1213,7 @@ export class Api<
      * @tags ClubCommentController
      * @name DeleteClubComment
      * @summary 동아리 게시글 댓글 삭제 API
-     * @request DELETE:/api/clubs/{clubId}/post/{postId}/comment/{commentId}
+     * @request DELETE:/api/clubs/{clubId}/posts/{postId}/comment/{commentId}
      * @secure
      */
     deleteClubComment: (
@@ -1063,7 +1223,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponse, any>({
-        path: `/api/clubs/${clubId}/post/${postId}/comment/${commentId}`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comment/${commentId}`,
         method: 'DELETE',
         secure: true,
         ...params,
@@ -1200,7 +1360,7 @@ export class Api<
       }),
 
     /**
-     * @description 모임을 생성하는 API 입니다. 아직 이미지 업로드 기능이 준비되지 않았기 때문에, meetingImage 필드는 제외하고 요청 보내주시면 됩니다.
+     * @description 모임을 생성하는 API 입니다.
      *
      * @tags MeetingController
      * @name CreateMeeting
@@ -1250,11 +1410,17 @@ export class Api<
      * @request POST:/api/meetings/{meetingId}/apply
      * @secure
      */
-    applyMeetingUser: (meetingId: number, params: RequestParams = {}) =>
+    applyMeetingUser: (
+      meetingId: number,
+      data: MeetingApplyRequest,
+      params: RequestParams = {},
+    ) =>
       this.request<ApiResponse, any>({
         path: `/api/meetings/${meetingId}/apply`,
         method: 'POST',
+        body: data,
         secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -1385,7 +1551,7 @@ export class Api<
      * @tags ClubCommentController
      * @name FindByClubPostId
      * @summary 동아리 게시글 댓글 조회 API
-     * @request GET:/api/clubs/{clubId}/post/{postId}/comment
+     * @request GET:/api/clubs/{clubId}/posts/{postId}/comment
      * @secure
      */
     findByClubPostId: (
@@ -1394,7 +1560,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseListClubCommentListResponseDto, any>({
-        path: `/api/clubs/${clubId}/post/${postId}/comment`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comment`,
         method: 'GET',
         secure: true,
         ...params,
@@ -1406,7 +1572,7 @@ export class Api<
      * @tags ClubCommentController
      * @name SaveClubComment
      * @summary 동아리 게시글 댓글 생성 API
-     * @request POST:/api/clubs/{clubId}/post/{postId}/comment
+     * @request POST:/api/clubs/{clubId}/posts/{postId}/comment
      * @secure
      */
     saveClubComment: (
@@ -1416,7 +1582,50 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseClubCommentResponseDto, any>({
-        path: `/api/clubs/${clubId}/post/${postId}/comment`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comment`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description 특정 동아리에 대한 모임 목록을 조회할 수 있는 API 입니다.
+     *
+     * @tags MeetingController
+     * @name FindAllClubMeetings
+     * @summary 동아리 모임 목록 조회 API
+     * @request GET:/api/clubs/{clubId}/meetings
+     * @secure
+     */
+    findAllClubMeetings: (clubId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseMeetingResponse, any>({
+        path: `/api/clubs/${clubId}/meetings`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리 모임을 생성하는 API 입니다.
+     *
+     * @tags MeetingController
+     * @name CreateClubMeeting
+     * @summary 동아리 모임 생성 API
+     * @request POST:/api/clubs/{clubId}/meetings
+     * @secure
+     */
+    createClubMeeting: (
+      clubId: number,
+      data: {
+        request: MeetingCreateRequest;
+        imageFiles: File[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseString, any>({
+        path: `/api/clubs/${clubId}/meetings`,
         method: 'POST',
         body: data,
         secure: true,
@@ -1635,7 +1844,7 @@ export class Api<
       }),
 
     /**
-     * @description 모임 정보를 수정할 수 있는 API 입니다. 아직 이미지 업로드 기능이 준비되지 않았기 때문에, meetingImage 필드는 제외하고 요청 보내주시면 됩니다.
+     * @description 모임 정보를 수정할 수 있는 API 입니다.
      *
      * @tags MeetingController
      * @name UpdateMeeting
@@ -1646,8 +1855,8 @@ export class Api<
     updateMeeting: (
       meetingId: number,
       data: {
-        request?: MeetingUpdateRequest;
-        imageFiles?: File[];
+        request: MeetingUpdateRequest;
+        imageFiles: File[];
       },
       params: RequestParams = {},
     ) =>
@@ -1965,6 +2174,23 @@ export class Api<
       }),
 
     /**
+     * @description 지원자 신청서 보는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name GetMeetingAnswers
+     * @summary 지원자 신청서 보는 API
+     * @request GET:/api/meetings/apply/{applyId}
+     * @secure
+     */
+    getMeetingAnswers: (applyId: number, params: RequestParams = {}) =>
+      this.request<ApiResponseListMeetingQuestionAnswerResponse, any>({
+        path: `/api/meetings/apply/${applyId}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description 동아리 멤버 목록을 조회하는 API 입니다.
      *
      * @tags ClubUserController
@@ -2010,6 +2236,27 @@ export class Api<
     checkMeetingAuthority1: (clubId: number, params: RequestParams = {}) =>
       this.request<ApiResponseClubUserAuthorityResponse, any>({
         path: `/api/clubs/${clubId}/members/authority`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 지원자 신청서를 보는 API 입니다.
+     *
+     * @tags ClubUserController
+     * @name GetMeetingAnswers1
+     * @summary 동아리 멤버 지원자 조회 API
+     * @request GET:/api/clubs/{clubId}/apply/{applyId}
+     * @secure
+     */
+    getMeetingAnswers1: (
+      applyId: number,
+      clubId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiResponseListClubQuestionAnswerResponseDto, any>({
+        path: `/api/clubs/${clubId}/apply/${applyId}`,
         method: 'GET',
         secure: true,
         ...params,

@@ -10,7 +10,6 @@ import {
   Users,
 } from 'lucide-react';
 import React, { useState } from 'react';
-
 interface ClubSidebarProps {
   roomId: string;
   clubId: number;
@@ -21,8 +20,8 @@ interface ClubSidebarProps {
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
-  roomId,
-  clubId,
+  // roomId,
+  // clubId,
   selectedMenu,
   setSelectedMenu,
   clubType,
@@ -72,7 +71,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <span className="text-sm">홈</span>
         </div>
 
-        {clubType === '동아리' && (
+        {clubType === 'club' && (
           <div
             role="button"
             tabIndex={0}
@@ -85,81 +84,83 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           </div>
         )}
 
-        <div className="space-y-1">
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => setIsBoardOpen(!isBoardOpen)}
-            onKeyDown={(event) =>
-              handleAccordionKeyDown(event, () => setIsBoardOpen(!isBoardOpen))
-            }
-            className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isBoardOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
-          >
-            <div className="flex items-center space-x-2">
-              <List className="w-5 h-5" />
-              <span className="text-sm">게시판</span>
-            </div>
-            <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
-          </div>
-          <div
-            className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
-          >
+        {clubType === '동아리' && (
+          <div className="space-y-1">
             <div
               role="button"
               tabIndex={0}
-              onClick={() => handleMenuClick('allBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+              onClick={() => setIsBoardOpen(!isBoardOpen)}
+              onKeyDown={(event) =>
+                handleAccordionKeyDown(event, () =>
+                  setIsBoardOpen(!isBoardOpen),
+                )
+              }
+              className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isBoardOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
             >
-              전체 게시판
+              <div className="flex items-center space-x-2">
+                <List className="w-5 h-5" />
+                <span className="text-sm">게시판</span>
+              </div>
+              <span>{isBoardOpen ? <ChevronUp /> : <ChevronDown />}</span>
             </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('noticeBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'noticeBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('noticeBoard')}`}
-            >
-              공지 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('freeBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'freeBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('freeBoard')}`}
-            >
-              자유 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('reviewBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'reviewBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('reviewBoard')}`}
-            >
-              후기 게시판
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => handleMenuClick('questionBoard')}
-              onKeyDown={(event) => handleKeyDown(event, 'questionBoard')}
-              className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('questionBoard')}`}
-            >
-              질문 게시판
-            </div>
-          </div>
-        </div>
 
+            <div
+              className={`overflow-hidden transition-all duration-300 ${isBoardOpen ? 'max-h-50' : 'max-h-0'}`}
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('allBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'allBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('allBoard')}`}
+              >
+                전체 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('noticeBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'noticeBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('noticeBoard')}`}
+              >
+                공지 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('freeBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'freeBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('freeBoard')}`}
+              >
+                자유 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('reviewBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'reviewBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('reviewBoard')}`}
+              >
+                후기 게시판
+              </div>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleMenuClick('questionBoard')}
+                onKeyDown={(event) => handleKeyDown(event, 'questionBoard')}
+                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('questionBoard')}`}
+              >
+                질문 게시판
+              </div>
+            </div>
+          </div>
+        )}
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick(`chatRooms/${clubId}/${roomId}`)}
-          onKeyDown={(event) =>
-            handleKeyDown(event, `chatRooms/${clubId}/${roomId}`)
-          }
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms/${clubId}/${roomId}`)}`}
+          onClick={() => handleMenuClick(`chatRooms`)}
+          onKeyDown={(event) => handleKeyDown(event, `chatRooms`)}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms`)}`}
         >
           <MessageCircleMore className="w-5 h-5" />
           <span className="text-sm">채팅</span>

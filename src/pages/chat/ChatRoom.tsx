@@ -139,7 +139,7 @@ const ChatRoom: React.FC = () => {
 
         <div className="w-full">
           <Link
-            to={`/${room.type?.toLowerCase()}/chatRooms/${index}`}
+            to={`/${room.type?.toLowerCase()}/${room.associatedId}/chatRooms`}
             state={{ room }}
             className="text-primary hover:cursor-pointer text-md font-semibold"
           >

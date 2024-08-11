@@ -2,6 +2,11 @@ import { Button } from '@/components/ui/button';
 import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
 import {
+  getColorByMeetingType,
+  getColorByType,
+  getDefaultImageByCategory,
+} from '@/utils/cardUtils'; // 리팩토링
+import {
   CalendarDays,
   ClipboardList,
   Eye,
@@ -28,36 +33,12 @@ const ClubHero: React.FC<ClubHeroProps> = ({
     return (data as Result).participantsNumber !== undefined;
   };
 
-  const getColorByType = (type: string) => {
-    switch (type) {
-      case '동아리':
-        return 'bg-green-200 text-green-800';
-      case '모임':
-        return 'bg-gray-200 text-gray-800';
-      default:
-        return '';
-    }
-  };
-
-  const getColorByCategory = (category: string) => {
-    switch (category) {
-      case '사교/취미':
-        return 'bg-yellow-200 text-yellow-800';
-      case '운동':
-        return 'bg-blue-200 text-blue-800';
-      case '스터디':
-        return 'bg-purple-200 text-purple-800';
-      default:
-        return '';
-    }
-  };
-
   return (
     <section className="relative w-full h-72 py-8 px-4 flex justify-center text-left bg-white">
       <div
         className="absolute inset-0 bg-cover bg-center opacity-75"
         style={{
-          backgroundImage: `url(${clubData.images[0]?.url})`,
+          backgroundImage: `url(${clubData.images[0]?.url || getDefaultImageByCategory(clubData.category)})`,
         }}
       ></div>
       <div className="absolute inset-0 bg-black opacity-25"></div>
@@ -72,7 +53,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
               {clubData.type}
             </span>
             <span
-              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByCategory(
+              className={`flex items-center justify-center h-5 px-3 py-[1.5px] rounded-lg font-neoBold text-[11px] ${getColorByMeetingType(
                 clubData.category,
               )}`}
             >
@@ -94,7 +75,6 @@ const ClubHero: React.FC<ClubHeroProps> = ({
         </div>
         <div className="relative flex flex-col items-end w-[30%] mt-12">
           {isMeeting(clubData) ? (
-            // 모임일 때 스타일
             <div className="flex w-28 flex-col gap-y-[2px]">
               <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
                 <CalendarDays className="w-[17px]" />
@@ -118,7 +98,6 @@ const ClubHero: React.FC<ClubHeroProps> = ({
               </div>
             </div>
           ) : (
-            // 동아리일 때 스타일
             <div className="flex flex-col">
               <div className="flex items-center">
                 <CalendarDays className="w-5 h-5 text-gray-600" />
@@ -135,11 +114,11 @@ const ClubHero: React.FC<ClubHeroProps> = ({
             </div>
           )}
           {userAuthority === '호스트' || userAuthority === '멤버' ? (
-            <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
+            <div className="flex w-[195px] h-[90px] rounded-lg bg-gray-100  items-center mt-4">
               <img
                 src={userProfile?.profileImage || ''}
                 alt="Profile"
-                className="w-10 h-10 rounded-full ml-4"
+                className="w-10 h-10 object-cover rounded-full ml-4"
               />
               <div className="w-full">
                 <div className="flex justify-center w-full">

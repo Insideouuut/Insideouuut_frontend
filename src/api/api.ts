@@ -16,3 +16,13 @@ export const postData = async <T, R>(
   const response = await axiosInstance.post<R>(url, data, config);
   return response.data;
 };
+
+// PATCH 요청 함수
+export const patchData = async <T, R>(
+  url: string,
+  data: T,
+  config?: AxiosRequestConfig,
+): Promise<R> => {
+  const response = await axiosInstance.patch<R>(url, data, config);
+  return response.data;
+};
