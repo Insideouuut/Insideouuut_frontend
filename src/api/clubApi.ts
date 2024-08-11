@@ -190,7 +190,7 @@ export const updateClubData = async (
     console.error('Error updating club data:', error);
     throw error;
   }
-}
+};
 // 동아리 멤버 조회
 export const getClubMemberList = async (clubId: string) => {
   const response = await axiosInstance.get(`/api/clubs/${clubId}/members`);
