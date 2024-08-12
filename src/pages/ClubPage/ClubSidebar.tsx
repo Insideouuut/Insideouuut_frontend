@@ -43,7 +43,15 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
     setSelectedMenu(menu);
 
     if (menu === 'chatRooms') {
-      navigate(`${basePath}/chatRooms/${chatRoomId}`);
+      console.log(chatRoomId);
+
+      if (chatRoomId) {
+        navigate(`${basePath}/chatRooms/${chatRoomId}`);
+      } else {
+        console.error('ChatRoomId is null. Cannot navigate to the chat room.');
+        // 예외 처리: 채팅방 ID가 없을 경우 사용자에게 알림
+        alert('채팅방 ID가 유효하지 않습니다. 채팅방으로 이동할 수 없습니다.');
+      }
     } else {
       navigate(menu === 'home' ? basePath : `${basePath}/${menu}`);
     }

@@ -87,13 +87,13 @@ const ClubMain: React.FC<ClubMainProps> = ({ data }) => {
             </p>
             <div className="w-full bg-gray-300 rounded-full h-6 mt-2 flex">
               <div
-                className="bg-blue-500 h-6 text-center text-white"
+                className="bg-blue-500 rounded-l-full h-6 text-center text-white"
                 style={{ width: `${genderRatio}%` }}
               >
                 {genderRatio.toFixed(1)}%
               </div>
               <div
-                className="bg-pink-500 h-6 text-center text-white"
+                className="bg-pink-500 h-6 rounded-r-full  text-center text-white"
                 style={{ width: `${100 - genderRatio}%` }}
               >
                 {(100 - genderRatio).toFixed(1)}%
