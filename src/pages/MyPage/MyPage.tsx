@@ -82,7 +82,6 @@ const MyPage: React.FC = () => {
     clearUser();
     setIsProfileModalOpen(false);
     localStorage.removeItem('accessToken');
-    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
   return (

@@ -3,13 +3,15 @@ import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface UserState {
+  name: string;
   imageUrl: string;
   email: string;
   nickname: string;
   password: string;
   confirmPassword: string;
   phoneNumber: string;
-  location: string;
+  locations: string[]; // 추가
+  isVerified: boolean; // 추가
   mbti: string;
   interests: string[];
   isLoggedIn: boolean;

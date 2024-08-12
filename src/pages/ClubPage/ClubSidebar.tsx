@@ -17,6 +17,7 @@ import { leaveMeeting } from '@/api/meetingApi'; // 모임 나가기 API 가져�
 interface ClubSidebarProps {
   roomId: string;
   id: number;
+  chatRoomId: string | number; // 채팅방 id
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
   type: string; // '동아리' 또는 '모임'
@@ -24,7 +25,9 @@ interface ClubSidebarProps {
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   roomId,
+  chatRoomId,
   id,
   selectedMenu,
   setSelectedMenu,
@@ -43,8 +46,12 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   const handleMenuClick = (menu: string) => {
     const basePath = type === 'club' ? `/club/${id}` : `/meeting/${id}`;
     setSelectedMenu(menu);
-    const targetPath = menu === 'home' ? basePath : `${basePath}/${menu}`;
-    navigate(targetPath);
+
+    if (menu === 'chatRooms') {
+      navigate(`${basePath}/chatRooms/${chatRoomId}`);
+    } else {
+      navigate(menu === 'home' ? basePath : `${basePath}/${menu}`);
+    }
   };
 
   const handleKeyDown = (
@@ -185,9 +192,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick(`chatRooms/${roomId}`)}
-          onKeyDown={(event) => handleKeyDown(event, `chatRooms/${roomId}`)}
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms/${roomId}`)}`}
+          onClick={() => handleMenuClick(`chatRooms`)}
+          onKeyDown={(event) => handleKeyDown(event, `chatRooms`)}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms`)}`}
         >
           <MessageCircleMore className="w-5 h-5" />
           <span className="text-sm">채팅</span>

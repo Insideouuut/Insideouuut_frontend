@@ -78,9 +78,10 @@ const SetLocation: React.FC = () => {
         isVerified,
       });
       setUser({
-        location: location,
+        locations: neighborhoods,
+        isVerified: isVerified,
       });
-      localStorage.setItem('neighborhoods', JSON.stringify(neighborhoods));
+
       alert(isVerified ? '동네 인증 성공!' : '동네 인증 실패.');
     } catch (error) {
       console.error('Error verifying location:', error);

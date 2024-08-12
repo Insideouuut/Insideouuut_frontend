@@ -84,7 +84,7 @@ const clubRoutes = {
       element: <MemberManagement />,
     },
     {
-      path: 'chatRooms',
+      path: 'chatRooms/:chatRoomId',
       element: <Chat />,
     },
   ],
@@ -124,7 +124,7 @@ const meetingRoutes = {
       element: <MemberManagement />,
     },
     {
-      path: 'chatRooms',
+      path: 'chatRooms/:chatRoomId',
       element: <Chat />,
     },
   ],

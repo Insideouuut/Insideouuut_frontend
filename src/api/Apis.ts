@@ -334,10 +334,15 @@ export interface MeetingPlaceRequest {
   longitude?: number;
 }
 
-export interface ApiResponseString {
+export interface ApiResponseMeetingCreateResponse {
   status?: Status;
   metadata?: Metadata;
-  results?: string[];
+  results?: MeetingCreateResponse[];
+}
+
+export interface MeetingCreateResponse {
+  /** @format int64 */
+  meetingId?: number;
 }
 
 export interface AnswerDto {
@@ -378,6 +383,12 @@ export interface ClubPostResponseDto {
   message?: string;
   /** @format int64 */
   clubPostId?: number;
+}
+
+export interface ApiResponseString {
+  status?: Status;
+  metadata?: Metadata;
+  results?: string[];
 }
 
 export interface ClubApplyRequestDto {
@@ -497,6 +508,8 @@ export interface MeetingResponse {
   type?: string;
   name?: string;
   introduction?: string;
+  /** @format int64 */
+  chatRoomId?: number;
   /** @format int32 */
   view?: number;
   /** @format int32 */
@@ -756,6 +769,8 @@ export interface ApiResponseListChatRoomResponseDTO {
 }
 
 export interface ChatRoomResponseDTO {
+  /** @format int64 */
+  chatRoomId?: number;
   /** @format int64 */
   associatedId?: number;
   title?: string;
@@ -1188,7 +1203,7 @@ export class Api<
      * @tags ClubCommentController
      * @name UpdateClubComment
      * @summary 동아리 게시글 댓글 수정 API
-     * @request PUT:/api/clubs/{clubId}/posts/{postId}/comment/{commentId}
+     * @request PUT:/api/clubs/{clubId}/posts/{postId}/comments/{commentId}
      * @secure
      */
     updateClubComment: (
@@ -1199,7 +1214,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseClubCommentResponseDto, any>({
-        path: `/api/clubs/${clubId}/posts/${postId}/comment/${commentId}`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comments/${commentId}`,
         method: 'PUT',
         body: data,
         secure: true,
@@ -1213,7 +1228,7 @@ export class Api<
      * @tags ClubCommentController
      * @name DeleteClubComment
      * @summary 동아리 게시글 댓글 삭제 API
-     * @request DELETE:/api/clubs/{clubId}/posts/{postId}/comment/{commentId}
+     * @request DELETE:/api/clubs/{clubId}/posts/{postId}/comments/{commentId}
      * @secure
      */
     deleteClubComment: (
@@ -1223,7 +1238,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponse, any>({
-        path: `/api/clubs/${clubId}/posts/${postId}/comment/${commentId}`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comments/${commentId}`,
         method: 'DELETE',
         secure: true,
         ...params,
@@ -1375,7 +1390,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<ApiResponseString, any>({
+      this.request<ApiResponseMeetingCreateResponse, any>({
         path: `/api/meetings`,
         method: 'POST',
         body: data,
@@ -1551,7 +1566,7 @@ export class Api<
      * @tags ClubCommentController
      * @name FindByClubPostId
      * @summary 동아리 게시글 댓글 조회 API
-     * @request GET:/api/clubs/{clubId}/posts/{postId}/comment
+     * @request GET:/api/clubs/{clubId}/posts/{postId}/comments
      * @secure
      */
     findByClubPostId: (
@@ -1560,7 +1575,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseListClubCommentListResponseDto, any>({
-        path: `/api/clubs/${clubId}/posts/${postId}/comment`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comments`,
         method: 'GET',
         secure: true,
         ...params,
@@ -1572,7 +1587,7 @@ export class Api<
      * @tags ClubCommentController
      * @name SaveClubComment
      * @summary 동아리 게시글 댓글 생성 API
-     * @request POST:/api/clubs/{clubId}/posts/{postId}/comment
+     * @request POST:/api/clubs/{clubId}/posts/{postId}/comments
      * @secure
      */
     saveClubComment: (
@@ -1582,7 +1597,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<ApiResponseClubCommentResponseDto, any>({
-        path: `/api/clubs/${clubId}/posts/${postId}/comment`,
+        path: `/api/clubs/${clubId}/posts/${postId}/comments`,
         method: 'POST',
         body: data,
         secure: true,
@@ -1689,6 +1704,23 @@ export class Api<
     ) =>
       this.request<ApiResponse, any>({
         path: `/api/clubs/${clubId}/apply/${applyId}/accept`,
+        method: 'POST',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description 동아리 모임에 참여하는 API 입니다.
+     *
+     * @tags MeetingApplyUserController
+     * @name ApplyClubMeetingUser
+     * @summary 동아리 모임 참여 API
+     * @request POST:/api/clubs/meetings/{meetingId}/apply
+     * @secure
+     */
+    applyClubMeetingUser: (meetingId: number, params: RequestParams = {}) =>
+      this.request<ApiResponse, any>({
+        path: `/api/clubs/meetings/${meetingId}/apply`,
         method: 'POST',
         secure: true,
         ...params,

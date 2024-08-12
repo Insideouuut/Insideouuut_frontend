@@ -1,55 +1,49 @@
 import {
-  Api,
   ApiResponseClubPostDto,
   ClubCommentListResponseDto,
   ClubPostDto,
 } from '@/api/Apis';
-import { useUserStore } from '@/store/userStore'; // 사용자 스토어에서 사용자 정보를 불러옵니다.
+import axiosInstance from '@/api/axiosConfig';
+import { useUserStore } from '@/store/userStore';
 import { formatDate } from '@/utils/timeUtils';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const apiInstance = new Api();
-
 const PostDetail: React.FC = () => {
-  const { id, postId } = useParams<{ id: string; postId: string }>(); // 클럽 ID와 게시글 ID를 받아옵니다.
+  const { id, postId } = useParams<{ id: string; postId: string }>(); // TypeScript에서 id와 postId의 타입 명시
   const navigate = useNavigate();
-  const [post, setPost] = useState<ClubPostDto | null>(null); // `ClubPostDto` 타입을 사용하여 상태를 관리합니다.
-  const [comments, setComments] = useState<ClubCommentListResponseDto[]>([]); // 댓글 목록 상태 관리
-  const [comment, setComment] = useState<string>(''); // 새로운 댓글을 입력받는 상태
+  const [post, setPost] = useState<ClubPostDto | null>(null);
+  const [comments, setComments] = useState<ClubCommentListResponseDto[]>([]);
+  const [comment, setComment] = useState<string>('');
+  const [editCommentId, setEditCommentId] = useState<number | null>(null); // 수정 중인 댓글의 ID를 관리
 
-  // 현재 로그인한 사용자 정보와 프로필 이미지를 스토어에서 가져옵니다.
-  const { profileImage, nickname } = useUserStore((state) => ({
+  const { profileImage, name } = useUserStore((state) => ({
     profileImage:
       state.imageUrl ||
       'https://w7.pngwing.com/pngs/665/132/png-transparent-user-defult-avatar.png',
-    nickname: state.nickname,
+    name: state.name,
   }));
 
   useEffect(() => {
     const fetchPostAndComments = async () => {
       try {
         // 게시글 가져오기
-        const postResponse: ApiResponseClubPostDto =
-          await apiInstance.api.findClubPost(
-            Number(postId), // 여기서 postid를 첫 번째 인수로 전달
-            id!, // 그리고 clubId를 두 번째 인수로 전달
-          );
-        console.log(postResponse);
-
-        const postDetail = postResponse.results?.[0];
+        const postResponse = await axiosInstance.get<ApiResponseClubPostDto>(
+          `/api/clubs/${id}/posts/${postId}`,
+        );
+        const postDetail = postResponse.data.results?.[0];
+        console.log(postDetail);
 
         if (postDetail) {
           setPost(postDetail);
         }
 
         // 댓글 가져오기
-        const commentsResponse = await apiInstance.api.findByClubPostId(
-          Number(postId),
-          id!,
+        const commentsResponse = await axiosInstance.get(
+          `/api/clubs/${id}/posts/${postId}/comments`,
         );
-        if (commentsResponse.results) {
-          setComments(commentsResponse.results.flat());
+        if (commentsResponse.data.results) {
+          setComments(commentsResponse.data.results.flat());
         }
       } catch (error) {
         console.error('Failed to fetch post details or comments:', error);
@@ -59,23 +53,20 @@ const PostDetail: React.FC = () => {
     };
 
     fetchPostAndComments();
-  }, [id, postId]); // id와 postid를 의존성 배열에 추가합니다.
+  }, [id, postId]);
 
   const handleDeletePost = async () => {
     try {
-      console.log(`Attempting to delete post with ID: ${postId}`);
-      const response = await apiInstance.api.deleteClubPost(
-        Number(id),
-        Number(postId),
+      const response = await axiosInstance.delete(
+        `/api/clubs/${id}/posts/${postId}`,
       );
 
-      if (response.status?.code === 200) {
-        console.log('Post deleted:', postId);
-        navigate(`/club/${id}/board/${post?.category}`); // 삭제 후 게시판 목록 페이지로 이동
+      if (response.status === 200) {
+        navigate(`/club/${id}/board/${post?.category}`);
       } else {
         console.error(
           'Failed to delete post. Server responded with:',
-          response.status,
+          response,
         );
       }
     } catch (error) {
@@ -91,24 +82,40 @@ const PostDetail: React.FC = () => {
     if (!comment.trim()) return;
 
     try {
-      const data = { content: comment };
-      const response = await apiInstance.api.saveClubComment(
-        Number(id),
-        Number(postId),
-        data,
-      );
-
-      if (response.status?.code === 200) {
-        console.log('Comment saved:', response.results);
-        setComment('');
-
-        // 댓글 다시 불러오기
-        const commentsResponse = await apiInstance.api.findByClubPostId(
-          Number(postId),
-          id!,
+      if (editCommentId) {
+        // 댓글 수정
+        const data = { content: comment };
+        const response = await axiosInstance.put(
+          `/api/clubs/${id}/posts/${postId}/comments/${editCommentId}`,
+          data,
         );
-        if (commentsResponse.results) {
-          setComments(commentsResponse.results.flat());
+
+        if (response.status === 200) {
+          setEditCommentId(null);
+          setComment('');
+          const commentsResponse = await axiosInstance.get(
+            `/api/clubs/${id}/posts/${postId}/comments`,
+          );
+          if (commentsResponse.data.results) {
+            setComments(commentsResponse.data.results.flat());
+          }
+        }
+      } else {
+        // 댓글 생성
+        const data = { content: comment };
+        const response = await axiosInstance.post(
+          `/api/clubs/${id}/posts/${postId}/comments`,
+          data,
+        );
+
+        if (response.status === 200) {
+          setComment('');
+          const commentsResponse = await axiosInstance.get(
+            `/api/clubs/${id}/posts/${postId}/comments`,
+          );
+          if (commentsResponse.data.results) {
+            setComments(commentsResponse.data.results.flat());
+          }
         }
       }
     } catch (error) {
@@ -116,36 +123,30 @@ const PostDetail: React.FC = () => {
     }
   };
 
-  const handleDeleteComment = async (commentId?: number) => {
-    if (!commentId) {
-      console.error('Invalid comment ID');
-      return;
-    }
+  const handleEditComment = (commentId: number, currentComment: string) => {
+    setEditCommentId(commentId);
+    setComment(currentComment);
+  };
 
-    console.log(`Attempting to delete comment with ID: ${commentId}`);
+  const handleDeleteComment = async (commentId?: number) => {
+    if (!commentId) return;
 
     try {
-      const response = await apiInstance.api.deleteClubComment(
-        Number(id),
-        Number(postId),
-        commentId,
+      const response = await axiosInstance.delete(
+        `/api/clubs/${id}/posts/${postId}/comments/${commentId}`,
       );
 
-      if (response.status?.code === 200) {
-        console.log('Comment deleted:', commentId);
-
-        // 댓글 목록 갱신
-        const commentsResponse = await apiInstance.api.findByClubPostId(
-          Number(postId),
-          id!,
+      if (response.status === 200) {
+        const commentsResponse = await axiosInstance.get(
+          `/api/clubs/${id}/posts/${postId}/comments`,
         );
-        if (commentsResponse.results) {
-          setComments(commentsResponse.results.flat());
+        if (commentsResponse.data.results) {
+          setComments(commentsResponse.data.results.flat());
         }
       } else {
         console.error(
           'Failed to delete comment. Server responded with:',
-          response.status,
+          response,
         );
       }
     } catch (error) {
@@ -154,7 +155,7 @@ const PostDetail: React.FC = () => {
   };
 
   if (!post) {
-    return <div>Loading...</div>; // post가 null인 경우 로딩 메시지를 표시하거나 다른 처리
+    return <div>Loading...</div>;
   }
 
   return (
@@ -172,7 +173,7 @@ const PostDetail: React.FC = () => {
           <div className="flex items-center">
             <img
               src={profileImage}
-              alt={nickname}
+              alt={name}
               className="w-8 h-8 rounded-full object-cover mr-4"
             />
             <div>
@@ -187,7 +188,7 @@ const PostDetail: React.FC = () => {
           <span className="my-2 block w-full h-[1px] bg-gray-200"></span>
         </div>
 
-        {post?.writer === nickname && (
+        {post?.writer === name && (
           <div className="flex space-x-2 whitespace-nowrap">
             <button
               onClick={() =>
@@ -219,7 +220,6 @@ const PostDetail: React.FC = () => {
       </div>
       <p className="text-sm mb-4">{post?.content}</p>
 
-      {/* 댓글 목록 렌더링 */}
       <div className="mt-6">
         <h2 className="text-lg font-bold mb-4">댓글</h2>
         {comments.map((comment, index) => (
@@ -234,15 +234,23 @@ const PostDetail: React.FC = () => {
                   {comment.dateTime ? formatDate(comment.dateTime) : ''}
                 </p>
               </div>
-              {comment.writer === nickname && (
-                <>
+              {comment.writer === name && (
+                <div className="space-x-2">
+                  <button
+                    onClick={() =>
+                      handleEditComment(comment.id!, comment.comment!)
+                    }
+                    className="text-primary text-sm"
+                  >
+                    수정
+                  </button>
                   <button
                     onClick={() => handleDeleteComment(comment.id)}
                     className="text-red-500 text-sm"
                   >
                     삭제
                   </button>
-                </>
+                </div>
               )}
             </div>
             <span className="block w-full h-[1px] bg-gray-200 mt-2"></span>
@@ -250,20 +258,19 @@ const PostDetail: React.FC = () => {
         ))}
       </div>
 
-      {/* 댓글 작성 영역 */}
       <div className="mt-6 flex space-x-2">
         <textarea
           value={comment}
           onChange={handleCommentChange}
           className="w-full p-2 border rounded"
           placeholder="댓글을 입력하세요"
-          rows={1} // 텍스트 영역의 높이를 기본 높이로 유지
+          rows={1}
         />
         <button
           onClick={handleCommentSubmit}
           className="p-2 bg-primary hover:bg-green-600 text-white rounded flex-shrink-0 h-full"
         >
-          댓글 작성
+          {editCommentId ? '댓글 수정' : '댓글 작성'}
         </button>
       </div>
     </div>

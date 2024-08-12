@@ -26,6 +26,10 @@ const ClubPage: React.FC = () => {
   const navigate = useNavigate();
   const type = location.pathname.includes('/club') ? 'club' : 'meeting'; // 'club'과 'meeting'으로 변경
   const [data, setData] = useState<ClubData | Result | null>(null);
+
+  // chatRoomId
+  const [chatRoomId, setChatRoomId] = useState<string | null>(null);
+
   const [userProfile, setUserProfile] = useState<{
     nickname: string;
     profileImage: string;
@@ -40,6 +44,14 @@ const ClubPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    // 경로에 따라 selectedMenu 업데이트
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    if (pathSegments.length >= 3) {
+      setSelectedMenu(pathSegments[2]); // 예: /club/:id/chatRooms 에서 chatRooms 선택
+    }
+  }, [location]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -67,12 +79,10 @@ const ClubPage: React.FC = () => {
     setSelectedMenu(menu);
     const basePath = type === 'club' ? `/club/${id}` : `/meeting/${id}`;
 
-    if (menu.includes('Board')) {
-      navigate(`${basePath}/board/${menu}`);
-    } else if (menu === 'home') {
-      navigate(`${basePath}`);
+    if (menu === 'chatRooms' && chatRoomId) {
+      navigate(`${basePath}/chatRooms/${chatRoomId}`);
     } else {
-      navigate(`${basePath}/${menu}`);
+      navigate(menu === 'home' ? basePath : `${basePath}/${menu}`);
     }
   };
 
@@ -85,7 +95,14 @@ const ClubPage: React.FC = () => {
 
           if (type === 'club') {
             fetchedData = await getClubData(id);
+            console.log('동아리데이터: ', fetchedData);
+
             setData(fetchedData ?? null);
+
+            // chatRoomId가 존재한다면 설정
+            if (fetchedData?.chatRoomId) {
+              setChatRoomId(fetchedData.chatRoomId.toString());
+            }
 
             const authorityResponse = await checkClubUserAuthority(id, token);
             const authority = authorityResponse.results[0].authority;
@@ -146,6 +163,7 @@ const ClubPage: React.FC = () => {
       <div className="flex mt-4 justify-center">
         {data && (
           <ClubSidebar
+            chatRoomId={chatRoomId || ''} // chatRoomId 전달
             roomId={'1'}
             id={id ? parseInt(id) : 0}
             selectedMenu={selectedMenu}
