@@ -65,31 +65,6 @@ export interface ApiResponse {
   results: Result[];
 }
 
-// 수정된 UpdateMeetingData 인터페이스
-export interface UpdateMeetingData {
-  title: string;
-  description: string;
-  category: string;
-  meetingPlace: {
-    name: string;
-    placeUrl: string;
-    kakaoMapId: string;
-    latitude: number;
-    longitude: number;
-  };
-  participantLimit: number;
-  rule: string;
-  joinQuestion: string;
-  schedule: string;
-  level: string;
-  minimumAge: number;
-  maximumAge: number;
-  maleRatio: number;
-  femaleRatio: number;
-  hasMembershipFee: boolean;
-  membershipFee: number;
-  hobby: string;
-}
 
 export interface Answer {
   question: string;
@@ -98,4 +73,52 @@ export interface Answer {
 
 export interface ApplyForMeetingRequest {
   answers: Answer[];
+}
+
+// 추가된 타입
+export interface ApplyForMeetingResponse {
+  applyId: number;
+  question: string;
+  answer: string;
+}
+
+// API 응답 타입
+export interface MeetingApplicantApiResponse {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: Metadata;
+  results: ApplyForMeetingResponse[][];
+}
+
+
+
+export interface MeetingPlace {
+  name: string;
+  placeUrl: string;
+  kakaoMapId: string;
+  address_name: string;
+  road_address_name: string;
+  latitude: string;
+  longitude: string;
+}
+
+export interface UpdateMeetingData {
+  type: string;
+  name: string;
+  introduction: string;
+  category: string;
+  categoryDetail: string;
+  meetingPlace: MeetingPlace;
+  participantLimit: number;
+  rules: string[];
+  joinQuestions: string[];
+  date: string;
+  level: string;
+  ageRange: number[];
+  hasGenderRatio: string;
+  ratio: string;
+  hasMembershipFee: boolean;
+  membershipFeeAmount: number;
 }

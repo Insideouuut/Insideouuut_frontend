@@ -65,20 +65,6 @@ export const reissueToken = async () => {
   return response;
 };
 
-// Access 토큰 만료시 자동 재발급 설정
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-//     if (error.response.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-//       await reissueToken();
-//       return axiosInstance(originalRequest);
-//     }
-//     return Promise.reject(error);
-//   },
-// );
-
 // 첫 로그인 회원 확인(카카오) 함수
 export const isFirstLoginWithKakao = async (token: string | null) => {
   const response = axiosInstance.get('/api/oauth2/userInfo', {

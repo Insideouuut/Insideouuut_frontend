@@ -8,6 +8,8 @@ import { ApplyForMeetingRequest } from '@/types/Meetings';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
 
+
+
 // 동아리에 대한 사용자 권한 확인 API
 export const checkClubUserAuthority = async (
   clubId: string,

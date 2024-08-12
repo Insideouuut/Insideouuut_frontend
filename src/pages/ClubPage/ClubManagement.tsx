@@ -3,11 +3,11 @@ import {
   deleteMeetingData,
   endMeeting,
   getMeetingData,
-  updateMeetingData, // 모임 데이터를 업데이트하기 위한 함수 import
+  updateMeetingData,
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { ClubData as ClubAPIData } from '@/types/Clubs';
-import { Result, UpdateMeetingData } from '@/types/Meetings'; // 필요한 타입 import
+import { Result, UpdateMeetingData } from '@/types/Meetings';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -15,13 +15,14 @@ interface MeetingPlace {
   name: string;
   placeUrl: string;
   kakaoMapId: string;
-  addressName: string;
-  roadAddressName: string;
-  latitude: number;
-  longitude: number;
+  address_name: string;
+  road_address_name: string;
+  latitude: string;
+  longitude: string;
 }
 
 interface ClubData {
+  type: string;
   name: string;
   introduction: string;
   category: string;
@@ -58,6 +59,7 @@ const ClubManagement: React.FC = () => {
           const data: ClubAPIData = await getClubData(id!);
 
           const clubData: ClubData = {
+            type: '동아리',
             name: data.name,
             introduction: data.introduction,
             category: data.category,
@@ -66,10 +68,10 @@ const ClubManagement: React.FC = () => {
               name: '',
               placeUrl: '',
               kakaoMapId: '',
-              addressName: '',
-              roadAddressName: '',
-              latitude: 0,
-              longitude: 0,
+              address_name: '',
+              road_address_name: '',
+              latitude: '0',
+              longitude: '0',
             },
             participantLimit: data.participantLimit,
             rules: data.rules,
@@ -89,6 +91,7 @@ const ClubManagement: React.FC = () => {
           const data: Result = await getMeetingData(id!);
 
           const meetingData: ClubData = {
+            type: '모임',
             name: data.name,
             introduction: data.introduction,
             category: data.category,
@@ -97,10 +100,10 @@ const ClubManagement: React.FC = () => {
               name: data.place.name,
               placeUrl: data.place.placeUrl,
               kakaoMapId: data.place.kakaoMapId,
-              addressName: data.place.addressName || '',
-              roadAddressName: data.place.roadAddressName || '',
-              latitude: data.place.latitude,
-              longitude: data.place.longitude,
+              address_name: data.place.addressName || '',
+              road_address_name: data.place.roadAddressName || '',
+              latitude: data.place.latitude.toString(),
+              longitude: data.place.longitude.toString(),
             },
             participantLimit: data.participantLimit,
             rules: data.rules,
@@ -108,7 +111,7 @@ const ClubManagement: React.FC = () => {
             date: data.date,
             level: data.level,
             ageRange: data.ageRange,
-            hasGenderRatio: data.ratio ? 'true' : 'false',
+            hasGenderRatio: data.ratio ? '지정' : '미지정',
             ratio: data.ratio,
             hasMembershipFee: data.hasMembershipFee,
             membershipFeeAmount: data.membershipFeeAmount,
@@ -124,6 +127,23 @@ const ClubManagement: React.FC = () => {
 
     fetchData();
   }, [id, type]);
+
+  const mapCategoryToEnglish = (category: string): string => {
+    switch (category) {
+      case '운동':
+        return 'SPORTS';
+      case '사교/취미':
+        return 'SOCIAL';
+      case '스터디':
+        return 'STUDY';
+      default:
+        return category;
+    }
+  };
+
+  const formatDate = (dateString: string): string => {
+    return dateString.replace(/\./g, '-');
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -162,16 +182,21 @@ const ClubManagement: React.FC = () => {
     try {
       const token = localStorage.getItem('accessToken') || '';
       if (formData) {
+        // 카테고리와 날짜 변환
+        const transformedCategory = mapCategoryToEnglish(formData.category);
+        const transformedDate = formatDate(formData.date);
+
         if (type === 'club') {
           const formDataToSend = new FormData();
 
           const clubRequestDto = {
-            category: formData.category,
+            type: formData.type,
+            category: transformedCategory, // 변환된 카테고리 사용
             categoryDetail: formData.categoryDetail,
             level: formData.level,
             hasMembershipFee: formData.hasMembershipFee,
             membershipFeeAmount: formData.membershipFeeAmount,
-            date: formData.date,
+            date: transformedDate, // 변환된 날짜 사용
             participantLimit: formData.participantLimit,
             hasGenderRatio: formData.hasGenderRatio,
             ratio: formData.ratio,
@@ -181,10 +206,9 @@ const ClubManagement: React.FC = () => {
             introduction: formData.introduction,
             rules: formData.rules,
             joinQuestions: formData.joinQuestions,
-            activityRegion: formData.meetingPlace.addressName,
+            activityRegion: formData.meetingPlace.address_name,
           };
 
-          // clubRequestDto를 application/json으로 FormData에 추가
           formDataToSend.append(
             'clubRequestDto',
             new Blob([JSON.stringify(clubRequestDto)], {
@@ -192,48 +216,42 @@ const ClubManagement: React.FC = () => {
             }),
           );
 
-          // 이미지 파일을 FormData에 추가
           formData.imageFiles.forEach((file) => {
             formDataToSend.append('imageFiles', file);
           });
 
-          // FormData의 내용을 확인하는 로그
-          for (const pair of formDataToSend.entries()) {
-            console.log(`${pair[0]}:`, pair[1]);
-          }
-
-          // updateClubData 함수 호출
           await updateClubData(id!, formDataToSend, token);
         } else if (type === 'meeting') {
           const updateData: UpdateMeetingData = {
-            title: formData.name,
-            description: formData.introduction,
-            category: formData.category,
+            type: formData.type,
+            name: formData.name,
+            introduction: formData.introduction,
+            category: transformedCategory, // 변환된 카테고리 사용
+            categoryDetail: formData.categoryDetail,
             meetingPlace: {
               name: formData.meetingPlace.name,
               placeUrl: formData.meetingPlace.placeUrl,
               kakaoMapId: formData.meetingPlace.kakaoMapId,
+              address_name: formData.meetingPlace.address_name,
+              road_address_name: formData.meetingPlace.road_address_name,
               latitude: formData.meetingPlace.latitude,
               longitude: formData.meetingPlace.longitude,
             },
             participantLimit: formData.participantLimit,
-            rule: formData.rules.join(', '),
-            joinQuestion: formData.joinQuestions.join(', '),
-            schedule: formData.date,
+            rules: formData.rules,
+            joinQuestions: formData.joinQuestions,
+            date: transformedDate, // 변환된 날짜 사용
             level: formData.level,
-            minimumAge: formData.ageRange[0],
-            maximumAge: formData.ageRange[1],
-            maleRatio: parseInt(formData.ratio.split(':')[0]),
-            femaleRatio: parseInt(formData.ratio.split(':')[1]),
+            ageRange: formData.ageRange,
+            hasGenderRatio: formData.hasGenderRatio,
+            ratio: formData.ratio,
             hasMembershipFee: formData.hasMembershipFee,
-            membershipFee: formData.membershipFeeAmount,
-            hobby: '등산', // 기본적으로 하드코딩된 값
+            membershipFeeAmount: formData.membershipFeeAmount,
           };
 
           const imageFile =
             formData.imageFiles.length > 0 ? formData.imageFiles[0] : null;
 
-          // updateMeetingData 함수 호출
           await updateMeetingData(id!, updateData, imageFile, token);
         }
 
@@ -351,29 +369,29 @@ const ClubManagement: React.FC = () => {
               className="block w-full mt-1 p-2 border rounded"
             />
             <input
-              name="addressName"
-              value={formData.meetingPlace.addressName}
+              name="address_name"
+              value={formData.meetingPlace.address_name}
               onChange={handleMeetingPlaceChange}
               placeholder="주소 이름"
               className="block w-full mt-1 p-2 border rounded"
             />
             <input
-              name="roadAddressName"
-              value={formData.meetingPlace.roadAddressName}
+              name="road_address_name"
+              value={formData.meetingPlace.road_address_name}
               onChange={handleMeetingPlaceChange}
               placeholder="도로명 주소"
               className="block w-full mt-1 p-2 border rounded"
             />
             <input
               name="latitude"
-              value={formData.meetingPlace.latitude.toString()}
+              value={formData.meetingPlace.latitude}
               onChange={handleMeetingPlaceChange}
               placeholder="위도"
               className="block w-full mt-1 p-2 border rounded"
             />
             <input
               name="longitude"
-              value={formData.meetingPlace.longitude.toString()}
+              value={formData.meetingPlace.longitude}
               onChange={handleMeetingPlaceChange}
               placeholder="경도"
               className="block w-full mt-1 p-2 border rounded"
