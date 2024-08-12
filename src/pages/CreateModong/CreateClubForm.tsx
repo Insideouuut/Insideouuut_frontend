@@ -23,6 +23,7 @@ import * as Slider from '@radix-ui/react-slider';
 import { Camera, Info } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 const CATEGORY_DETAIL = ['사교/취미 종류', '운동 종류', '스터디 목표'];
@@ -82,7 +83,7 @@ const initialValues: ClubFormData = {
 };
 
 const CreateClubForm = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -131,7 +132,7 @@ const CreateClubForm = () => {
     const request = {
       category: data.category,
       categoryDetail: data.categoryDetail,
-      level: data.category === 'SOCIAL' ? '' : data.level || '',
+      level: data.category === 'SOCIAL' ? 'NONE' : data.level,
       hasMembershipFee: data.hasMembershipFee,
       membershipFeeAmount: data.membershipFeeAmount || 0,
       activityRegion: data.activityRegion,
@@ -158,11 +159,11 @@ const CreateClubForm = () => {
 
     try {
       const response = await createClub(formData);
-      // const clubId = response.data.results[0].clubId;
+      const clubId = response.data.results[0].clubId;
       if (response.status === 200) {
         if (response.data.status.code === 200) {
           alert('동아리 생성이 완료되었습니다!');
-          // navigate(`/club/${clubId}`);
+          navigate(`/club/${clubId}`);
         } else {
           alert(response.data.status.message);
         }
