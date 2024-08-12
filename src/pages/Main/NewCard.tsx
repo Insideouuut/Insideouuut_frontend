@@ -19,7 +19,7 @@ interface NewCardProps {
   imageUrl: string;
   name: string;
   introduction: string;
-  level: string;
+  level: string | undefined;
   date: string;
   location: string;
   participantsNumber: number;
@@ -49,7 +49,7 @@ const NewCard: React.FC<NewCardProps> = ({
 
   const mainImage = imageUrl ? imageUrl : getDefaultImageByCategory(category);
 
-  const levelInKorean = getLevel(level);
+  const levelInKorean = getLevel(level ?? '');
   return (
     <Link
       to={`/${getLinkByType(type)}/${id}`}
