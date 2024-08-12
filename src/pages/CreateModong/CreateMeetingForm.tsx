@@ -27,6 +27,7 @@ import { format } from 'date-fns';
 import { CalendarIcon, Camera, Clock4, Info } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import Map from './Map';
 
@@ -95,7 +96,7 @@ const initialValues: MeetingFormData = {
 };
 
 const CreateMeetingForm = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const {
     handleSubmit,
     setValue,
@@ -153,15 +154,31 @@ const CreateMeetingForm = () => {
       alert('모임 장소는 필수 입력 값입니다.');
       return;
     }
+    const formattedTime = (meetingTime: string) => {
+      let formattedTime = '';
+      const [meridian, time] = meetingTime.split(' ');
+      const [hour, minute] = time.split(':');
+      let adjustedHour = hour;
+
+      if (meridian === '오후' && hour !== '12') {
+        adjustedHour = String(Number(hour) + 12).padStart(2, '0');
+      } else if (meridian === '오전' && hour === '12') {
+        adjustedHour = '00';
+      }
+
+      formattedTime = `${adjustedHour}:${minute}:00`;
+      return formattedTime;
+    };
 
     const request = {
+      type: '모임',
       category: data.category,
       categoryDetail: data.categoryDetail,
-      level: data.category === 'SOCIAL' ? '' : data.level || '',
+      level: data.category === 'SOCIAL' ? 'NONE' : data.level,
       hasMembershipFee: data.hasMembershipFee,
       membershipFeeAmount: data.membershipFeeAmount || 0,
       meetingPlace: meetingPlace,
-      date: data.meetingDate + ' ' + data.meetingTime,
+      date: data.meetingDate + ' ' + formattedTime(data.meetingTime),
       participantLimit: data.participantLimit,
       hasGenderRatio: data.hasGenderRatio,
       ratio: `${data.ratio} : ${10 - data.ratio}`,
@@ -174,8 +191,6 @@ const CreateMeetingForm = () => {
         .map((joinQuestion) => joinQuestion.trim()),
     };
 
-    console.log('meeting request:', request);
-
     const formData = new FormData();
     formData.append(
       'request',
@@ -185,10 +200,10 @@ const CreateMeetingForm = () => {
 
     try {
       const response = await createMeeting(formData);
-      // const meetingId = response.data.results[0].meetingId;
+      const meetingId = response.data.results[0].meetingId;
       if (response.status === 200) {
         alert('모임 생성이 완료되었습니다!');
-        // navigate(`/meetings/${meetingId}`);
+        navigate(`/meeting/${meetingId}`);
       } else {
         console.error(response.statusText);
         alert(response.statusText);
