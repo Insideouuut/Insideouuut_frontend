@@ -22,6 +22,7 @@ interface ClubSidebarProps {
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   roomId,
   id,
   selectedMenu,
