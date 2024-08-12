@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Bubble from './Bubble';
 
-// Create the WebSocket client outside of the component
+// WebSocket 클라이언트를 컴포넌트 외부에 선언하여 중복 연결을 방지
 let socketClient: Client | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let subscription: any = null; // 구독을 추적하는 변수
@@ -19,9 +19,7 @@ const Chat = () => {
   const { chatRoomId } = useParams<{ chatRoomId: string }>();
   const { nickname, imageUrl } = useUserStore();
   const [messages, setMessages] = useState<ChatResponseDTO[]>([]);
-  const [readMessages, setReadMessages] = useState<ChatResponseDTO[]>([]);
-  const [unreadMessages, setUnreadMessages] = useState<ChatResponseDTO[]>([]);
-  const [lastMessageId, setLastMessageId] = useState<number | null>(null);
+  const [lastMessageId, setLastMessageId] = useState<number | null>(null); // 마지막 메시지 ID를 추적
   const unreadRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [newMessage, setNewMessage] = useState('');
@@ -66,11 +64,6 @@ const Chat = () => {
               }
               return [...prevMessages, message];
             });
-
-            setUnreadMessages((prevUnreadMessages) => [
-              ...prevUnreadMessages,
-              message,
-            ]);
           },
         );
       },
@@ -120,7 +113,6 @@ const Chat = () => {
       }
       exitChatRoom(); // 채팅방에서 퇴장
     };
-    // 의존성 배열은 비워두어 useEffect가 처음 mount될 때만 실행되도록 설정합니다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -141,12 +133,6 @@ const Chat = () => {
         },
       });
 
-      setReadMessages((prevReadMessages) => [
-        ...prevReadMessages,
-        ...unreadMessages,
-        message,
-      ]);
-      setUnreadMessages([]); // 모든 메시지를 읽음 처리
       setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage('');
     } else {
@@ -164,8 +150,7 @@ const Chat = () => {
         const readMsgs = response.results[0]?.readMessages || [];
         const unreadMsgs = response.results[0]?.unreadMessages || [];
 
-        setReadMessages(readMsgs);
-        setUnreadMessages(unreadMsgs);
+        setMessages([...readMsgs, ...unreadMsgs]);
 
         if (unreadMsgs.length > 0) {
           setLastMessageId(unreadMsgs[unreadMsgs.length - 1].id || null);
@@ -192,10 +177,7 @@ const Chat = () => {
       if (response?.results) {
         const newMessages = response.results.flat();
 
-        setUnreadMessages((prevUnreadMessages) => [
-          ...prevUnreadMessages,
-          ...newMessages,
-        ]);
+        setMessages((prevMessages) => [...prevMessages, ...newMessages]);
         setLastMessageId(newMessages[newMessages.length - 1].id || null);
       }
     } catch (error) {
@@ -205,10 +187,10 @@ const Chat = () => {
 
   // 이전 메시지 로드
   const fetchPreviousMessages = async () => {
-    if (readMessages.length === 0) return;
+    if (messages.length === 0) return;
 
     try {
-      const firstMessageId = Number(readMessages[0].id);
+      const firstMessageId = Number(messages[0].id);
       const response = await apiInstance.api.getPreviousMessages(
         Number(chatRoomId),
         {
@@ -218,10 +200,7 @@ const Chat = () => {
       if (response?.results) {
         const previousMessages = response.results.flat();
 
-        setReadMessages((prevReadMessages) => [
-          ...previousMessages,
-          ...prevReadMessages,
-        ]);
+        setMessages((prevMessages) => [...previousMessages, ...prevMessages]);
       }
     } catch (error) {
       console.error('Failed to fetch previous messages:', error);
@@ -243,15 +222,15 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (unreadMessages.length > 0 && unreadRef.current) {
+    if (unreadRef.current) {
       unreadRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (readMessages.length > 0 && chatContainerRef.current) {
+    } else if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
-  }, [unreadMessages, readMessages]);
+  }, [messages]);
 
   // 엔터키로 메시지 전송
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -271,7 +250,7 @@ const Chat = () => {
         ref={chatContainerRef}
         onScroll={handleScroll}
       >
-        {[...readMessages, ...unreadMessages, ...messages].map((msg, index) => (
+        {[...messages].map((msg, index) => (
           <Bubble
             key={index}
             isCurrentUser={msg.sender?.nickname === nickname}
