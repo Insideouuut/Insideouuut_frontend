@@ -22,7 +22,7 @@ interface ClubSidebarProps {
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
-  // roomId,
+  roomId,
   id,
   selectedMenu,
   setSelectedMenu,
