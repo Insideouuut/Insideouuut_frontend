@@ -159,7 +159,7 @@ const Signup = () => {
     try {
       const response = await checkEmail(email);
       const statusCode = response.data.status.code;
-      console.log('email response:', response);
+
       if (statusCode === 200) {
         alert('사용가능한 이메일입니다.');
         setCheckedEmail(true);
@@ -177,7 +177,6 @@ const Signup = () => {
     try {
       const response = await checkNickname(nickname);
       const statusCode = response.data.status.code;
-      console.log('nickname response:', response);
 
       if (statusCode === 200) {
         alert('사용가능한 닉네임입니다.');
