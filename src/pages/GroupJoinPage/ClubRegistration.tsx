@@ -1,13 +1,18 @@
+import { applyForClub } from '@/api/clubApi'; // 새로 추가한 동아리 가입 API 호출 함수
 import { applyForMeeting } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { Result } from '@/types/Meetings';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ClubRegistrationProps {
   clubData: Result;
+  type: 'club' | 'meeting'; // type을 받아서 동아리 또는 모임으로 구분
 }
 
-const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
+const ClubRegistration: React.FC<ClubRegistrationProps> = ({
+  clubData,
+  type,
+}) => {
   const [isAgreed, setIsAgreed] = useState(false);
   const [isInfoAgreed, setIsInfoAgreed] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>(
@@ -19,6 +24,12 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
       {},
     ),
   );
+
+  useEffect(() => {
+    // 클럽 데이터와 타입 콘솔에 출력
+    console.log('Club Data:', clubData);
+    console.log('Type:', type);
+  }, [clubData, type]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -38,16 +49,21 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
 
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken') || '';
-    const answers = Object.entries(formData).map(([value], index) => ({
+    const answers = Object.entries(formData).map(([key, value], index) => ({
       question: clubData.joinQuestions[index],
       answer: value,
     }));
 
     try {
-      await applyForMeeting(clubData.id.toString(), token, answers);
-      alert('모임 가입 신청이 성공적으로 이루어졌습니다.');
+      if (type === 'meeting') {
+        await applyForMeeting(clubData.id.toString(), token, answers);
+        alert('모임 가입 신청이 성공적으로 이루어졌습니다.');
+      } else if (type === 'club') {
+        await applyForClub(clubData.id.toString(), token, answers);
+        alert('동아리 가입 신청이 성공적으로 이루어졌습니다.');
+      }
     } catch (error) {
-      alert('모임 가입 신청에 실패했습니다.');
+      alert('가입 신청에 실패했습니다.');
     }
   };
 

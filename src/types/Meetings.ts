@@ -67,30 +67,28 @@ export interface ApiResponse {
 
 // 수정된 UpdateMeetingData 인터페이스
 export interface UpdateMeetingData {
-  name: string;
-  introduction: string;
+  title: string;
+  description: string;
   category: string;
-  categoryDetail: string;
   meetingPlace: {
     name: string;
     placeUrl: string;
     kakaoMapId: string;
-    addressName: string;
-    roadAddressName: string;
     latitude: number;
     longitude: number;
   };
   participantLimit: number;
-  rules: string[];
-  joinQuestions: string[];
-  date: string;
+  rule: string;
+  joinQuestion: string;
+  schedule: string;
   level: string;
-  ageRange: number[];
-  hasGenderRatio: string;
-  ratio: string;
+  minimumAge: number;
+  maximumAge: number;
+  maleRatio: number;
+  femaleRatio: number;
   hasMembershipFee: boolean;
-  membershipFeeAmount: number;
-  imageFiles: string[];
+  membershipFee: number;
+  hobby: string;
 }
 
 export interface Answer {

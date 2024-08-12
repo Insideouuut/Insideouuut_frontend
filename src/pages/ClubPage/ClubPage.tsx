@@ -27,7 +27,7 @@ const ClubPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const type = location.pathname.includes('/club') ? 'club' : 'meeting';
+  const type = location.pathname.includes('/club') ? '동아리' : '모임';
   const [data, setData] = useState<ClubData | Result | null>(null);
   const [userProfile, setUserProfile] = useState<{
     nickname: string;
@@ -68,12 +68,14 @@ const ClubPage: React.FC = () => {
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
+    const basePath = type === '동아리' ? `/club/${id}` : `/meeting/${id}`;
+
     if (menu.includes('Board')) {
-      navigate(`/club/${id}/board/${menu}`);
+      navigate(`${basePath}/board/${menu}`);
     } else if (menu === 'home') {
-      navigate(`/club/${id}`);
+      navigate(`${basePath}`);
     } else {
-      navigate(`/meeting/${id}/${menu}`);
+      navigate(`${basePath}/${menu}`);
     }
   };
 
@@ -84,11 +86,10 @@ const ClubPage: React.FC = () => {
           let fetchedData: ClubData | Result | null = null;
           const token = localStorage.getItem('accessToken') || '';
 
-          if (type === 'club') {
+          if (type === '동아리') {
             fetchedData = await getClubData(id);
             setData(fetchedData ?? null);
 
-            // 클럽에 대한 사용자 권한 확인 (호스트 여부 확인)
             const authorityResponse = await checkClubUserAuthority(id, token);
             const authority = authorityResponse.results[0].authority;
             setUserAuthority(authority);
@@ -107,11 +108,10 @@ const ClubPage: React.FC = () => {
                 setUserProfile(null);
               }
             }
-          } else if (type === 'meeting') {
+          } else if (type === '모임') {
             fetchedData = await getMeetingData(id);
             setData(fetchedData ?? null);
 
-            // 모임에 대한 사용자 권한 확인
             const authorityResponse = await checkUserAuthority(id, token);
             const authority = authorityResponse.results[0].authority;
             setUserAuthority(authority);
@@ -150,8 +150,8 @@ const ClubPage: React.FC = () => {
             id={id ? parseInt(id) : 0}
             selectedMenu={selectedMenu}
             setSelectedMenu={handleMenuClick}
-            type={data.type}
-            isHost={userAuthority === '호스트'}
+            type={type}
+            userAuthority={userAuthority}
           />
         )}
         <div>

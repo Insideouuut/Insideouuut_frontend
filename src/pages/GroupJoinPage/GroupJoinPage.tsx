@@ -46,6 +46,9 @@ const GroupJoinPage: React.FC = () => {
     fetchData();
   }, [clubId]);
 
+  // 여기서 type을 결정합니다.
+  const type: 'club' | 'meeting' = 'club'; // 현재는 'club'으로 설정
+
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -83,7 +86,11 @@ const GroupJoinPage: React.FC = () => {
         subtitle="우리의 다양한 모임과 동아리에서 새로운 취미를 발견하고,'기존의 취미를 더욱 즐겁게 누려보세요."
         imageData={{ src: runImg, alt: 'Run Icon' }}
       />
-      {clubData ? <ClubRegistration clubData={clubData} /> : <p>Loading...</p>}
+      {clubData ? (
+        <ClubRegistration clubData={clubData} type={type} /> // 동적으로 결정된 타입 전달
+      ) : (
+        <p>Loading...</p>
+      )}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
