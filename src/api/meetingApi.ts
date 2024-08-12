@@ -267,3 +267,17 @@ export const expelMember = async (
     throw error;
   }
 };
+
+export const leaveMeeting = async (meetingId: string, token: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/api/meetings/${meetingId}/members`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    console.log('Successfully left the meeting.');
+  } catch (error) {
+    console.error('Error leaving the meeting:', error);
+    throw error;
+  }
+};

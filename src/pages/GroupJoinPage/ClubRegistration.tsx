@@ -55,12 +55,12 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
 
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken') || '';
-    const answers = Object.entries(formData).map(([value], index) => ({
+    const answers = Object.entries(formData).map(([key, value], index) => ({
       question:
         type === 'club'
           ? (clubData as ClubData).joinQuestions[index]
           : (clubData as Result).joinQuestions[index],
-      answer: value,
+      answer: value,  // 사용자가 입력한 실제 답변을 전송
     }));
 
     try {
@@ -72,10 +72,14 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
         alert('동아리 가입 신청이 성공적으로 이루어졌습니다.');
       }
 
-      // 여기서 navigate를 사용하여 search 페이지로 이동
+      // 가입 성공 시 search 페이지로 이동
       navigate('/search');
-    } catch (error) {
-      alert('가입 신청에 실패했습니다.');
+    } catch (error: any) {
+      if (error.response && error.response.status === 403) {
+        alert('가입 연령에 맞지 않습니다.');
+      } else {
+        alert('가입 신청에 실패했습니다.');
+      }
     }
   };
 

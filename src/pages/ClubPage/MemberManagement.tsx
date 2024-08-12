@@ -1,19 +1,18 @@
-import { expelMember, getMeetingMembers } from '@/api/meetingApi'; // 추가된 API 함수 import
+import React, { useEffect, useState } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import { getMeetingMembers, expelMember as expelMeetingMember } from '@/api/meetingApi';
+import { getClubMembers, expelClubMember } from '@/api/clubApi';
 import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { Member } from '@/types/Member'; // 타입 import
+import { Member } from '@/types/Member';
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 const MemberManagement: React.FC = () => {
   const { id: clubId } = useParams<{ id: string }>();
+  const location = useLocation();
+  const type = location.pathname.includes('/club') ? 'club' : 'meeting';
   const [members, setMembers] = useState<Member[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
@@ -22,7 +21,12 @@ const MemberManagement: React.FC = () => {
     const fetchMembers = async () => {
       try {
         const token = localStorage.getItem('accessToken') || '';
-        const membersData = await getMeetingMembers(clubId!, token);
+        let membersData: Member[] = [];
+        if (type === 'club') {
+          membersData = await getClubMembers(clubId!, token);
+        } else {
+          membersData = await getMeetingMembers(clubId!, token);
+        }
         setMembers(membersData);
       } catch (error) {
         console.error('Error fetching members:', error);
@@ -30,7 +34,7 @@ const MemberManagement: React.FC = () => {
     };
 
     fetchMembers();
-  }, [clubId]);
+  }, [clubId, type]);
 
   const openModal = (member: Member) => {
     setMemberToRemove(member);
@@ -46,8 +50,16 @@ const MemberManagement: React.FC = () => {
     if (memberToRemove) {
       try {
         const token = localStorage.getItem('accessToken') || '';
-        // userId를 string으로 변환하여 expelMember 함수에 전달
-        await expelMember(String(memberToRemove.id), token);
+        if (type === 'club') {
+          if (memberToRemove.role === '멤버') {
+            await expelClubMember(clubId!, String(memberToRemove.id), token);
+          } else {
+            console.error('Only members with the role "멤버" can be expelled.');
+            return;
+          }
+        } else {
+          await expelMeetingMember(String(memberToRemove.id), token);
+        }
         setMembers((prevMembers) =>
           prevMembers.filter((member) => member.id !== memberToRemove.id),
         );
@@ -77,12 +89,14 @@ const MemberManagement: React.FC = () => {
                 </span>
               </div>
               <div className="flex items-center">
-                <Button
-                  className="bg-red-500 px-4 py-2 mr-2 rounded hover:bg-red-700"
-                  onClick={() => openModal(member)}
-                >
-                  강퇴하기
-                </Button>
+                {type === 'meeting' || member.role === '멤버' ? (
+                  <Button
+                    className="bg-red-500 px-4 py-2 mr-2 rounded hover:bg-red-700"
+                    onClick={() => openModal(member)}
+                  >
+                    강퇴하기
+                  </Button>
+                ) : null}
                 <Popover>
                   <PopoverTrigger asChild className="cursor-pointer">
                     <EllipsisVertical size={24} />
@@ -110,14 +124,9 @@ const MemberManagement: React.FC = () => {
         className="fixed z-10 inset-0 overflow-y-auto"
       >
         <div className="flex items-center justify-center min-h-screen">
-          <div
-            className="fixed inset-0 bg-black opacity-30"
-            aria-hidden="true"
-          ></div>
+          <div className="fixed inset-0 bg-black opacity-30" aria-hidden="true"></div>
           <div className="bg-white rounded-lg max-w-sm mx-auto p-6 relative z-20">
-            <Dialog.Title className="text-xl font-bold mb-4">
-              강퇴 확인
-            </Dialog.Title>
+            <Dialog.Title className="text-xl font-bold mb-4">강퇴 확인</Dialog.Title>
             <Dialog.Description>
               {memberToRemove && (
                 <p>정말로 {memberToRemove.nickName}님을 강퇴하시겠습니까?</p>

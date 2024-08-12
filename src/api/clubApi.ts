@@ -5,8 +5,35 @@ import {
   ClubData,
 } from '@/types/Clubs';
 import { ApplyForMeetingRequest } from '@/types/Meetings';
+import { Member } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
+
+// 동아리 내 모임 목록 조회 API
+export const getClubMeetings = async (
+  clubId: string,
+  token: string,
+  page: number = 0,
+  size: number = 10
+): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(`/api/clubs/${clubId}/meetings`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+      params: {
+        page,
+        size,
+      },
+    });
+    return response.data.results;
+  } catch (error) {
+    console.error('Error fetching club meetings:', error);
+    throw error;
+  }
+};
+
+// 기존 코드
 
 // 동아리에 대한 사용자 권한 확인 API
 export const checkClubUserAuthority = async (
@@ -84,7 +111,7 @@ export const getClubApplicants = async (
   }
 };
 
-// 동아리 멤버 지원 승인 API
+// 클럽 지원자를 승인하는 API
 export const acceptClubApplication = async (
   clubId: string,
   applyId: string,
@@ -100,28 +127,31 @@ export const acceptClubApplication = async (
         },
       },
     );
-    console.log('동아리 멤버 지원이 성공적으로 승인되었습니다.');
+    console.log('지원자가 성공적으로 승인되었습니다.');
   } catch (error) {
-    console.error('Error accepting club application:', error);
+    console.error('Error accepting applicant:', error);
     throw error;
   }
 };
 
-// 동아리 멤버 지원 거절 API
+// 클럽 지원자를 거절하는 API
 export const rejectClubApplication = async (
   clubId: string,
   applyId: string,
   token: string,
 ): Promise<void> => {
   try {
-    await axiosInstance.delete(`/api/clubs/${clubId}/apply/${applyId}/reject`, {
-      headers: {
-        Authorization: `${token}`,
+    await axiosInstance.delete(
+      `/api/clubs/${clubId}/apply/${applyId}/reject`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
       },
-    });
-    console.log('동아리 멤버 지원이 성공적으로 거절되었습니다.');
+    );
+    console.log('지원자가 성공적으로 거절되었습니다.');
   } catch (error) {
-    console.error('Error rejecting club application:', error);
+    console.error('Error rejecting applicant:', error);
     throw error;
   }
 };
@@ -130,7 +160,7 @@ export const rejectClubApplication = async (
 export const getClubMembers = async (
   clubId: string,
   token: string,
-): Promise<ClubApplicant[]> => {
+): Promise<Member[]> => {
   try {
     const response = await axiosInstance.get<ClubApplicantApiResponse>(
       `/api/clubs/${clubId}/members`,
@@ -140,7 +170,18 @@ export const getClubMembers = async (
         },
       },
     );
-    return response.data.results[0]; // 첫 번째 배열 반환
+
+    // 응답 데이터를 Member 타입에 맞게 변환
+    return response.data.results[0].map((applicant) => ({
+      id: applicant.clubUserId,
+      role: applicant.role,
+      nickName: applicant.userName,
+      profileImage: {
+        name: "",  // 만약 name 필드가 필수라면 적절히 할당해야 합니다.
+        url: applicant.profileImgUrl,
+      },
+      mannerTemp: applicant.mannerTemp,
+    }));
   } catch (error) {
     console.error('Error fetching club members:', error);
     throw error;
@@ -212,7 +253,7 @@ export const updateClubData = async (
   }
 };
 
-// 동아리 멤버 조회
+// 동아리 멤버 신청서 조회
 export const getClubMemberList = async (clubId: string) => {
   const response = await axiosInstance.get(`/api/clubs/${clubId}/members`);
   return response;
@@ -247,4 +288,39 @@ export const getMeetingMemberList = async (meetingId: string) => {
     `/api/meetings/${meetingId}/members`,
   );
   return response;
+};
+
+// 클럽 삭제 API
+export const deleteClub = async (clubId: string, token: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/api/clubs/${clubId}`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    console.log('클럽이 성공적으로 삭제되었습니다.');
+  } catch (error) {
+    console.error('Error deleting club:', error);
+    throw error;
+  }
+};
+
+// 동아리 모임 생성 API
+export const createClubMeeting = async (
+  clubId: string,
+  token: string,
+  meetingData: any // 서버에 전송할 모임 데이터
+): Promise<void> => {
+  try {
+    await axiosInstance.post(`/api/clubs/${clubId}/meetings`, meetingData, {
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('모임이 성공적으로 생성되었습니다.');
+  } catch (error) {
+    console.error('Error creating meeting:', error);
+    throw error;
+  }
 };

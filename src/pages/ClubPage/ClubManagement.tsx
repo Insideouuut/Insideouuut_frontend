@@ -1,4 +1,6 @@
-import { getClubData, updateClubData } from '@/api/clubApi';
+// src/components/ClubManagement.tsx
+
+import { getClubData, updateClubData, deleteClub } from '@/api/clubApi';
 import {
   deleteMeetingData,
   endMeeting,
@@ -141,6 +143,21 @@ const ClubManagement: React.FC = () => {
     }
   };
 
+  const mapLevelToEnglish = (level: string): string => {
+    switch (level) {
+      case '하':
+        return 'BEGINNER';
+      case '중':
+        return 'INTERMEDIATE';
+      case '상':
+        return 'ADVANCED';
+      case '무관':
+        return 'NONE';
+      default:
+        return level;
+    }
+  };
+
   const formatDate = (dateString: string): string => {
     return dateString.replace(/\./g, '-');
   };
@@ -185,6 +202,7 @@ const ClubManagement: React.FC = () => {
         // 카테고리와 날짜 변환
         const transformedCategory = mapCategoryToEnglish(formData.category);
         const transformedDate = formatDate(formData.date);
+        const transformedLevel = mapLevelToEnglish(formData.level);
 
         if (type === 'club') {
           const formDataToSend = new FormData();
@@ -193,7 +211,7 @@ const ClubManagement: React.FC = () => {
             type: formData.type,
             category: transformedCategory, // 변환된 카테고리 사용
             categoryDetail: formData.categoryDetail,
-            level: formData.level,
+            level: transformedLevel, // 변환된 레벨 사용
             hasMembershipFee: formData.hasMembershipFee,
             membershipFeeAmount: formData.membershipFeeAmount,
             date: transformedDate, // 변환된 날짜 사용
@@ -241,7 +259,7 @@ const ClubManagement: React.FC = () => {
             rules: formData.rules,
             joinQuestions: formData.joinQuestions,
             date: transformedDate, // 변환된 날짜 사용
-            level: formData.level,
+            level: transformedLevel, // 변환된 레벨 사용
             ageRange: formData.ageRange,
             hasGenderRatio: formData.hasGenderRatio,
             ratio: formData.ratio,
@@ -282,13 +300,17 @@ const ClubManagement: React.FC = () => {
       setIsDisbandModalOpen(false);
       try {
         const token = localStorage.getItem('accessToken') || '';
-        await deleteMeetingData(id!, token);
-        alert('모임이 성공적으로 삭제되었습니다.');
+        if (type === 'club') {
+          await deleteClub(id!, token); // 클럽 삭제 API 호출
+        } else {
+          await deleteMeetingData(id!, token); // 모임 삭제 API 호출
+        }
+        alert(`${type === 'club' ? '클럽이' : '모임이'} 성공적으로 삭제되었습니다.`);
         setDisbandText('');
         setDisbandError('');
       } catch (error) {
         console.error('Error deleting data:', error);
-        alert('모임 삭제에 실패했습니다.');
+        alert(`${type === 'club' ? '클럽' : '모임'} 삭제에 실패했습니다.`);
       }
     } else {
       setDisbandError('해체하려면 "해체하기"를 입력하세요.');

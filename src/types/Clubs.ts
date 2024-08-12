@@ -136,6 +136,14 @@ export interface ClubSearchApiResponse {
   }[];
 }
 
+export interface ClubApplicant {
+  applyId: number; // 신청자 ID
+  userName: string; // 신청자 이름
+  profileImgUrl: string; // 프로필 이미지 URL
+  mannerTemp: number; // 매너 온도
+  answers: string[]; // 질문에 대한 대답
+}
+
 export interface ClubRequestDto {
   name: string;
   category: string;
@@ -158,4 +166,32 @@ export interface ClubRequestDto {
 export interface UpdateClubDataRequest {
   clubRequestDto: ClubRequestDto;
   imageFiles: File[]; // 수정된 부분
+}
+
+
+export interface ClubApplicantDetail {
+  applyId: number;       // 신청서 ID
+  question: string;      // 신청서 질문
+  answer: string;        // 신청서 답변
+}
+
+export interface ClubApplicantApiResponse {
+  status: {
+    code: number;
+    message: string;
+  };
+  metadata: {
+    resultCount: number;
+    pageable: null | object;
+  };
+  result: ClubApplicantDetail[][];  // 이중 배열
+}
+
+export interface ClubApplicant {
+  clubUserId: number;  // 새로 추가된 속성
+  role: string;        // 새로 추가된 속성
+  userName: string;
+  profileImgUrl: string;
+  mannerTemp: number;
+  // 필요한 다른 속성들 추가
 }

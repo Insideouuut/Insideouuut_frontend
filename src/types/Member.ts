@@ -22,3 +22,16 @@ export interface ApiResponse {
   };
   results: Member[][];
 }
+
+export interface ProfileImage {
+  name: string;  // ProfileImage에 name 필드가 필요하다면 유지
+  url: string;
+}
+
+export interface Member {
+  id: number;
+  role: string;
+  nickName: string;
+  profileImage: ProfileImage;
+  mannerTemp: number;
+}
