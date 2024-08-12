@@ -22,7 +22,7 @@ interface ClubSidebarProps {
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
-  // roomId,
+  roomId,
   id,
   selectedMenu,
   setSelectedMenu,
@@ -97,7 +97,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
               tabIndex={0}
               onClick={() => setIsBoardOpen(!isBoardOpen)}
               onKeyDown={(event) =>
-                handleAccordionKeyDown(event, () => setIsBoardOpen(!isBoardOpen))
+                handleAccordionKeyDown(event, () =>
+                  setIsBoardOpen(!isBoardOpen),
+                )
               }
               className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isBoardOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
             >
@@ -162,9 +164,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick(`chatRooms`)}
-          onKeyDown={(event) => handleKeyDown(event, `chatRooms`)}
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms`)}`}
+          onClick={() => handleMenuClick(`chatRooms/${roomId}`)}
+          onKeyDown={(event) => handleKeyDown(event, `chatRooms/${roomId}`)}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms/${roomId}`)}`}
         >
           <MessageCircleMore className="w-5 h-5" />
           <span className="text-sm">채팅</span>
@@ -181,51 +183,52 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <span className="text-sm">멤버</span>
         </div>
 
-        {(userAuthority === '멤버' || userAuthority === '호스트') && type === 'club' && (
-          <div className="space-y-1">
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              onKeyDown={(event) =>
-                handleAccordionKeyDown(event, () =>
-                  setIsSettingsOpen(!isSettingsOpen),
-                )
-              }
-              className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isSettingsOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
-            >
-              <div className="flex items-center space-x-2">
-                <House className="w-5 h-5" />
-                <span className="text-sm">나의 동아리</span>
-              </div>
-              <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
-            </div>
-            <div
-              className={`overflow-hidden transition-all duration-300 ${isSettingsOpen ? 'max-h-40' : 'max-h-0'}`}
-            >
+        {(userAuthority === '멤버' || userAuthority === '호스트') &&
+          type === 'club' && (
+            <div className="space-y-1">
               <div
                 role="button"
                 tabIndex={0}
-                onClick={() => handleMenuClick('createMeeting')}
-                onKeyDown={(event) => handleKeyDown(event, 'createMeeting')}
-                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('createMeeting')}`}
-              >
-                모임 생성
-              </div>
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => handleMenuClick('meetingListSettings')}
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 onKeyDown={(event) =>
-                  handleKeyDown(event, 'meetingListSettings')
+                  handleAccordionKeyDown(event, () =>
+                    setIsSettingsOpen(!isSettingsOpen),
+                  )
                 }
-                className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
+                className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isSettingsOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
               >
-                모임 관리
+                <div className="flex items-center space-x-2">
+                  <House className="w-5 h-5" />
+                  <span className="text-sm">나의 동아리</span>
+                </div>
+                <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
+              </div>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${isSettingsOpen ? 'max-h-40' : 'max-h-0'}`}
+              >
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleMenuClick('createMeeting')}
+                  onKeyDown={(event) => handleKeyDown(event, 'createMeeting')}
+                  className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('createMeeting')}`}
+                >
+                  모임 생성
+                </div>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleMenuClick('meetingListSettings')}
+                  onKeyDown={(event) =>
+                    handleKeyDown(event, 'meetingListSettings')
+                  }
+                  className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
+                >
+                  모임 관리
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {userAuthority === '멤버' && type === 'meeting' && (
           <div

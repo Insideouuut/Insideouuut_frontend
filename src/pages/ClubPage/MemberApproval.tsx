@@ -2,7 +2,7 @@ import { getClubApplicants } from '@/api/clubApi';
 import {
   acceptMeetingApplication,
   getMeetingApplicants,
-  getMeetingApplicationDetails,  // 새로 추가된 함수
+  getMeetingApplicationDetails, // 새로 추가된 함수
   rejectMeetingApplication,
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,9 @@ const MemberApproval: React.FC = () => {
   const location = useLocation();
   const type = location.pathname.includes('/club') ? 'club' : 'meeting';
   const [members, setMembers] = useState<Member[]>([]);
-  const [selectedApplication, setSelectedApplication] = useState<ApplyForMeetingResponse[] | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<
+    ApplyForMeetingResponse[] | null
+  >(null);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   useEffect(() => {
@@ -71,7 +73,10 @@ const MemberApproval: React.FC = () => {
   const openApplicationModal = async (member: Member) => {
     const token = localStorage.getItem('accessToken') || '';
     try {
-      const applicationDetails = await getMeetingApplicationDetails(String(member.applyId), token);
+      const applicationDetails = await getMeetingApplicationDetails(
+        String(member.applyId),
+        token,
+      );
       setSelectedApplication(applicationDetails);
       setIsApplicationModalOpen(true);
     } catch (error) {

@@ -4,16 +4,15 @@ import {
 } from '@/types/MeetingApplicantsTypes';
 import {
   ApplyForMeetingRequest,
+  ApplyForMeetingResponse,
   ApiResponse as MeetingApiResponse,
+  MeetingApplicantApiResponse,
   Result,
   UpdateMeetingData,
-  MeetingApplicantApiResponse,
-  ApplyForMeetingResponse
 } from '@/types/Meetings';
 import { Member, ApiResponse as MemberApiResponse } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
-
 
 // 모임 참여 신청서 상세 조회 API
 export const getMeetingApplicationDetails = async (
