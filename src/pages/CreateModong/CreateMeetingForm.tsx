@@ -191,8 +191,6 @@ const CreateMeetingForm = () => {
         .map((joinQuestion) => joinQuestion.trim()),
     };
 
-    console.log('meeting request:', request);
-
     const formData = new FormData();
     formData.append(
       'request',
@@ -205,7 +203,7 @@ const CreateMeetingForm = () => {
       const meetingId = response.data.results[0].meetingId;
       if (response.status === 200) {
         alert('모임 생성이 완료되었습니다!');
-        navigate(`/meetings/${meetingId}`);
+        navigate(`/meeting/${meetingId}`);
       } else {
         console.error(response.statusText);
         alert(response.statusText);
