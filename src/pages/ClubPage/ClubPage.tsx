@@ -41,6 +41,13 @@ const ClubPage: React.FC = () => {
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
 
+  useEffect(() => {
+    // 경로에 따라 selectedMenu 업데이트
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    if (pathSegments.length >= 3) {
+      setSelectedMenu(pathSegments[2]); // 예: /club/:id/chatRooms 에서 chatRooms 선택
+    }
+  }, [location]);
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
