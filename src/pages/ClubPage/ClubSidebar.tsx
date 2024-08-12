@@ -183,9 +183,9 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => handleMenuClick(`chatRooms/${roomId}`)}
-          onKeyDown={(event) => handleKeyDown(event, `chatRooms/${roomId}`)}
-          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms/${roomId}`)}`}
+          onClick={() => handleMenuClick(`chatRooms`)}
+          onKeyDown={(event) => handleKeyDown(event, `chatRooms`)}
+          className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass(`chatRooms`)}`}
         >
           <MessageCircleMore className="w-5 h-5" />
           <span className="text-sm">채팅</span>
