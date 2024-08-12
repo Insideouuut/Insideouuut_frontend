@@ -12,6 +12,14 @@ import { Member, ApiResponse as MemberApiResponse } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
 
+// 모임 멤버 조회
+export const getMeetingMemberList = async (meetingId: string) => {
+  const response = await axiosInstance.get(
+    `/api/meetings/${meetingId}/members`,
+  );
+  return response;
+};
+
 // 모임 단건 조회 API
 export const getMeetingData = async (id: string): Promise<Result> => {
   try {
@@ -43,7 +51,6 @@ export const deleteMeetingData = async (
   }
 };
 
-// 모임 정보 수정 API
 export const updateMeetingData = async (
   id: string,
   data: UpdateMeetingData,
@@ -100,7 +107,7 @@ export const endMeeting = async (id: string, token: string): Promise<void> => {
 };
 
 // 모임에 대한 사용자 권한 확인 API
-export const checkUserAuthority = async (
+export const checkMeetingUserAuthority = async (
   meetingId: string,
   token: string,
 ): Promise<MemberAuthorityApiResponse> => {
@@ -115,7 +122,7 @@ export const checkUserAuthority = async (
     );
     return response.data;
   } catch (error) {
-    console.error('Error checking user authority:', error);
+    console.error('Error checking meeting user authority:', error);
     throw error;
   }
 };
