@@ -15,6 +15,7 @@ const PostDetail: React.FC = () => {
   const [post, setPost] = useState<ClubPostDto | null>(null);
   const [comments, setComments] = useState<ClubCommentListResponseDto[]>([]);
   const [comment, setComment] = useState<string>('');
+  const [editCommentId, setEditCommentId] = useState<number | null>(null); // 수정 중인 댓글의 ID를 관리
 
   const { profileImage, name } = useUserStore((state) => ({
     profileImage:
@@ -81,24 +82,50 @@ const PostDetail: React.FC = () => {
     if (!comment.trim()) return;
 
     try {
-      const data = { content: comment };
-      const response = await axiosInstance.post(
-        `/api/clubs/${id}/posts/${postId}/comments`,
-        data,
-      );
-
-      if (response.status === 200) {
-        setComment('');
-        const commentsResponse = await axiosInstance.get(
-          `/api/clubs/${id}/posts/${postId}/comments`,
+      if (editCommentId) {
+        // 댓글 수정
+        const data = { content: comment };
+        const response = await axiosInstance.put(
+          `/api/clubs/${id}/posts/${postId}/comments/${editCommentId}`,
+          data,
         );
-        if (commentsResponse.data.results) {
-          setComments(commentsResponse.data.results.flat());
+
+        if (response.status === 200) {
+          setEditCommentId(null);
+          setComment('');
+          const commentsResponse = await axiosInstance.get(
+            `/api/clubs/${id}/posts/${postId}/comments`,
+          );
+          if (commentsResponse.data.results) {
+            setComments(commentsResponse.data.results.flat());
+          }
+        }
+      } else {
+        // 댓글 생성
+        const data = { content: comment };
+        const response = await axiosInstance.post(
+          `/api/clubs/${id}/posts/${postId}/comments`,
+          data,
+        );
+
+        if (response.status === 200) {
+          setComment('');
+          const commentsResponse = await axiosInstance.get(
+            `/api/clubs/${id}/posts/${postId}/comments`,
+          );
+          if (commentsResponse.data.results) {
+            setComments(commentsResponse.data.results.flat());
+          }
         }
       }
     } catch (error) {
       console.error('Failed to save comment:', error);
     }
+  };
+
+  const handleEditComment = (commentId: number, currentComment: string) => {
+    setEditCommentId(commentId);
+    setComment(currentComment);
   };
 
   const handleDeleteComment = async (commentId?: number) => {
@@ -208,14 +235,22 @@ const PostDetail: React.FC = () => {
                 </p>
               </div>
               {comment.writer === name && (
-                <>
+                <div className="space-x-2">
+                  <button
+                    onClick={() =>
+                      handleEditComment(comment.id!, comment.comment!)
+                    }
+                    className="text-primary text-sm"
+                  >
+                    수정
+                  </button>
                   <button
                     onClick={() => handleDeleteComment(comment.id)}
                     className="text-red-500 text-sm"
                   >
                     삭제
                   </button>
-                </>
+                </div>
               )}
             </div>
             <span className="block w-full h-[1px] bg-gray-200 mt-2"></span>
@@ -235,7 +270,7 @@ const PostDetail: React.FC = () => {
           onClick={handleCommentSubmit}
           className="p-2 bg-primary hover:bg-green-600 text-white rounded flex-shrink-0 h-full"
         >
-          댓글 작성
+          {editCommentId ? '댓글 수정' : '댓글 작성'}
         </button>
       </div>
     </div>
