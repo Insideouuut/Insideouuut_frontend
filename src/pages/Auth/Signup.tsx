@@ -126,9 +126,7 @@ const Signup = () => {
         alert('닉네임 중복 확인을 해주세요.');
       }
     } else if (step === 3) {
-
       isValid = await trigger(['birth', 'gender', 'interests']);
-
     }
 
     if (isValid) {
@@ -554,8 +552,6 @@ const Signup = () => {
                       </span>
                     )}
                   </div>
-
-
 
                   <div className="grow"></div>
 
