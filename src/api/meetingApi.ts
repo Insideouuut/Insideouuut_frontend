@@ -4,13 +4,36 @@ import {
 } from '@/types/MeetingApplicantsTypes';
 import {
   ApplyForMeetingRequest,
+  ApplyForMeetingResponse,
   ApiResponse as MeetingApiResponse,
+  MeetingApplicantApiResponse,
   Result,
   UpdateMeetingData,
 } from '@/types/Meetings';
 import { Member, ApiResponse as MemberApiResponse } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
+
+// 모임 참여 신청서 상세 조회 API
+export const getMeetingApplicationDetails = async (
+  applyId: string,
+  token: string,
+): Promise<ApplyForMeetingResponse[]> => {
+  try {
+    const response = await axiosInstance.get<MeetingApplicantApiResponse>(
+      `/api/meetings/apply/${applyId}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      },
+    );
+    return response.data.results[0]; // 응답 결과 배열 중 첫 번째 배열을 반환합니다.
+  } catch (error) {
+    console.error('Error fetching meeting application details:', error);
+    throw error;
+  }
+};
 
 // 모임 멤버 조회
 export const getMeetingMemberList = async (meetingId: string) => {
