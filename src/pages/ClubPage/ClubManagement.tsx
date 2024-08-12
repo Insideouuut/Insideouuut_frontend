@@ -3,10 +3,11 @@ import {
   deleteMeetingData,
   endMeeting,
   getMeetingData,
+  updateMeetingData, // 모임 데이터를 업데이트하기 위한 함수 import
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { ClubData as ClubAPIData } from '@/types/Clubs';
-import { Result } from '@/types/Meetings';
+import { Result, UpdateMeetingData } from '@/types/Meetings'; // 필요한 타입 import
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -161,47 +162,81 @@ const ClubManagement: React.FC = () => {
     try {
       const token = localStorage.getItem('accessToken') || '';
       if (formData) {
-        const formDataToSend = new FormData();
+        if (type === 'club') {
+          const formDataToSend = new FormData();
 
-        const clubRequestDto = {
-          category: formData.category,
-          categoryDetail: formData.categoryDetail,
-          level: formData.level,
-          hasMembershipFee: formData.hasMembershipFee,
-          membershipFeeAmount: formData.membershipFeeAmount,
-          date: formData.date,
-          participantLimit: formData.participantLimit,
-          hasGenderRatio: formData.hasGenderRatio,
-          ratio: formData.ratio,
-          minAge: formData.ageRange[0],
-          maxAge: formData.ageRange[1],
-          name: formData.name,
-          introduction: formData.introduction,
-          rules: formData.rules,
-          joinQuestions: formData.joinQuestions,
-          activityRegion: formData.meetingPlace.addressName,
-        };
+          const clubRequestDto = {
+            category: formData.category,
+            categoryDetail: formData.categoryDetail,
+            level: formData.level,
+            hasMembershipFee: formData.hasMembershipFee,
+            membershipFeeAmount: formData.membershipFeeAmount,
+            date: formData.date,
+            participantLimit: formData.participantLimit,
+            hasGenderRatio: formData.hasGenderRatio,
+            ratio: formData.ratio,
+            minAge: formData.ageRange[0],
+            maxAge: formData.ageRange[1],
+            name: formData.name,
+            introduction: formData.introduction,
+            rules: formData.rules,
+            joinQuestions: formData.joinQuestions,
+            activityRegion: formData.meetingPlace.addressName,
+          };
 
-        // clubRequestDto를 application/json으로 FormData에 추가
-        formDataToSend.append(
-          'clubRequestDto',
-          new Blob([JSON.stringify(clubRequestDto)], {
-            type: 'application/json',
-          }),
-        );
+          // clubRequestDto를 application/json으로 FormData에 추가
+          formDataToSend.append(
+            'clubRequestDto',
+            new Blob([JSON.stringify(clubRequestDto)], {
+              type: 'application/json',
+            }),
+          );
 
-        // 이미지 파일을 FormData에 추가
-        formData.imageFiles.forEach((file) => {
-          formDataToSend.append('imageFiles', file);
-        });
+          // 이미지 파일을 FormData에 추가
+          formData.imageFiles.forEach((file) => {
+            formDataToSend.append('imageFiles', file);
+          });
 
-        // FormData의 내용을 확인하는 로그
-        for (const pair of formDataToSend.entries()) {
-          console.log(`${pair[0]}:`, pair[1]);
+          // FormData의 내용을 확인하는 로그
+          for (const pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}:`, pair[1]);
+          }
+
+          // updateClubData 함수 호출
+          await updateClubData(id!, formDataToSend, token);
+        } else if (type === 'meeting') {
+          const updateData: UpdateMeetingData = {
+            title: formData.name,
+            description: formData.introduction,
+            category: formData.category,
+            meetingPlace: {
+              name: formData.meetingPlace.name,
+              placeUrl: formData.meetingPlace.placeUrl,
+              kakaoMapId: formData.meetingPlace.kakaoMapId,
+              latitude: formData.meetingPlace.latitude,
+              longitude: formData.meetingPlace.longitude,
+            },
+            participantLimit: formData.participantLimit,
+            rule: formData.rules.join(', '),
+            joinQuestion: formData.joinQuestions.join(', '),
+            schedule: formData.date,
+            level: formData.level,
+            minimumAge: formData.ageRange[0],
+            maximumAge: formData.ageRange[1],
+            maleRatio: parseInt(formData.ratio.split(':')[0]),
+            femaleRatio: parseInt(formData.ratio.split(':')[1]),
+            hasMembershipFee: formData.hasMembershipFee,
+            membershipFee: formData.membershipFeeAmount,
+            hobby: '등산', // 기본적으로 하드코딩된 값
+          };
+
+          const imageFile =
+            formData.imageFiles.length > 0 ? formData.imageFiles[0] : null;
+
+          // updateMeetingData 함수 호출
+          await updateMeetingData(id!, updateData, imageFile, token);
         }
 
-        // updateClubData 함수 호출
-        await updateClubData(id!, formDataToSend, token);
         setIsModalOpen(true);
       }
     } catch (error) {

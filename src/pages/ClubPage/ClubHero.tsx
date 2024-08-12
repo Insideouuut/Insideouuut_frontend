@@ -17,13 +17,14 @@ interface ClubHeroProps {
   data: Result | ClubData;
   userProfile: { nickname: string; profileImage: string } | null;
   userAuthority: string;
-  type: string;
+  type: 'club' | 'meeting'; // 타입을 명시적으로 정의
 }
 
 const ClubHero: React.FC<ClubHeroProps> = ({
   data,
   userProfile,
   userAuthority,
+  type, // 타입을 받아옴
 }) => {
   const isMeeting = (data: Result | ClubData): data is Result => {
     return (data as Result).participantsNumber !== undefined;
@@ -159,7 +160,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
               </div>
             </div>
           ) : (
-            <Link to={`/groupjoin/${data.id}`}>
+            <Link to={`/groupjoin/${data.id}?type=${type}`}>
               <Button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                 가입하기
               </Button>

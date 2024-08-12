@@ -1,21 +1,14 @@
-// src/routes/Routes.tsx
-
 import IsFirstKakaoLogin from '@/pages/Auth/IsFirstKakaoLogin';
 import Login from '@/pages/Auth/Login';
 import Reissue from '@/pages/Auth/Reissue';
 import Signup from '@/pages/Auth/Signup';
 import UserInfo from '@/pages/Auth/UserInfo';
+import ClubMemberList from '@/pages/ClubPage/ClubMemberList';
+import MeetingMemberList from '@/pages/ClubPage/MeetingMemberList';
+import Main from '@/pages/Main/Main';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
 import PostForm from '@/pages/board/PostForm';
-import Chat from '@/pages/chat/Chat';
-import ChatRoom from '@/pages/chat/ChatRoom';
-import ClubMemberList from '@/pages/ClubPage/ClubMemberList';
-import MeetingMemberList from '@/pages/ClubPage/MeetingMemberList';
-import CreateClub from '@/pages/CreateModong/CreateClub';
-import CreateMeeting from '@/pages/CreateModong/CreateMeeting';
-import Main from '@/pages/Main/Main';
-import MyPage from '@/pages/MyPage/MyPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import ClubManagement from '../pages/ClubPage/ClubManagement';
@@ -25,10 +18,15 @@ import MeetingList from '../pages/ClubPage/MeetingList';
 import MemberApproval from '../pages/ClubPage/MemberApproval';
 import MemberManagement from '../pages/ClubPage/MemberManagement';
 import Mymeeting from '../pages/ClubPage/MyMeeting';
+import CreateClub from '../pages/CreateModong/CreateClub';
+import CreateMeeting from '../pages/CreateModong/CreateMeeting';
 import GroupJoin from '../pages/GroupJoinPage/GroupJoinPage';
 import Landing from '../pages/LandingPage/LandingPage';
+import MyPage from '../pages/MyPage/MyPage';
 import SearchPage from '../pages/SearchPage/SearchPage';
 import SetLocation from '../pages/SetLocation/SetLocation';
+import Chat from '../pages/chat/Chat';
+import ChatRoom from '../pages/chat/ChatRoom';
 
 const boardRoutes = {
   path: 'board',

@@ -3,6 +3,7 @@ import {
   ChevronUp,
   ClipboardList,
   Home,
+  House,
   List,
   Lock,
   MessageCircleMore,
@@ -17,7 +18,7 @@ interface ClubSidebarProps {
   selectedMenu: string;
   setSelectedMenu: (menu: string) => void;
   type: string; // '동아리' 또는 '모임'
-  isHost: boolean; // 사용자가 호스트인지 여부
+  userAuthority: string; // '호스트', '멤버', '권한 없음'
 }
 
 const ClubSidebar: React.FC<ClubSidebarProps> = ({
@@ -26,42 +27,18 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   selectedMenu,
   setSelectedMenu,
   type,
-  isHost,
+  userAuthority,
 }) => {
   const [isBoardOpen, setIsBoardOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleMenuClick = (menu: string) => {
     const basePath = type === '동아리' ? `/club/${id}` : `/meeting/${id}`;
     setSelectedMenu(menu);
-
-    let targetPath;
-    switch (menu) {
-      case 'home':
-        targetPath = basePath;
-        break;
-      case 'meetingList':
-        targetPath = `${basePath}/meetingList`;
-        break;
-      case 'createMeeting':
-        targetPath = `${basePath}/createMeeting`;
-        break;
-      case 'meetingListSettings':
-        targetPath = `${basePath}/meetingListSettings`;
-        break;
-      case `chatRooms/${roomId}`:
-        targetPath = `${basePath}/chatRooms/${roomId}`;
-        break;
-      default:
-        targetPath = `${basePath}/${menu}`;
-    }
-
-    if (targetPath) {
-      navigate(targetPath);
-    } else {
-      console.error('Invalid target path');
-    }
+    const targetPath = menu === 'home' ? basePath : `${basePath}/${menu}`;
+    navigate(targetPath);
   };
 
   const handleKeyDown = (
@@ -100,7 +77,7 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <span className="text-sm">홈</span>
         </div>
 
-        {type === '동아리' && (
+        {type === '동아리' && userAuthority !== '권한 없음' && (
           <div
             role="button"
             tabIndex={0}
@@ -202,7 +179,67 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           <span className="text-sm">멤버</span>
         </div>
 
-        {(isHost || type === '동아리') && (
+        {userAuthority === '멤버' ||
+          ('호스트' && type === '동아리' && (
+            <div className="space-y-1">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                onKeyDown={(event) =>
+                  handleAccordionKeyDown(event, () =>
+                    setIsSettingsOpen(!isSettingsOpen),
+                  )
+                }
+                className={`flex items-center justify-between cursor-pointer p-2 rounded-lg ${isSettingsOpen ? 'bg-gray-100' : 'bg-white hover:bg-gray-100'}`}
+              >
+                <div className="flex items-center space-x-2">
+                  <House className="w-5 h-5" />
+                  <span className="text-sm">나의 동아리</span>
+                </div>
+                <span>{isSettingsOpen ? <ChevronUp /> : <ChevronDown />}</span>
+              </div>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${isSettingsOpen ? 'max-h-40' : 'max-h-0'}`}
+              >
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleMenuClick('createMeeting')}
+                  onKeyDown={(event) => handleKeyDown(event, 'createMeeting')}
+                  className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('createMeeting')}`}
+                >
+                  모임 생성
+                </div>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleMenuClick('meetingListSettings')}
+                  onKeyDown={(event) =>
+                    handleKeyDown(event, 'meetingListSettings')
+                  }
+                  className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('meetingListSettings')}`}
+                >
+                  모임 관리
+                </div>
+              </div>
+            </div>
+          ))}
+
+        {userAuthority === '멤버' && type === '모임' && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => handleMenuClick('leaveMeeting')}
+            onKeyDown={(event) => handleKeyDown(event, 'leaveMeeting')}
+            className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('leaveMeeting')}`}
+          >
+            <House className="w-5 h-5" />
+            <span className="text-sm">모임 나가기</span>
+          </div>
+        )}
+
+        {userAuthority === '호스트' && (
           <div className="space-y-1">
             <div
               role="button"

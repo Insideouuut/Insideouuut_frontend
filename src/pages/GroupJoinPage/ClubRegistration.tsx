@@ -1,17 +1,28 @@
+import { applyForClub } from '@/api/clubApi'; // 새로 추가한 동아리 가입 API 호출 함수
 import { applyForMeeting } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
+import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Link import 추가
 
 interface ClubRegistrationProps {
-  clubData: Result;
+  clubData: Result | ClubData; // type을 받아서 동아리 또는 모임으로 구분
+  type: 'club' | 'meeting';
 }
 
-const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
+const ClubRegistration: React.FC<ClubRegistrationProps> = ({
+  clubData,
+  type,
+}) => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
   const [isAgreed, setIsAgreed] = useState(false);
   const [isInfoAgreed, setIsInfoAgreed] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>(
-    clubData.joinQuestions.reduce(
+    (type === 'club'
+      ? (clubData as ClubData).joinQuestions
+      : (clubData as Result).joinQuestions
+    ).reduce(
       (acc: { [key: string]: string }, question: string, index: number) => {
         acc[`question-${index}`] = '';
         return acc;
@@ -19,6 +30,12 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
       {},
     ),
   );
+
+  useEffect(() => {
+    // 클럽 데이터와 타입 콘솔에 출력
+    console.log('Club Data:', clubData);
+    console.log('Type:', type);
+  }, [clubData, type]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -39,15 +56,26 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken') || '';
     const answers = Object.entries(formData).map(([value], index) => ({
-      question: clubData.joinQuestions[index],
+      question:
+        type === 'club'
+          ? (clubData as ClubData).joinQuestions[index]
+          : (clubData as Result).joinQuestions[index],
       answer: value,
     }));
 
     try {
-      await applyForMeeting(clubData.id.toString(), token, answers);
-      alert('모임 가입 신청이 성공적으로 이루어졌습니다.');
+      if (type === 'meeting') {
+        await applyForMeeting(clubData.id.toString(), token, answers);
+        alert('모임 가입 신청이 성공적으로 이루어졌습니다.');
+      } else if (type === 'club') {
+        await applyForClub(clubData.id.toString(), token, answers);
+        alert('동아리 가입 신청이 성공적으로 이루어졌습니다.');
+      }
+
+      // 여기서 navigate를 사용하여 search 페이지로 이동
+      navigate('/search');
     } catch (error) {
-      alert('모임 가입 신청에 실패했습니다.');
+      alert('가입 신청에 실패했습니다.');
     }
   };
 
@@ -60,7 +88,10 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
         <h2 className="text-xl text-green-600 font-neoBold mb-4">가입 규칙</h2>
         <div className="border-2 border-[#B4E3BF] rounded-lg bg-white p-8 mb-4">
           <ol className="space-y-1.5 list-decimal list-inside">
-            {clubData.rules.map((rule: string, index: number) => (
+            {(type === 'club'
+              ? (clubData as ClubData).rules
+              : (clubData as Result).rules
+            ).map((rule: string, index: number) => (
               <li key={index}>{rule}</li>
             ))}
           </ol>
@@ -76,7 +107,10 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
 
         <h2 className="text-xl text-green-600 font-neoBold mb-4">가입 질문</h2>
         <div className="space-y-4 bg-white p-8 border-2 border-[#B4E3BF] rounded-lg">
-          {clubData.joinQuestions.map((question: string, index: number) => (
+          {(type === 'club'
+            ? (clubData as ClubData).joinQuestions
+            : (clubData as Result).joinQuestions
+          ).map((question: string, index: number) => (
             <div key={index}>
               <label
                 htmlFor={`question-${index}`}
