@@ -1,3 +1,5 @@
+// src/routes/Routes.tsx
+
 import IsFirstKakaoLogin from '@/pages/Auth/IsFirstKakaoLogin';
 import Login from '@/pages/Auth/Login';
 import Reissue from '@/pages/Auth/Reissue';

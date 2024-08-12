@@ -1,3 +1,4 @@
+import { applyForMeeting } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { Result } from '@/types/Meetings';
 import React, { useState } from 'react';
@@ -33,6 +34,21 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
       isInfoAgreed &&
       Object.values(formData).every((field) => field.trim() !== '')
     );
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('accessToken') || '';
+    const answers = Object.entries(formData).map(([value], index) => ({
+      question: clubData.joinQuestions[index],
+      answer: value,
+    }));
+
+    try {
+      await applyForMeeting(clubData.id.toString(), token, answers);
+      alert('모임 가입 신청이 성공적으로 이루어졌습니다.');
+    } catch (error) {
+      alert('모임 가입 신청에 실패했습니다.');
+    }
   };
 
   return (
@@ -91,7 +107,11 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({ clubData }) => {
             </span>
           </label>
           <div className="flex justify-end">
-            <Button className="hover:bg-green-700" disabled={!isFormValid()}>
+            <Button
+              className="hover:bg-green-700"
+              disabled={!isFormValid()}
+              onClick={handleSubmit}
+            >
               가입하기
             </Button>
           </div>

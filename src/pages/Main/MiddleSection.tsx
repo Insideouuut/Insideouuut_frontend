@@ -81,11 +81,11 @@ const MiddleSection: React.FC = () => {
     .slice(0, 5); // 최대 5개 항목 선택
 
   // 관심사와 일치하는 동아리 필터링
-  const filteredClubs = clubs
-    .filter(
-      (item) => item.category && transformedInterests.includes(item.category),
-    )
-    .slice(0, 5); // 최대 5개 항목 선택
+  // const filteredClubs = clubs
+  //   .filter(
+  //     (item) => item.category && transformedInterests.includes(item.category),
+  //   )
+  //   .slice(0, 5); // 최대 5개 항목 선택
 
   // 데이터를 createdAt을 기준으로 정렬하는 함수
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,58 +124,12 @@ const MiddleSection: React.FC = () => {
       <p className="text-grey-900 text-3xl py-10">관심 카테고리의 모동</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filteredData.length > 0 ? (
-          filteredData.map((item) => (
-            <GroupCard
-              key={item.id}
-              id={item.id}
-              level={item.level}
-              type={item.type}
-              imageUrl={item.images[0]?.url || ''}
-              name={item.name}
-              introduction={item.introduction}
-              date={item.date}
-              location={item.place?.name || ''}
-              participantsNumber={item.participantsNumber}
-              participantLimit={item.participantLimit}
-              category={item.category}
-            />
-          ))
+          filteredData.map((item) => <GroupCard key={item.id} data={item} />)
         ) : (
           <p>모임: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}
-        {filteredClubs.length > 0 ? (
-          filteredClubs.map((item) => {
-            // category 변환 함수
-            const getCategory = (category: string | undefined): string => {
-              switch (category) {
-                case 'SPORTS':
-                  return '운동';
-                case 'SOCIAL':
-                  return '사교/취미';
-                case 'STUDY':
-                  return '스터디';
-                default:
-                  return '';
-              }
-            };
-
-            return (
-              <GroupCard
-                key={item.id}
-                id={item.id ?? 0}
-                level={item.level}
-                type={item.type ?? ''}
-                imageUrl={item.images?.[0]?.url ?? ''}
-                name={item.name ?? ''}
-                introduction={item.introduction ?? ''}
-                date={item.date ?? ''}
-                location={item.activityRegion ?? ''}
-                participantsNumber={item.participantNumber ?? 0}
-                participantLimit={item.participantLimit ?? 0}
-                category={getCategory(item.category) ?? ''}
-              />
-            );
-          })
+        {filteredData.length > 0 ? (
+          filteredData.map((item) => <GroupCard key={item.id} data={item} />)
         ) : (
           <p>동아리: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}

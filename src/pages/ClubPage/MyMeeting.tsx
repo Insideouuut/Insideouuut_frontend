@@ -13,7 +13,7 @@ const Mymeeting: React.FC = () => {
       const fetchData = async () => {
         try {
           const data = await getMeetingData(clubId);
-          if (data.type === '모임') {
+          if (data.type === '동아리') {
             setClubData(data);
           }
         } catch (error) {

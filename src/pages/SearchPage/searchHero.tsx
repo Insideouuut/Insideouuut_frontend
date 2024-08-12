@@ -48,11 +48,7 @@ const Search: React.FC<SearchProps> = ({ token }) => {
       let query = submittedSearchQuery;
       if (activeBottomTab === '전체') {
         query = 'all';
-      } else if (
-        activeBottomTab === '운동' ||
-        activeBottomTab === '스터디' ||
-        activeBottomTab === '사교/취미'
-      ) {
+      } else if (['운동', '스터디', '사교/취미'].includes(activeBottomTab)) {
         query = '';
       }
 
@@ -80,9 +76,8 @@ const Search: React.FC<SearchProps> = ({ token }) => {
             함께 할 취미를 찾아보세요.
           </h1>
           <p className="text-white font-neoLight mt-2">
-            취향에 맞는 모임을 찾아
+            취향에 맞는 모임을 찾아 같이 취미를 즐겨봐요.
           </p>
-          <p className="text-white font-neoLight mt-2">같이 취미를 즐겨봐요.</p>
         </div>
         <img src={studyImg} style={{ height: 200, width: 200 }} alt="Study" />
       </div>

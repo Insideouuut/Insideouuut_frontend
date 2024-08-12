@@ -1,3 +1,4 @@
+import { getClubApplicants } from '@/api/clubApi';
 import {
   acceptMeetingApplication,
   getMeetingApplicants,
@@ -14,7 +15,7 @@ import { MeetingApplicant } from '@/types/MeetingApplicantsTypes';
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface Member {
   applyId: number;
@@ -26,6 +27,8 @@ interface Member {
 
 const MemberApproval: React.FC = () => {
   const { id: clubId } = useParams<{ id: string }>();
+  const location = useLocation();
+  const type = location.pathname.includes('/club') ? 'club' : 'meeting';
   const [members, setMembers] = useState<Member[]>([]);
   const [selectedApplication, setSelectedApplication] = useState<Member | null>(
     null,
@@ -36,30 +39,37 @@ const MemberApproval: React.FC = () => {
     const fetchMembers = async () => {
       try {
         const token = localStorage.getItem('accessToken') || '';
-        const applicants: MeetingApplicant[] = await getMeetingApplicants(
-          clubId!,
-          token,
-        );
 
-        console.log('응답 값:', applicants);
-
-        const formattedMembers = applicants
-          .flat()
-          .map((applicant: MeetingApplicant) => ({
+        if (type === 'club') {
+          const applicants = await getClubApplicants(clubId!, token);
+          const formattedMembers = applicants.map((applicant) => ({
             applyId: applicant.applyId,
-            profileImage: applicant.basicUserResponse.profileImage.url,
-            nickname: applicant.basicUserResponse.nickname,
-            mannerTemp: applicant.basicUserResponse.mannerTemp,
+            profileImage: applicant.profileImgUrl,
+            nickname: applicant.userName,
+            mannerTemp: applicant.mannerTemp,
             answer: applicant.answer,
           }));
-        setMembers(formattedMembers);
+          setMembers(formattedMembers);
+        } else if (type === 'meeting') {
+          const applicants = await getMeetingApplicants(clubId!, token);
+          const formattedMembers = applicants.map(
+            (applicant: MeetingApplicant) => ({
+              applyId: applicant.applyId,
+              profileImage: applicant.basicUserResponse.profileImage.url,
+              nickname: applicant.basicUserResponse.nickname,
+              mannerTemp: applicant.basicUserResponse.mannerTemp,
+              answer: applicant.answer,
+            }),
+          );
+          setMembers(formattedMembers);
+        }
       } catch (error) {
         console.error('Error fetching members:', error);
       }
     };
 
     fetchMembers();
-  }, [clubId]);
+  }, [clubId, type]);
 
   const openApplicationModal = (member: Member) => {
     setSelectedApplication(member);

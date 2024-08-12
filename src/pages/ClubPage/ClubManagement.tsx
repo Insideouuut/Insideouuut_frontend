@@ -1,13 +1,14 @@
+import { getClubData, updateClubData } from '@/api/clubApi';
 import {
   deleteMeetingData,
   endMeeting,
   getMeetingData,
-  updateMeetingData,
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
+import { ClubData as ClubAPIData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface MeetingPlace {
   name: string;
@@ -35,57 +36,93 @@ interface ClubData {
   ratio: string;
   hasMembershipFee: boolean;
   membershipFeeAmount: number;
-  imageFiles: string[]; // 이미지 파일 필드 추가
+  imageFiles: File[];
 }
 
 const ClubManagement: React.FC = () => {
-  const { id: meetingId } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [formData, setFormData] = useState<ClubData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisbandModalOpen, setIsDisbandModalOpen] = useState(false);
   const [disbandText, setDisbandText] = useState('');
   const [disbandError, setDisbandError] = useState('');
 
+  const type = location.pathname.includes('/club') ? 'club' : 'meeting';
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data: Result = await getMeetingData(meetingId!);
+        if (type === 'club') {
+          const data: ClubAPIData = await getClubData(id!);
 
-        const clubData: ClubData = {
-          name: data.name,
-          introduction: data.introduction,
-          category: data.category,
-          categoryDetail: data.categoryDetail,
-          meetingPlace: {
-            name: data.place.name,
-            placeUrl: data.place.placeUrl,
-            kakaoMapId: data.place.kakaoMapId,
-            addressName: data.place.addressName || '',
-            roadAddressName: data.place.roadAddressName || '',
-            latitude: data.place.latitude,
-            longitude: data.place.longitude,
-          },
-          participantLimit: data.participantLimit,
-          rules: data.rules,
-          joinQuestions: data.joinQuestions,
-          date: data.date,
-          level: data.level,
-          ageRange: data.ageRange,
-          hasGenderRatio: data.ratio ? 'true' : 'false',
-          ratio: data.ratio,
-          hasMembershipFee: data.hasMembershipFee,
-          membershipFeeAmount: data.membershipFeeAmount,
-          imageFiles: [], // 이미지 파일 필드 초기화
-        };
+          const clubData: ClubData = {
+            name: data.name,
+            introduction: data.introduction,
+            category: data.category,
+            categoryDetail: data.categoryDetail,
+            meetingPlace: {
+              name: '',
+              placeUrl: '',
+              kakaoMapId: '',
+              addressName: '',
+              roadAddressName: '',
+              latitude: 0,
+              longitude: 0,
+            },
+            participantLimit: data.participantLimit,
+            rules: data.rules,
+            joinQuestions: data.joinQuestions,
+            date: data.date,
+            level: data.level,
+            ageRange: data.ageRange,
+            hasGenderRatio: data.genderRatio ? 'true' : 'false',
+            ratio: data.genderRatio,
+            hasMembershipFee: data.hasMembershipFee,
+            membershipFeeAmount: data.membershipFeeAmount,
+            imageFiles: [],
+          };
 
-        setFormData(clubData);
+          setFormData(clubData);
+        } else if (type === 'meeting') {
+          const data: Result = await getMeetingData(id!);
+
+          const meetingData: ClubData = {
+            name: data.name,
+            introduction: data.introduction,
+            category: data.category,
+            categoryDetail: data.categoryDetail,
+            meetingPlace: {
+              name: data.place.name,
+              placeUrl: data.place.placeUrl,
+              kakaoMapId: data.place.kakaoMapId,
+              addressName: data.place.addressName || '',
+              roadAddressName: data.place.roadAddressName || '',
+              latitude: data.place.latitude,
+              longitude: data.place.longitude,
+            },
+            participantLimit: data.participantLimit,
+            rules: data.rules,
+            joinQuestions: data.joinQuestions,
+            date: data.date,
+            level: data.level,
+            ageRange: data.ageRange,
+            hasGenderRatio: data.ratio ? 'true' : 'false',
+            ratio: data.ratio,
+            hasMembershipFee: data.hasMembershipFee,
+            membershipFeeAmount: data.membershipFeeAmount,
+            imageFiles: [],
+          };
+
+          setFormData(meetingData);
+        }
       } catch (error) {
-        console.error('Error fetching club data:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [meetingId]);
+  }, [id, type]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -110,36 +147,13 @@ const ClubManagement: React.FC = () => {
     );
   };
 
-  const handleRulesChange = (index: number, value: string) => {
-    if (formData) {
-      const newRules = [...formData.rules];
-      newRules[index] = value;
-      setFormData({ ...formData, rules: newRules });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setFormData(
+        (prevData) => prevData && { ...prevData, imageFiles: filesArray },
+      );
     }
-  };
-
-  const handleAddRule = () => {
-    setFormData(
-      (prevData) => prevData && { ...prevData, rules: [...prevData.rules, ''] },
-    );
-  };
-
-  const handleJoinQuestionsChange = (index: number, value: string) => {
-    if (formData) {
-      const newQuestions = [...formData.joinQuestions];
-      newQuestions[index] = value;
-      setFormData({ ...formData, joinQuestions: newQuestions });
-    }
-  };
-
-  const handleAddQuestion = () => {
-    setFormData(
-      (prevData) =>
-        prevData && {
-          ...prevData,
-          joinQuestions: [...prevData.joinQuestions, ''],
-        },
-    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,11 +161,51 @@ const ClubManagement: React.FC = () => {
     try {
       const token = localStorage.getItem('accessToken') || '';
       if (formData) {
-        await updateMeetingData(meetingId!, formData, token);
+        const formDataToSend = new FormData();
+
+        const clubRequestDto = {
+          category: formData.category,
+          categoryDetail: formData.categoryDetail,
+          level: formData.level,
+          hasMembershipFee: formData.hasMembershipFee,
+          membershipFeeAmount: formData.membershipFeeAmount,
+          date: formData.date,
+          participantLimit: formData.participantLimit,
+          hasGenderRatio: formData.hasGenderRatio,
+          ratio: formData.ratio,
+          minAge: formData.ageRange[0],
+          maxAge: formData.ageRange[1],
+          name: formData.name,
+          introduction: formData.introduction,
+          rules: formData.rules,
+          joinQuestions: formData.joinQuestions,
+          activityRegion: formData.meetingPlace.addressName,
+        };
+
+        // clubRequestDto를 application/json으로 FormData에 추가
+        formDataToSend.append(
+          'clubRequestDto',
+          new Blob([JSON.stringify(clubRequestDto)], {
+            type: 'application/json',
+          }),
+        );
+
+        // 이미지 파일을 FormData에 추가
+        formData.imageFiles.forEach((file) => {
+          formDataToSend.append('imageFiles', file);
+        });
+
+        // FormData의 내용을 확인하는 로그
+        for (const pair of formDataToSend.entries()) {
+          console.log(`${pair[0]}:`, pair[1]);
+        }
+
+        // updateClubData 함수 호출
+        await updateClubData(id!, formDataToSend, token);
         setIsModalOpen(true);
       }
     } catch (error) {
-      console.error('Error updating club data:', error);
+      console.error('Error updating data:', error);
     }
   };
 
@@ -162,7 +216,7 @@ const ClubManagement: React.FC = () => {
   const handleEndMeeting = async () => {
     try {
       const token = localStorage.getItem('accessToken') || '';
-      await endMeeting(meetingId!, token);
+      await endMeeting(id!, token);
       alert('모임이 성공적으로 종료되었습니다.');
     } catch (error) {
       console.error('Error ending meeting:', error);
@@ -175,16 +229,16 @@ const ClubManagement: React.FC = () => {
       setIsDisbandModalOpen(false);
       try {
         const token = localStorage.getItem('accessToken') || '';
-        await deleteMeetingData(meetingId!, token);
+        await deleteMeetingData(id!, token);
         alert('모임이 성공적으로 삭제되었습니다.');
         setDisbandText('');
         setDisbandError('');
       } catch (error) {
-        console.error('Error deleting club data:', error);
+        console.error('Error deleting data:', error);
         alert('모임 삭제에 실패했습니다.');
       }
     } else {
-      setDisbandError('해체하려면 &apos;해체하기&apos;를 입력하세요.');
+      setDisbandError('해체하려면 "해체하기"를 입력하세요.');
     }
   };
 
@@ -194,8 +248,11 @@ const ClubManagement: React.FC = () => {
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
-      <h2 className="text-xl font-bold mb-4">클럽 관리</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {type === 'club' ? '클럽 관리' : '모임 관리'}
+      </h2>
       <form onSubmit={handleSubmit}>
+        {/* Form fields */}
         <label className="block mb-2">
           이름:
           <input
@@ -232,60 +289,108 @@ const ClubManagement: React.FC = () => {
             className="block w-full mt-1 p-2 border rounded"
           />
         </label>
-        <div className="block mb-2">
-          장소:
+
+        {/* Conditional fields based on type */}
+        {type === 'meeting' && (
+          <div className="block mb-2">
+            장소:
+            <input
+              name="name"
+              value={formData.meetingPlace.name}
+              onChange={handleMeetingPlaceChange}
+              placeholder="장소 이름"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="placeUrl"
+              value={formData.meetingPlace.placeUrl}
+              onChange={handleMeetingPlaceChange}
+              placeholder="장소 URL"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="kakaoMapId"
+              value={formData.meetingPlace.kakaoMapId}
+              onChange={handleMeetingPlaceChange}
+              placeholder="카카오 맵 ID"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="addressName"
+              value={formData.meetingPlace.addressName}
+              onChange={handleMeetingPlaceChange}
+              placeholder="주소 이름"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="roadAddressName"
+              value={formData.meetingPlace.roadAddressName}
+              onChange={handleMeetingPlaceChange}
+              placeholder="도로명 주소"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="latitude"
+              value={formData.meetingPlace.latitude.toString()}
+              onChange={handleMeetingPlaceChange}
+              placeholder="위도"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+            <input
+              name="longitude"
+              value={formData.meetingPlace.longitude.toString()}
+              onChange={handleMeetingPlaceChange}
+              placeholder="경도"
+              className="block w-full mt-1 p-2 border rounded"
+            />
+          </div>
+        )}
+
+        {/* Image upload */}
+        <label className="block mb-2">
+          이미지 파일 업로드:
           <input
-            name="name"
-            value={formData.meetingPlace.name}
-            onChange={handleMeetingPlaceChange}
-            placeholder="장소 이름"
+            type="file"
+            multiple
+            onChange={handleFileChange}
             className="block w-full mt-1 p-2 border rounded"
           />
-          <input
-            name="addressName"
-            value={formData.meetingPlace.addressName}
-            onChange={handleMeetingPlaceChange}
-            placeholder="주소"
-            className="block w-full mt-1 p-2 border rounded"
-          />
-        </div>
+        </label>
+
+        {/* More form fields */}
         <div className="block mb-2">
           규칙:
           {formData.rules.map((rule, index) => (
             <input
               key={index}
+              name={`rule_${index}`}
               value={rule}
-              onChange={(e) => handleRulesChange(index, e.target.value)}
+              onChange={(e) => {
+                const newRules = [...formData.rules];
+                newRules[index] = e.target.value;
+                setFormData({ ...formData, rules: newRules });
+              }}
               placeholder={`규칙 ${index + 1}`}
               className="block w-full mt-1 p-2 border rounded"
             />
           ))}
-          <Button
-            type="button"
-            onClick={handleAddRule}
-            className="bg-gray-300 text-black p-2 rounded mt-2"
-          >
-            규칙 추가
-          </Button>
         </div>
         <div className="block mb-2">
           참가 질문:
           {formData.joinQuestions.map((question, index) => (
             <input
               key={index}
+              name={`joinQuestion_${index}`}
               value={question}
-              onChange={(e) => handleJoinQuestionsChange(index, e.target.value)}
+              onChange={(e) => {
+                const newQuestions = [...formData.joinQuestions];
+                newQuestions[index] = e.target.value;
+                setFormData({ ...formData, joinQuestions: newQuestions });
+              }}
               placeholder={`질문 ${index + 1}`}
               className="block w-full mt-1 p-2 border rounded"
             />
           ))}
-          <Button
-            type="button"
-            onClick={handleAddQuestion}
-            className="bg-gray-300 text-black p-2 rounded mt-2"
-          >
-            질문 추가
-          </Button>
         </div>
         <label className="block mb-2">
           정원 수:
@@ -307,6 +412,16 @@ const ClubManagement: React.FC = () => {
             className="block w-full mt-1 p-2 border rounded"
           />
         </label>
+        <label className="block mb-2">
+          성비:
+          <input
+            name="ratio"
+            type="text"
+            value={formData.ratio}
+            onChange={handleChange}
+            className="block w-full mt-1 p-2 border rounded"
+          />
+        </label>
         <Button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-700"
@@ -315,18 +430,21 @@ const ClubManagement: React.FC = () => {
         </Button>
       </form>
 
+      {/* Modals */}
       <div className="mt-4">
-        <Button
-          onClick={handleEndMeeting}
-          className="bg-green-500 text-white p-2 rounded hover:bg-green-700 mr-2"
-        >
-          모임 종료하기
-        </Button>
+        {type === 'meeting' && (
+          <Button
+            onClick={handleEndMeeting}
+            className="bg-green-500 text-white p-2 rounded hover:bg-green-700 mr-2"
+          >
+            모임 종료하기
+          </Button>
+        )}
         <Button
           onClick={() => setIsDisbandModalOpen(true)}
           className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
         >
-          모임 삭제하기
+          {type === 'club' ? '클럽 삭제하기' : '모임 삭제하기'}
         </Button>
       </div>
 
@@ -334,7 +452,10 @@ const ClubManagement: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
             <h2 className="text-lg font-bold mb-4">알림</h2>
-            <p>클럽 정보가 업데이트되었습니다.</p>
+            <p>
+              {type === 'club' ? '클럽 정보가' : '모임 정보가'}{' '}
+              업데이트되었습니다.
+            </p>
             <div className="flex justify-end mt-4">
               <Button
                 onClick={closeModal}
@@ -351,7 +472,9 @@ const ClubManagement: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
             <h2 className="text-lg font-bold mb-4">경고</h2>
-            <p>정말로 모임을 삭제하시겠습니까?</p>
+            <p>
+              정말로 {type === 'club' ? '클럽을' : '모임을'} 삭제하시겠습니까?
+            </p>
             <p>&apos;해체하기&apos;를 입력하여 확인하세요:</p>
             <input
               type="text"

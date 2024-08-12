@@ -1,7 +1,8 @@
-// src/pages/ClubPage/ClubPage.tsx
-
 import { Api } from '@/api/Apis';
-import { getClubData } from '@/api/clubApi';
+import {
+  checkUserAuthority as checkClubUserAuthority,
+  getClubData,
+} from '@/api/clubApi';
 import { checkUserAuthority, getMeetingData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -23,10 +24,11 @@ const ClubPage: React.FC = () => {
     !!localStorage.getItem('accessToken'),
   );
   const [hasNotifications, setHasNotifications] = useState(false);
-  const { id: clubId } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const type = location.pathname.includes('/club') ? 'club' : 'meeting';
-  const [clubData, setClubData] = useState<ClubData | Result | null>(null);
+  const [data, setData] = useState<ClubData | Result | null>(null);
   const [userProfile, setUserProfile] = useState<{
     nickname: string;
     profileImage: string;
@@ -41,7 +43,6 @@ const ClubPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const profileRef = useRef<HTMLImageElement>(null);
-  const navigate = useNavigate();
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -68,44 +69,52 @@ const ClubPage: React.FC = () => {
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
     if (menu.includes('Board')) {
-      navigate(`/club/${clubId}/board/${menu}`);
+      navigate(`/club/${id}/board/${menu}`);
     } else if (menu === 'home') {
-      navigate(`/club/${clubId}`);
+      navigate(`/club/${id}`);
     } else {
-      navigate(`/club/${clubId}/${menu}`);
+      navigate(`/meeting/${id}/${menu}`);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (clubId) {
-          let data: ClubData | Result | null = null;
-          if (type === 'club') {
-            data = await getClubData(clubId);
-          } else if (type === 'meeting') {
-            data = await getMeetingData(clubId);
-          }
-          setClubData(data ?? null);
-
+        if (id) {
+          let fetchedData: ClubData | Result | null = null;
           const token = localStorage.getItem('accessToken') || '';
-          const authorityResponse = await checkUserAuthority(clubId, token);
-          const authority = authorityResponse.results[0].authority;
-          setUserAuthority(authority);
 
-          if (authority === '호스트' || authority === '멤버') {
-            const api = new Api();
-            const profileResponse = await api.api.getMyProfile();
-            const profile = profileResponse.results?.[0];
+          if (type === 'club') {
+            fetchedData = await getClubData(id);
+            setData(fetchedData ?? null);
 
-            if (profile?.nickname && profile?.profileImage) {
-              setUserProfile({
-                nickname: profile.nickname,
-                profileImage: profile.profileImage,
-              });
-            } else {
-              setUserProfile(null);
+            // 클럽에 대한 사용자 권한 확인 (호스트 여부 확인)
+            const authorityResponse = await checkClubUserAuthority(id, token);
+            const authority = authorityResponse.results[0].authority;
+            setUserAuthority(authority);
+
+            if (authority === '호스트' || authority === '멤버') {
+              const api = new Api();
+              const profileResponse = await api.api.getMyProfile();
+              const profile = profileResponse.results?.[0];
+
+              if (profile?.nickname && profile?.profileImage) {
+                setUserProfile({
+                  nickname: profile.nickname,
+                  profileImage: profile.profileImage,
+                });
+              } else {
+                setUserProfile(null);
+              }
             }
+          } else if (type === 'meeting') {
+            fetchedData = await getMeetingData(id);
+            setData(fetchedData ?? null);
+
+            // 모임에 대한 사용자 권한 확인
+            const authorityResponse = await checkUserAuthority(id, token);
+            const authority = authorityResponse.results[0].authority;
+            setUserAuthority(authority);
           }
         }
       } catch (error) {
@@ -114,7 +123,7 @@ const ClubPage: React.FC = () => {
     };
 
     fetchData();
-  }, [clubId, type]);
+  }, [id, type]);
 
   return (
     <div className="relative">
@@ -126,28 +135,29 @@ const ClubPage: React.FC = () => {
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
-      {clubData && (
+      {data && (
         <ClubHero
-          clubData={clubData}
+          data={data}
           userProfile={userProfile}
           userAuthority={userAuthority}
+          type={type}
         />
       )}
       <div className="flex mt-4 justify-center">
-        {clubData && (
+        {data && (
           <ClubSidebar
             roomId={'1'}
-            clubId={clubId ? parseInt(clubId) : 0}
+            id={id ? parseInt(id) : 0}
             selectedMenu={selectedMenu}
             setSelectedMenu={handleMenuClick}
-            clubType={clubData.type}
+            type={data.type}
             isHost={userAuthority === '호스트'}
           />
         )}
         <div>
-          {selectedMenu === 'home' && clubData && (
+          {selectedMenu === 'home' && data && (
             <div>
-              <ClubMain clubData={clubData} />
+              <ClubMain data={data} />
             </div>
           )}
           <Outlet />

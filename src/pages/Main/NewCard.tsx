@@ -1,3 +1,5 @@
+// src/components/NewCard.tsx
+
 import {
   getColorByLevel,
   getColorByMeetingType,
@@ -5,8 +7,8 @@ import {
   getDefaultImageByCategory,
   getLevel,
   getLinkByType,
-} from '@/utils/cardUtils'; // 카드 관련 유틸리티 함수 임포트
-import { formatClubTime, formatEventTime } from '@/utils/timeUtils'; // 시간 관련 유틸리티 함수 임포트
+} from '@/utils/cardUtils';
+import { formatClubTime, formatEventTime } from '@/utils/timeUtils';
 import { MapPin, Users } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -98,9 +100,9 @@ const NewCard: React.FC<NewCardProps> = ({
           <p className="mr-4">
             {location.length > 10 ? `${location.slice(0, 10)}...` : location}
           </p>
-          <Users className="w-4 mr-" />
+          <Users className="w-4 mr-1" />
           <p className="mr-2">{`${participantsNumber}/${participantLimit}`}</p>
-          <p className="text-gray-600">{timeDisplay}</p> {/* 시간 표시 */}
+          <p className="text-gray-600">{timeDisplay}</p>
         </div>
       </div>
     </Link>
