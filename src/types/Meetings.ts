@@ -31,6 +31,7 @@ export interface Result {
   id: number;
   name: string;
   introduction: string;
+  chatRoomId: string;
   view: number;
   like: number;
   hasMembershipFee: boolean;
