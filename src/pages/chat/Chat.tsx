@@ -54,16 +54,10 @@ const Chat = () => {
         subscription = socketClient?.subscribe(
           `/sub/chatRoom/${chatRoomId}`,
           (messageOutput) => {
-            const message = JSON.parse(messageOutput.body);
+            const message = JSON.parse(messageOutput.body) as ChatResponseDTO;
             console.log('Received message from server:', message);
 
-            // 기존 메시지 리스트에 중복되지 않게 추가
-            setMessages((prevMessages) => {
-              if (prevMessages.some((msg) => msg.id === message.id)) {
-                return prevMessages; // 중복된 메시지가 있을 경우 추가하지 않음
-              }
-              return [...prevMessages, message];
-            });
+            handleReceivedMessage(message);
           },
         );
       },
@@ -98,31 +92,18 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    const initializeChat = async () => {
-      await enterChatRoom();
-      connectWebSocket();
-    };
-
-    initializeChat();
-
-    return () => {
-      if (socketClient?.active) {
-        socketClient.deactivate();
-        console.log('[Chat] Disconnected from WebSocket');
-      }
-      exitChatRoom(); // 채팅방에서 퇴장
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const sendMessage = () => {
     if (!newMessage.trim()) return;
 
-    const message = {
+    const message: ChatResponseDTO = {
       content: newMessage,
       sender: { nickname: nickname || '' },
+      sendTime: new Date().toISOString(), // 메시지를 보낼 때 sendTime을 설정
     };
+
+    // 클라이언트에서 먼저 메시지를 UI에 추가 (서버 응답 전)
+    setMessages((prevMessages) => [...prevMessages, message]);
+    setNewMessage('');
 
     if (socketClient?.active) {
       socketClient.publish({
@@ -132,12 +113,29 @@ const Chat = () => {
           Authorization: token,
         },
       });
-
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setNewMessage('');
     } else {
       console.error('WebSocket client is not connected');
     }
+  };
+
+  // 서버로부터 수신된 메시지를 처리하는 함수
+  const handleReceivedMessage = (message: ChatResponseDTO) => {
+    setMessages((prevMessages) => {
+      // 서버에서 수신한 메시지가 클라이언트에서 보낸 메시지와 동일한 경우 업데이트
+      const existingMessageIndex = prevMessages.findIndex(
+        (msg) =>
+          msg.content === message?.content &&
+          msg.sender?.nickname === message.sender?.nickname,
+      );
+
+      if (existingMessageIndex !== -1) {
+        const updatedMessages = [...prevMessages];
+        updatedMessages[existingMessageIndex] = message; // 서버에서 수신한 메시지로 업데이트
+        return updatedMessages;
+      }
+
+      return [...prevMessages, message]; // 새로운 메시지 추가
+    });
   };
 
   // 초기 메시지 로드
@@ -220,6 +218,24 @@ const Chat = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      await enterChatRoom();
+      connectWebSocket();
+    };
+
+    initializeChat();
+
+    return () => {
+      if (socketClient?.active) {
+        socketClient.deactivate();
+        console.log('[Chat] Disconnected from WebSocket');
+      }
+      exitChatRoom(); // 채팅방에서 퇴장
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (unreadRef.current) {
