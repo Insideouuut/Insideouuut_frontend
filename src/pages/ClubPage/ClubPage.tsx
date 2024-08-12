@@ -74,7 +74,14 @@ const ClubPage: React.FC = () => {
     setSelectedMenu(menu);
     const basePath = type === 'club' ? `/club/${id}` : `/meeting/${id}`;
 
-    if (menu.includes('Board')) {
+    const boardMenus = [
+      'allBoard',
+      'noticeBoard',
+      'freeBoard',
+      'reviewBoard',
+      'questionBoard',
+    ];
+    if (boardMenus.includes(menu)) {
       navigate(`${basePath}/board/${menu}`);
     } else if (menu === 'home') {
       navigate(`${basePath}`);
