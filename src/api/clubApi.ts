@@ -8,6 +8,27 @@ import { ApplyForMeetingRequest } from '@/types/Meetings';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
 
+// 동아리에 대한 사용자 권한 확인 API
+export const checkClubUserAuthority = async (
+  clubId: string,
+  token: string,
+): Promise<MemberAuthorityApiResponse> => {
+  try {
+    const response = await axiosInstance.get<MemberAuthorityApiResponse>(
+      `/api/clubs/${clubId}/members/authority`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error checking club user authority:', error);
+    throw error;
+  }
+};
+
 // 동아리 단건 조회
 export const getClubData = async (id: string): Promise<ClubData> => {
   try {

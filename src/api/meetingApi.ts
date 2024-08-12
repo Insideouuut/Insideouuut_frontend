@@ -107,7 +107,7 @@ export const endMeeting = async (id: string, token: string): Promise<void> => {
 };
 
 // 모임에 대한 사용자 권한 확인 API
-export const checkUserAuthority = async (
+export const checkMeetingUserAuthority = async (
   meetingId: string,
   token: string,
 ): Promise<MemberAuthorityApiResponse> => {
@@ -122,7 +122,7 @@ export const checkUserAuthority = async (
     );
     return response.data;
   } catch (error) {
-    console.error('Error checking user authority:', error);
+    console.error('Error checking meeting user authority:', error);
     throw error;
   }
 };

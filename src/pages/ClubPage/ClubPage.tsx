@@ -1,9 +1,6 @@
 import { Api } from '@/api/Apis';
-import {
-  checkUserAuthority as checkClubUserAuthority,
-  getClubData,
-} from '@/api/clubApi';
-import { checkUserAuthority, getMeetingData } from '@/api/meetingApi';
+import { checkClubUserAuthority, getClubData } from '@/api/clubApi';
+import { checkMeetingUserAuthority, getMeetingData } from '@/api/meetingApi';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
@@ -27,7 +24,7 @@ const ClubPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const type = location.pathname.includes('/club') ? '동아리' : '모임';
+  const type = location.pathname.includes('/club') ? 'club' : 'meeting'; // 'club'과 'meeting'으로 변경
   const [data, setData] = useState<ClubData | Result | null>(null);
   const [userProfile, setUserProfile] = useState<{
     nickname: string;
@@ -68,7 +65,7 @@ const ClubPage: React.FC = () => {
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
-    const basePath = type === '동아리' ? `/club/${id}` : `/meeting/${id}`;
+    const basePath = type === 'club' ? `/club/${id}` : `/meeting/${id}`;
 
     if (menu.includes('Board')) {
       navigate(`${basePath}/board/${menu}`);
@@ -86,7 +83,7 @@ const ClubPage: React.FC = () => {
           let fetchedData: ClubData | Result | null = null;
           const token = localStorage.getItem('accessToken') || '';
 
-          if (type === '동아리') {
+          if (type === 'club') {
             fetchedData = await getClubData(id);
             setData(fetchedData ?? null);
 
@@ -108,11 +105,14 @@ const ClubPage: React.FC = () => {
                 setUserProfile(null);
               }
             }
-          } else if (type === '모임') {
+          } else if (type === 'meeting') {
             fetchedData = await getMeetingData(id);
             setData(fetchedData ?? null);
 
-            const authorityResponse = await checkUserAuthority(id, token);
+            const authorityResponse = await checkMeetingUserAuthority(
+              id,
+              token,
+            );
             const authority = authorityResponse.results[0].authority;
             setUserAuthority(authority);
           }
@@ -140,7 +140,7 @@ const ClubPage: React.FC = () => {
           data={data}
           userProfile={userProfile}
           userAuthority={userAuthority}
-          type={type}
+          type={type} // 명확한 'club' 또는 'meeting' 값을 전달
         />
       )}
       <div className="flex mt-4 justify-center">
@@ -150,7 +150,7 @@ const ClubPage: React.FC = () => {
             id={id ? parseInt(id) : 0}
             selectedMenu={selectedMenu}
             setSelectedMenu={handleMenuClick}
-            type={type}
+            type={type} // 명확한 'club' 또는 'meeting' 값을 전달
             userAuthority={userAuthority}
           />
         )}
