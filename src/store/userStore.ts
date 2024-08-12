@@ -9,7 +9,8 @@ interface UserState {
   password: string;
   confirmPassword: string;
   phoneNumber: string;
-  location: string;
+  locations: string[]; // 추가
+  isVerified: boolean; // 추가
   mbti: string;
   interests: string[];
   isLoggedIn: boolean;

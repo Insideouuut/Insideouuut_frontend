@@ -15,7 +15,6 @@ export interface SignupForm {
   birth: string;
   gender: 'MALE' | 'FEMALE';
   interests: string[];
-  location: string;
 }
 
 export interface SignupRequest {
@@ -27,7 +26,6 @@ export interface SignupRequest {
   birthDate: string;
   gender: 'MALE' | 'FEMALE';
   category: string[];
-  location: string;
 }
 
 export interface LoginResponse {

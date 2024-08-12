@@ -33,7 +33,6 @@ const defaultData: SignupForm = {
   birth: '',
   gender: 'MALE',
   interests: [],
-  location: '',
 };
 
 const signupSchema = z
@@ -97,7 +96,6 @@ const Signup = () => {
       birthDate: data.birth,
       gender: data.gender,
       category: data.interests,
-      location: data.location,
     };
 
     try {
@@ -129,7 +127,7 @@ const Signup = () => {
         alert('닉네임 중복 확인을 해주세요.');
       }
     } else if (step === 3) {
-      isValid = await trigger(['gender', 'interests', 'location']);
+      isValid = await trigger(['gender', 'interests']);
     }
 
     if (isValid) {
@@ -557,29 +555,6 @@ const Signup = () => {
                       </span>
                     )}
                   </div>
-
-                  <div className="grid gap-2 justify-items-start">
-                    <Label htmlFor="location">내 지역</Label>
-                    <Controller
-                      name="location"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id="location"
-                          type="text"
-                          placeholder="내 지역"
-                          {...field}
-                        />
-                      )}
-                    />
-                    {errors.location && (
-                      <span className="text-red-500 text-sm">
-                        {errors.location.message}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="grow"></div>
 
                   <div>
                     <Button
