@@ -25,7 +25,7 @@ export interface Place {
 }
 
 export interface ClubResult {
-  id: number;
+  id: number | undefined;
   name: string;
   introduction: string;
   type: string;

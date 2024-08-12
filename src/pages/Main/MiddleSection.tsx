@@ -1,4 +1,3 @@
-import { Api, ClubBoardResponseDto } from '@/api/Apis';
 import axiosInstance from '@/api/axiosConfig';
 import GroupCard from '@/components/GroupCard';
 import { Button } from '@/components/ui/button';
@@ -10,11 +9,9 @@ import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
 import NewCard from './NewCard';
 
-const apiInstance = new Api();
-
 const MiddleSection: React.FC = () => {
   const [data, setData] = useState<Result[]>([]);
-  const [clubs, setClubs] = useState<ClubBoardResponseDto[]>([]);
+  const [clubs, setClubs] = useState<Result[]>([]);
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -37,21 +34,25 @@ const MiddleSection: React.FC = () => {
     fetchMeetings();
   }, []);
 
-  console.log(data);
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        const response = await apiInstance.api.findByType();
+        const response = await axiosInstance.get('/api/search/club', {
+          params: {
+            query: 'all',
+            category: 'all',
+            sort: 'date',
+          },
+        });
 
-        // 응답 데이터의 results 속성을 확인하고 빈 배열을 기본값으로 설정
-        setClubs(response.results || []);
+        setClubs(response.data.results || []); // 빈 배열을 기본값으로 설정
       } catch (error) {
-        console.error('Failed to fetch clubs:', error);
-        setClubs([]); // 오류 발생 시 빈 배열로 설정
+        console.error('Failed to fetch meetings:', error);
+        setClubs([]); // 오류 발생 시에도 빈 배열로 설정
       }
     };
 
-    fetchClubs(); // 함수 호출
+    fetchClubs();
   }, []);
 
   const { interests } = useUserStore();
@@ -80,14 +81,12 @@ const MiddleSection: React.FC = () => {
     )
     .slice(0, 5); // 최대 5개 항목 선택
 
-  // 관심사와 일치하는 동아리 필터링
-  // const filteredClubs = clubs
-  //   .filter(
-  //     (item) => item.category && transformedInterests.includes(item.category),
-  //   )
-  //   .slice(0, 5); // 최대 5개 항목 선택
+  const filteredClub = clubs
+    .filter(
+      (item) => item.category && transformedInterests.includes(item.category),
+    )
+    .slice(0, 5); // 최대 5개 항목 선택
 
-  // 데이터를 createdAt을 기준으로 정렬하는 함수
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sortByCreatedAt = (items: any[]) => {
     return items.sort((a, b) => {
@@ -128,8 +127,8 @@ const MiddleSection: React.FC = () => {
         ) : (
           <p>모임: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}
-        {filteredData.length > 0 ? (
-          filteredData.map((item) => <GroupCard key={item.id} data={item} />)
+        {filteredClub.length > 0 ? (
+          filteredClub.map((item) => <GroupCard key={item.id} data={item} />)
         ) : (
           <p>동아리: 마이페이지에서 관심 카테고리를 설정해주세요</p>
         )}
@@ -168,7 +167,7 @@ const MiddleSection: React.FC = () => {
                 type={item.type}
                 imageUrl={item.images[0]?.url || ''}
                 name={item.name}
-                level={item.level}
+                level={item.level || ''}
                 introduction={item.introduction}
                 date={item.date}
                 createdAt={''}

@@ -2,13 +2,13 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { useUserStore } from '@/store/userStore';
 import React, { useEffect, useState } from 'react';
 import Search from './searchHero';
-
 const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const [profileCoords, setProfileCoords] = useState<{
     top: number;
@@ -42,8 +42,10 @@ const SearchPage: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
+    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
   return (
@@ -52,7 +54,7 @@ const SearchPage: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={handleLogout}
         hasNotifications={hasNotifications}
         profileRef={null}
       />
