@@ -33,7 +33,6 @@ const defaultData: SignupForm = {
   birth: '',
   gender: 'MALE',
   interests: [],
-  location: '',
 };
 
 const signupSchema = z
@@ -65,7 +64,6 @@ const signupSchema = z
     interests: z
       .array(z.string())
       .min(1, '관심사를 최소 하나 이상 선택해주세요.'),
-    location: z.string().min(1, '내 지역을 입력해주세요.'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: '비밀번호가 일치하지 않습니다.',
@@ -97,7 +95,6 @@ const Signup = () => {
       birthDate: data.birth,
       gender: data.gender,
       category: data.interests,
-      location: data.location,
     };
 
     try {
@@ -123,13 +120,13 @@ const Signup = () => {
         alert('이메일 중복 확인을 해주세요.');
       }
     } else if (step === 2) {
-      isValid = await trigger(['name', 'nickname', 'phoneNumber', 'birth']);
+      isValid = await trigger(['name', 'nickname', 'phoneNumber']);
       if (!checkedNickname) {
         isValid = false;
         alert('닉네임 중복 확인을 해주세요.');
       }
     } else if (step === 3) {
-      isValid = await trigger(['gender', 'interests', 'location']);
+      isValid = await trigger(['birth', 'gender', 'interests']);
     }
 
     if (isValid) {
@@ -403,58 +400,6 @@ const Signup = () => {
                     )}
                   </div>
 
-                  <div className="grid gap-2 justify-items-start">
-                    <Label htmlFor="birth">생년월일</Label>
-                    <Controller
-                      name="birth"
-                      control={control}
-                      render={({ field }) => (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground',
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), 'yyyy-MM-dd')
-                              ) : (
-                                <span>날짜 선택</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
-                              }
-                              onSelect={(date) => {
-                                const formattedDate = date
-                                  ? format(date, 'yyyy-MM-dd')
-                                  : '';
-                                field.onChange(formattedDate);
-                              }}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date('1900-01-01')
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    />
-                    {errors.birth && (
-                      <span className="text-red-500 text-sm">
-                        {errors.birth.message}
-                      </span>
-                    )}
-                  </div>
-
                   <div className="grow"></div>
 
                   <div>
@@ -493,6 +438,57 @@ const Signup = () => {
                     <span className="bg-primary w-8 h-2 rounded-lg"></span>
                     <span className="bg-primary w-8 h-2 rounded-lg"></span>
                   </div>
+                </div>
+
+                <div className="grid gap-2 justify-items-start">
+                  <Label htmlFor="birth">생년월일</Label>
+                  <Controller
+                    name="birth"
+                    control={control}
+                    render={({ field }) => (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
+                            )}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), 'yyyy-MM-dd')
+                            ) : (
+                              <span>날짜 선택</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => {
+                              const formattedDate = date
+                                ? format(date, 'yyyy-MM-dd')
+                                : '';
+                              field.onChange(formattedDate);
+                            }}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date('1900-01-01')
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  />
+                  {errors.birth && (
+                    <span className="text-red-500 text-sm">
+                      {errors.birth.message}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-col h-full gap-8">
@@ -553,27 +549,6 @@ const Signup = () => {
                     {errors.interests && (
                       <span className="text-red-500 text-sm">
                         {errors.interests.message}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="grid gap-2 justify-items-start">
-                    <Label htmlFor="location">내 지역</Label>
-                    <Controller
-                      name="location"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          id="location"
-                          type="text"
-                          placeholder="내 지역"
-                          {...field}
-                        />
-                      )}
-                    />
-                    {errors.location && (
-                      <span className="text-red-500 text-sm">
-                        {errors.location.message}
                       </span>
                     )}
                   </div>
