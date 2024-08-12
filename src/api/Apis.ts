@@ -508,6 +508,8 @@ export interface MeetingResponse {
   type?: string;
   name?: string;
   introduction?: string;
+  /** @format int64 */
+  chatRoomId?: number;
   /** @format int32 */
   view?: number;
   /** @format int32 */
@@ -767,6 +769,8 @@ export interface ApiResponseListChatRoomResponseDTO {
 }
 
 export interface ChatRoomResponseDTO {
+  /** @format int64 */
+  chatRoomId?: number;
   /** @format int64 */
   associatedId?: number;
   title?: string;
