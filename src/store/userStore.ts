@@ -3,6 +3,7 @@ import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface UserState {
+  name: string;
   imageUrl: string;
   email: string;
   nickname: string;
