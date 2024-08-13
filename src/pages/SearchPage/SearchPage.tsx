@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import { useUserStore } from '@/store/userStore';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Search from './searchHero';
 
 const SearchPage: React.FC = () => {
@@ -70,7 +70,8 @@ const SearchPage: React.FC = () => {
         hasNotifications={hasNotifications}
         profileRef={null}
       />
-      <Search token={token} initialQuery={searchQuery} /> {/* initialQuery 추가 */}
+      <Search token={token} initialQuery={searchQuery} />{' '}
+      {/* initialQuery 추가 */}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal

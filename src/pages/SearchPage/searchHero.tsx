@@ -9,7 +9,7 @@ const bottomTabs = ['전체', '사교/취미', '운동', '스터디'];
 
 interface SearchProps {
   token: string;
-  initialQuery?: string; 
+  initialQuery?: string;
 }
 
 const Search: React.FC<SearchProps> = ({ token, initialQuery = '' }) => {
@@ -21,7 +21,8 @@ const Search: React.FC<SearchProps> = ({ token, initialQuery = '' }) => {
     useState<React.CSSProperties>({});
   const topTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const bottomTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>(initialQuery);
+  const [submittedSearchQuery, setSubmittedSearchQuery] =
+    useState<string>(initialQuery);
 
   useEffect(() => {
     const activeTab = topTabRefs.current[topTabs.indexOf(activeTopTab)];

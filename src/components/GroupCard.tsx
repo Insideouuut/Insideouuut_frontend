@@ -32,8 +32,8 @@ const categoryMap: Record<string, string> = {
 };
 
 const GroupCard: React.FC<GroupCardProps> = ({ data }) => {
-  if (!data) {
-    return null;
+  if (!data || data.type === '동아리 모임') {
+    return null; // 타입이 '동아리 모임'일 경우 렌더링하지 않음
   }
 
   const { id, type, images, name, introduction, date, category } = data;
@@ -74,6 +74,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ data }) => {
 
   const linkTo = `/${getLinkByType(translatedType)}/${id}`;
   const levelInKorean = getLevel(data.level);
+
   return (
     <Link
       to={linkTo}

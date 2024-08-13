@@ -10,6 +10,15 @@ import { Member } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
 
+interface MeetingData {
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  // 필요한 필드들을 추가하세요.
+  [key: string]: unknown;
+}
+
 // 동아리에 대한 사용자 권한 확인 API
 export const checkClubUserAuthority = async (
   clubId: string,
@@ -284,7 +293,7 @@ export const deleteClub = async (
 export const createClubMeeting = async (
   clubId: string,
   token: string,
-  meetingData: any, // 서버에 전송할 모임 데이터
+  meetingData: MeetingData, // 'any' 대신 MeetingData 타입 사용
 ): Promise<void> => {
   try {
     await axiosInstance.post(`/api/clubs/${clubId}/meetings`, meetingData, {
@@ -303,8 +312,6 @@ export const createClubMeeting = async (
 export const getClubMeetings = async (
   clubId: string,
   token: string,
-  page: number = 0,
-  size: number = 10,
 ): Promise<MeetingInfo[]> => {
   try {
     const response = await axiosInstance.get(`/api/clubs/${clubId}/meetings`, {
@@ -325,7 +332,7 @@ export const applyForMeeting = async (
   answers: { question: string; answer: string }[],
 ): Promise<void> => {
   try {
-    const response = await axiosInstance.post(
+    await axiosInstance.post(
       `/api/clubs/meetings/${meetingId}/apply`,
       { answers },
       {

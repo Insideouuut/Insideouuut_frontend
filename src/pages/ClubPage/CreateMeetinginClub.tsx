@@ -136,6 +136,9 @@ const CreateMeeting: React.FC = () => {
     const formattedDate = formatDate(date);
 
     const newMeeting = {
+      title, // 추가
+      location, // 추가
+      description, // 추
       type: '동아리 모임',
       name: title,
       introduction: description,
@@ -213,7 +216,9 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 카테고리 선택 */}
         <div className="flex flex-col">
-          <label className="mb-2">카테고리</label>
+          <label htmlFor="category" className="mb-2">
+            카테고리
+          </label>
           <div className="flex space-x-2">
             {Object.entries(categoryOptions).map(([key, value]) => (
               <Button
@@ -288,6 +293,7 @@ const CreateMeeting: React.FC = () => {
             </select>
             {(memberLimit === 'custom' || typeof memberLimit === 'number') && (
               <input
+                id="customMemberLimit"
                 value={typeof memberLimit === 'number' ? memberLimit : ''}
                 onChange={handleMemberLimitChange}
                 className="mt-2 p-2 border rounded"
@@ -331,10 +337,13 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 규칙 입력 */}
         <div className="flex flex-col">
-          <label className="mb-2">규칙</label>
+          <label htmlFor="rules" className="mb-2">
+            규칙
+          </label>
           {rules.map((rule, index) => (
             <div key={index} className="flex items-center mt-2">
               <input
+                id={`rule-${index}`}
                 value={rule}
                 onChange={(e) => handleRuleChange(index, e.target.value)}
                 className="p-2 border rounded flex-grow"
@@ -361,10 +370,13 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 질문 입력 */}
         <div className="flex flex-col">
-          <label className="mb-2">가입 질문</label>
+          <label htmlFor="joinQuestions" className="mb-2">
+            가입 질문
+          </label>
           {joinQuestions.map((question, index) => (
             <div key={index} className="flex items-center mt-2">
               <input
+                id={`joinQuestion-${index}`}
                 value={question}
                 onChange={(e) => handleQuestionChange(index, e.target.value)}
                 className="p-2 border rounded flex-grow"
@@ -395,7 +407,9 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 레벨 선택 */}
         <div className="flex flex-col">
-          <label className="mb-2">레벨</label>
+          <label htmlFor="level" className="mb-2">
+            레벨
+          </label>
           <div className="flex space-x-2">
             {Object.entries(levelOptions).map(([key, value]) => (
               <Button
@@ -410,8 +424,11 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 나이 범위 입력 */}
         <div className="flex flex-col">
-          <label className="mb-2">나이 범위</label>
+          <label htmlFor="ageRange" className="mb-2">
+            나이 범위
+          </label>
           <input
+            id="ageRangeMin"
             type="number"
             value={ageRange[0]}
             onChange={(e) => setAgeRange([Number(e.target.value), ageRange[1]])}
@@ -419,6 +436,7 @@ const CreateMeeting: React.FC = () => {
             placeholder="최소 나이"
           />
           <input
+            id="ageRangeMax"
             type="number"
             value={ageRange[1]}
             onChange={(e) => setAgeRange([ageRange[0], Number(e.target.value)])}
@@ -428,8 +446,11 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 성비 설정 */}
         <div className="flex flex-col">
-          <label className="mb-2">성비 설정</label>
+          <label htmlFor="genderRatio" className="mb-2">
+            성비 설정
+          </label>
           <select
+            id="genderRatio"
             value={hasGenderRatio}
             onChange={(e) => setHasGenderRatio(e.target.value)}
             className="p-2 border rounded"
@@ -440,6 +461,7 @@ const CreateMeeting: React.FC = () => {
           {hasGenderRatio === '지정' && (
             <div className="flex items-center mt-2">
               <input
+                id="leftRatio"
                 type="text"
                 value={leftRatio}
                 onChange={(e) => setLeftRatio(e.target.value)}
@@ -448,6 +470,7 @@ const CreateMeeting: React.FC = () => {
               />
               <span className="mx-2">:</span>
               <input
+                id="rightRatio"
                 type="text"
                 value={rightRatio}
                 onChange={(e) => setRightRatio(e.target.value)}

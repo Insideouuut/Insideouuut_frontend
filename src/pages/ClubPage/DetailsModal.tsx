@@ -16,57 +16,57 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ meeting, onClose }) => {
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               카테고리
-            </label>
+            </span>
             <p className="text-sm mt-1">
               {meeting.category} - {meeting.categoryDetail}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               레벨
-            </label>
+            </span>
             <p className="text-sm mt-1">{meeting.level}</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               일시
-            </label>
+            </span>
             <p className="text-sm mt-1">{meeting.date}</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               장소
-            </label>
+            </span>
             <p className="text-sm mt-1">{meeting.place.name}</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               인원
-            </label>
+            </span>
             <p className="text-sm mt-1">
               {meeting.participantsNumber} / {meeting.participantLimit}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               성비
-            </label>
+            </span>
             <p className="text-sm mt-1">{meeting.ratio}</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               연령대
-            </label>
+            </span>
             <p className="text-sm mt-1">
               {meeting.ageRange[0]} - {meeting.ageRange[1]}세
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <span className="block text-xs font-medium text-gray-500">
               회비
-            </label>
+            </span>
             <p className="text-sm mt-1">
               {meeting.hasMembershipFee
                 ? `${meeting.membershipFeeAmount}원`

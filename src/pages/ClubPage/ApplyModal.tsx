@@ -53,58 +53,90 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             <h3 className="text-md font-semibold text-gray-700">기본 정보</h3>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="category"
+              className="block text-xs font-medium text-gray-500"
+            >
               카테고리
             </label>
-            <p className="text-sm mt-1">
+            <p id="category" className="text-sm mt-1">
               {meeting.category} - {meeting.categoryDetail}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="level"
+              className="block text-xs font-medium text-gray-500"
+            >
               레벨
             </label>
-            <p className="text-sm mt-1">{meeting.level}</p>
+            <p id="level" className="text-sm mt-1">
+              {meeting.level}
+            </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="date"
+              className="block text-xs font-medium text-gray-500"
+            >
               일시
             </label>
-            <p className="text-sm mt-1">{meeting.date}</p>
+            <p id="date" className="text-sm mt-1">
+              {meeting.date}
+            </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="place"
+              className="block text-xs font-medium text-gray-500"
+            >
               장소
             </label>
-            <p className="text-sm mt-1">{meeting.place.name}</p>
+            <p id="place" className="text-sm mt-1">
+              {meeting.place.name}
+            </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="participantsNumber"
+              className="block text-xs font-medium text-gray-500"
+            >
               인원
             </label>
-            <p className="text-sm mt-1">
+            <p id="participantsNumber" className="text-sm mt-1">
               {meeting.participantsNumber} / {meeting.participantLimit}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="ratio"
+              className="block text-xs font-medium text-gray-500"
+            >
               성비
             </label>
-            <p className="text-sm mt-1">{meeting.ratio}</p>
+            <p id="ratio" className="text-sm mt-1">
+              {meeting.ratio}
+            </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="ageRange"
+              className="block text-xs font-medium text-gray-500"
+            >
               연령대
             </label>
-            <p className="text-sm mt-1">
+            <p id="ageRange" className="text-sm mt-1">
               {meeting.ageRange[0]} - {meeting.ageRange[1]}세
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500">
+            <label
+              htmlFor="membershipFee"
+              className="block text-xs font-medium text-gray-500"
+            >
               회비
             </label>
-            <p className="text-sm mt-1">
+            <p id="membershipFee" className="text-sm mt-1">
               {meeting.hasMembershipFee
                 ? `${meeting.membershipFeeAmount}원`
                 : '없음'}
@@ -124,8 +156,14 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             </h3>
             {meeting.joinQuestions.map((question, index) => (
               <div key={index} className="mb-2">
-                <p className="text-sm text-gray-700">{question}</p>
+                <label
+                  htmlFor={`question-${index}`}
+                  className="text-sm text-gray-700"
+                >
+                  {question}
+                </label>
                 <input
+                  id={`question-${index}`}
                   type="text"
                   className="mt-1 p-2 w-full border rounded-md"
                   value={answers[index]}

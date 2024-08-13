@@ -338,14 +338,13 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
         )}
       </nav>
 
-      {/* Leave Club Modal */}
       {isLeaveModalOpen && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80">
             <h2 className="text-lg font-bold mb-4">동아리 나가기</h2>
             <p className="mb-4">정말로 동아리에서 나가시겠습니까?</p>
             <p className="mb-4">
-              "나가기"를 입력하여 확인하세요:
+              &quot;나가기&quot;를 입력하여 확인하세요:
               <input
                 type="text"
                 value={leaveConfirmation}

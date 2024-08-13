@@ -63,7 +63,6 @@ export const searchMeetings = async (
         Authorization: `${token}`,
       },
     });
-    console.log('Request URL:', response.config.url);
 
     const { results } = response.data as ApiResponseForAll;
 
@@ -73,10 +72,12 @@ export const searchMeetings = async (
         ...(results[0].clubSearchResults || []),
         ...(results[0].meetingSearchResults || []),
       ];
-      return combinedResults;
+
+      // "동아리 모임" 타입을 제외한 결과 반환
+      return combinedResults.filter((item) => item.type !== '동아리 모임');
     } else if (Array.isArray(results)) {
-      // 모임 또는 동아리 탭일 경우 해당 결과 반환
-      return results as Result[];
+      // 모임 또는 동아리 탭일 경우 해당 결과에서 "동아리 모임" 타입을 제외한 결과 반환
+      return results.filter((item) => item.type !== '동아리 모임') as Result[];
     } else {
       throw new Error('Unexpected response structure');
     }

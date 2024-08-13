@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import logo from '@/assets/icons/logo.png';
 import location from '@/assets/icons/location.svg';
+import logo from '@/assets/icons/logo.png';
 import notification_active from '@/assets/icons/notification_active.svg';
 import notification_default from '@/assets/icons/notification_default.svg';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/store/userStore';
 import { Menu, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   toggleProfileModal: (e: React.MouseEvent) => void;
@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({
     <nav className="bg-white px-4 py-3.5 relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
-          <Link to={isLoggedIn ? "/main" : "/"}>
+          <Link to={isLoggedIn ? '/main' : '/'}>
             <img src={logo} alt="Logo" className="h-8 w-32" />
           </Link>
         </div>
@@ -96,7 +96,10 @@ const Header: React.FC<HeaderProps> = ({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
-                <Button onClick={handleSearch} className="hover:text-neutral-100 hover:bg-green-700">
+                <Button
+                  onClick={handleSearch}
+                  className="hover:text-neutral-100 hover:bg-green-700"
+                >
                   검색
                 </Button>
                 <button
