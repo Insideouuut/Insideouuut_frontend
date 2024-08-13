@@ -66,7 +66,7 @@ const MeetingList: React.FC = () => {
       try {
         const token = localStorage.getItem('accessToken') || '';
         const meetingsData = await getClubMeetings(clubId, token);
-        setMeetings(meetingsData);
+        setMeetings(meetingsData || []); // meetingsData가 undefined일 경우 빈 배열로 초기화
       } catch (err) {
         setError('모임 목록을 불러오는 중 오류가 발생했습니다.');
         console.error(err);
@@ -89,44 +89,48 @@ const MeetingList: React.FC = () => {
       <div className="overflow-x-auto">
         <h2 className="text-xl font-bold mb-6 text-left">모임 목록</h2>
         {error && <p className="text-red-500">{error}</p>}
-        <table className="min-w-full bg-white border-y-2">
-          <thead>
-            <tr>
-              <th className="py-2 px-5 border-b text-lg">제목</th>
-              <th className="py-2 px-5 border-b text-lg">설명</th>
-              <th className="py-2 px-5 border-b text-lg">장소</th>
-              <th className="py-2 px-5 border-b text-lg">인원</th>
-              <th className="py-2 px-5 border-b text-lg">일시</th>
-            </tr>
-          </thead>
-          <tbody>
-            {meetings.map((meeting: MeetingInfo, index: number) => (
-              <tr
-                key={index}
-                className="cursor-pointer hover:bg-gray-100"
-                onClick={() => handleRowClick(meeting)}
-              >
-                <td className="py-3 px-5 border-b text-sm text-gray-800">
-                  {meeting.name}
-                </td>
-                <td className="py-3 px-5 border-b text-sm text-gray-600">
-                  {meeting.introduction.length > 10
-                    ? `${meeting.introduction.slice(0, 10)}...`
-                    : meeting.introduction}
-                </td>
-                <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.place.name}
-                </td>
-                <td className="py-3 px-5 border-b text-center text-sm text-gray-500">
-                  {meeting.participantLimit}
-                </td>
-                <td className="py-3 px-5 border-b text-sm text-gray-500">
-                  {meeting.date}
-                </td>
+        {meetings.length > 0 ? (
+          <table className="min-w-full bg-white border-y-2">
+            <thead>
+              <tr>
+                <th className="py-2 px-5 border-b text-lg">제목</th>
+                <th className="py-2 px-5 border-b text-lg">설명</th>
+                <th className="py-2 px-5 border-b text-lg">장소</th>
+                <th className="py-2 px-5 border-b text-lg">인원</th>
+                <th className="py-2 px-5 border-b text-lg">일시</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {meetings.map((meeting: MeetingInfo, index: number) => (
+                <tr
+                  key={index}
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleRowClick(meeting)}
+                >
+                  <td className="py-3 px-5 border-b text-sm text-gray-800">
+                    {meeting.name}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-600">
+                    {meeting.introduction.length > 10
+                      ? `${meeting.introduction.slice(0, 10)}...`
+                      : meeting.introduction}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-500">
+                    {meeting.place.name}
+                  </td>
+                  <td className="py-3 px-5 border-b text-center text-sm text-gray-500">
+                    {meeting.participantLimit}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-500">
+                    {meeting.date}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-center text-gray-500">모임이 없습니다.</p>
+        )}
       </div>
       {selectedMeeting && (
         <ApplyModal meeting={selectedMeeting} onClose={handleCloseModal} />
