@@ -10,12 +10,20 @@ const bottomTabs = ['전체', '사교/취미', '운동', '스터디'];
 interface SearchProps {
   token: string;
   initialQuery?: string;
+  initialTopTab?: string;
+  initialBottomTab?: string;
 }
 
-const Search: React.FC<SearchProps> = ({ token, initialQuery = '' }) => {
+const Search: React.FC<SearchProps> = ({
+  token,
+  initialQuery = '',
+  initialTopTab = '전체',
+  initialBottomTab = '전체',
+}) => {
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
-  const [activeTopTab, setActiveTopTab] = useState<string>('전체');
-  const [activeBottomTab, setActiveBottomTab] = useState<string>('전체');
+  const [activeTopTab, setActiveTopTab] = useState<string>(initialTopTab);
+  const [activeBottomTab, setActiveBottomTab] =
+    useState<string>(initialBottomTab);
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({});
   const [bottomUnderlineStyle, setBottomUnderlineStyle] =
     useState<React.CSSProperties>({});

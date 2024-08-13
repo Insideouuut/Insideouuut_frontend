@@ -1,7 +1,7 @@
 import { useUserStore } from '@/store/userStore';
-import { Edit2, Heart, Map, User, UserRoundSearch } from 'lucide-react';
+import { Dumbbell, Edit2, Map, User, UserRoundSearch } from 'lucide-react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CategoryButton from './CategoryButton';
 
 const CategoryContainer: React.FC = () => {
@@ -19,9 +19,27 @@ const CategoryContainer: React.FC = () => {
 
   return (
     <section className="grid grid-cols-3 gap-4 p-5 bg-white">
-      <CategoryButton Icon={User} label="사교/취미" />
-      <CategoryButton Icon={Heart} label="모임" />
-      <CategoryButton Icon={Edit2} label="공부" />
+      <Link
+        to="/search?bottomTab=사교/취미"
+        className="flex items-center justify-center"
+        aria-label="사교/취미"
+      >
+        <CategoryButton Icon={User} label="사교/취미" />
+      </Link>
+      <Link
+        to="/search?bottomTab=운동"
+        className="flex items-center justify-center"
+        aria-label="운동"
+      >
+        <CategoryButton Icon={Dumbbell} label="운동" />
+      </Link>
+      <Link
+        to="/search?bottomTab=스터디"
+        className="flex items-center justify-center"
+        aria-label="공부"
+      >
+        <CategoryButton Icon={Edit2} label="공부" />
+      </Link>
 
       <button
         onClick={() => handleNavigation('/create-meeting')}
