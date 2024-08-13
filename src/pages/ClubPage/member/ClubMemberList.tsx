@@ -36,7 +36,7 @@ const ClubMemberList = () => {
         {members.map((member, index) => (
           <>
             <Member
-              key={member.clubUserId}
+              clubUserId={member.clubUserId}
               profileImgUrl={member.profileImgUrl}
               userName={member.userName}
               mannerTemp={member.mannerTemp}
