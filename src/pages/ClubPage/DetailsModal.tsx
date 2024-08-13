@@ -1,57 +1,20 @@
-import { applyForMeeting } from '@/api/clubApi';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import React from 'react';
 import { MeetingInfo } from './MeetingList';
 
-interface ApplyModalProps {
+interface DetailsModalProps {
   meeting: MeetingInfo;
   onClose: () => void;
 }
 
-const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
-  const [answers, setAnswers] = useState<string[]>(
-    meeting.joinQuestions.map(() => ''),
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleAnswerChange = (index: number, value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = value;
-    setAnswers(newAnswers);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const token = localStorage.getItem('accessToken') || '';
-      const formattedAnswers = meeting.joinQuestions.map((question, index) => ({
-        question,
-        answer: answers[index],
-      }));
-
-      await applyForMeeting(String(meeting.id), token, formattedAnswers);
-      alert('신청이 성공적으로 완료되었습니다!');
-      onClose();
-    } catch (error) {
-      alert('신청 중 오류가 발생했습니다.');
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+const DetailsModal: React.FC<DetailsModalProps> = ({ meeting, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[530px] max-w-full mx-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">{meeting.name}</h2>
-        <p className="text-lg mb-6 text-gray-800">{meeting.introduction}</p>
+        <h2 className="text-2xl font-bold mb-4 text-center">{meeting.name}</h2>
+        <p className="text-lg mb-4 text-gray-800">{meeting.introduction}</p>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="col-span-2">
-            <h3 className="text-md font-semibold text-gray-700">기본 정보</h3>
-          </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-xs font-medium text-gray-500">
               카테고리
@@ -122,37 +85,21 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
             <h3 className="text-md font-semibold text-gray-700 mt-4">
               참가 질문
             </h3>
-            {meeting.joinQuestions.map((question, index) => (
-              <div key={index} className="mb-2">
-                <p className="text-sm text-gray-700">{question}</p>
-                <input
-                  type="text"
-                  className="mt-1 p-2 w-full border rounded-md"
-                  value={answers[index]}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
-                  required
-                />
-              </div>
-            ))}
+            <ul className="mt-1 list-disc list-inside text-sm text-gray-700">
+              {meeting.joinQuestions.map((question, index) => (
+                <li key={index}>{question}</li>
+              ))}
+            </ul>
           </div>
         </div>
 
         <div className="flex justify-end">
           <Button
             type="button"
-            className="mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
             onClick={onClose}
-            disabled={isSubmitting}
           >
-            취소
-          </Button>
-          <Button
-            type="submit"
-            className={`px-4 py-2 text-white rounded-md ${isSubmitting ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? '신청 중...' : '신청'}
+            닫기
           </Button>
         </div>
       </div>
@@ -160,4 +107,4 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ meeting, onClose }) => {
   );
 };
 
-export default ApplyModal;
+export default DetailsModal;

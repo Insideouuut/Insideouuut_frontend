@@ -60,7 +60,7 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
         type === 'club'
           ? (clubData as ClubData).joinQuestions[index]
           : (clubData as Result).joinQuestions[index],
-      answer: value,  // 사용자가 입력한 실제 답변을 전송
+      answer: value, // 사용자가 입력한 실제 답변을 전송
     }));
 
     try {

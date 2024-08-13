@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { getMeetingMembers, expelMember as expelMeetingMember } from '@/api/meetingApi';
-import { getClubMembers, expelClubMember } from '@/api/clubApi';
+import { expelClubMember, getClubMembers } from '@/api/clubApi';
+import {
+  expelMember as expelMeetingMember,
+  getMeetingMembers,
+} from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Member } from '@/types/Member';
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 
 const MemberManagement: React.FC = () => {
   const { id: clubId } = useParams<{ id: string }>();
@@ -124,9 +131,14 @@ const MemberManagement: React.FC = () => {
         className="fixed z-10 inset-0 overflow-y-auto"
       >
         <div className="flex items-center justify-center min-h-screen">
-          <div className="fixed inset-0 bg-black opacity-30" aria-hidden="true"></div>
+          <div
+            className="fixed inset-0 bg-black opacity-30"
+            aria-hidden="true"
+          ></div>
           <div className="bg-white rounded-lg max-w-sm mx-auto p-6 relative z-20">
-            <Dialog.Title className="text-xl font-bold mb-4">강퇴 확인</Dialog.Title>
+            <Dialog.Title className="text-xl font-bold mb-4">
+              강퇴 확인
+            </Dialog.Title>
             <Dialog.Description>
               {memberToRemove && (
                 <p>정말로 {memberToRemove.nickName}님을 강퇴하시겠습니까?</p>

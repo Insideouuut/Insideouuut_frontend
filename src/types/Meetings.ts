@@ -27,6 +27,7 @@ export interface Place {
 }
 
 export interface Result {
+  results(results: any): unknown;
   type: string;
   id: number;
   name: string;
@@ -66,8 +67,6 @@ export interface ApiResponse {
   results: Result[];
 }
 
-
-
 export interface Answer {
   question: string;
   answer: string;
@@ -93,8 +92,6 @@ export interface MeetingApplicantApiResponse {
   metadata: Metadata;
   results: ApplyForMeetingResponse[][];
 }
-
-
 
 export interface MeetingPlace {
   name: string;

@@ -1,13 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { getClubApplicants, acceptClubApplication, rejectClubApplication } from '@/api/clubApi';
-import { acceptMeetingApplication, getMeetingApplicants, rejectMeetingApplication } from '@/api/meetingApi';
+import {
+  acceptClubApplication,
+  getClubApplicants,
+  rejectClubApplication,
+} from '@/api/clubApi';
+import {
+  acceptMeetingApplication,
+  getMeetingApplicants,
+  rejectMeetingApplication,
+} from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { MeetingApplicant } from '@/types/MeetingApplicantsTypes';
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface Member {
   applyId: number;
@@ -22,7 +34,9 @@ const MemberApproval: React.FC = () => {
   const location = useLocation();
   const type = location.pathname.includes('/club') ? 'club' : 'meeting';
   const [members, setMembers] = useState<Member[]>([]);
-  const [selectedApplication, setSelectedApplication] = useState<Member | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<Member | null>(
+    null,
+  );
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   useEffect(() => {
@@ -32,7 +46,7 @@ const MemberApproval: React.FC = () => {
 
         if (type === 'club') {
           const applicants = await getClubApplicants(clubId!, token);
-          const formattedMembers = applicants.map(applicant => ({
+          const formattedMembers = applicants.map((applicant) => ({
             applyId: applicant.applyId,
             profileImage: applicant.profileImgUrl,
             nickname: applicant.userName,
@@ -42,13 +56,15 @@ const MemberApproval: React.FC = () => {
           setMembers(formattedMembers);
         } else if (type === 'meeting') {
           const applicants = await getMeetingApplicants(clubId!, token);
-          const formattedMembers = applicants.map((applicant: MeetingApplicant) => ({
-            applyId: applicant.applyId,
-            profileImage: applicant.basicUserResponse.profileImage.url,
-            nickname: applicant.basicUserResponse.nickname,
-            mannerTemp: applicant.basicUserResponse.mannerTemp,
-            answer: applicant.answer,
-          }));
+          const formattedMembers = applicants.map(
+            (applicant: MeetingApplicant) => ({
+              applyId: applicant.applyId,
+              profileImage: applicant.basicUserResponse.profileImage.url,
+              nickname: applicant.basicUserResponse.nickname,
+              mannerTemp: applicant.basicUserResponse.mannerTemp,
+              answer: applicant.answer,
+            }),
+          );
           setMembers(formattedMembers);
         }
       } catch (error) {
@@ -85,7 +101,9 @@ const MemberApproval: React.FC = () => {
           await rejectMeetingApplication(String(applyId), token);
         }
       }
-      setMembers(prevMembers => prevMembers.filter(member => member.applyId !== applyId));
+      setMembers((prevMembers) =>
+        prevMembers.filter((member) => member.applyId !== applyId),
+      );
     } catch (error) {
       console.error(`Error handling ${action} action:`, error);
     }
@@ -177,13 +195,17 @@ const MemberApproval: React.FC = () => {
             <div className="mt-4 flex space-x-4">
               <Button
                 className="bg-primary text-white px-4 py-2 rounded hover:bg-green-700"
-                onClick={() => handleAction('승인', selectedApplication!.applyId)}
+                onClick={() =>
+                  handleAction('승인', selectedApplication!.applyId)
+                }
               >
                 승인
               </Button>
               <Button
                 className="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600"
-                onClick={() => handleAction('거절', selectedApplication!.applyId)}
+                onClick={() =>
+                  handleAction('거절', selectedApplication!.applyId)
+                }
               >
                 거절
               </Button>

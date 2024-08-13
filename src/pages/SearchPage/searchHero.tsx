@@ -9,9 +9,11 @@ const bottomTabs = ['전체', '사교/취미', '운동', '스터디'];
 
 interface SearchProps {
   token: string;
+  initialQuery?: string; 
 }
 
-const Search: React.FC<SearchProps> = ({ token }) => {
+const Search: React.FC<SearchProps> = ({ token, initialQuery = '' }) => {
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const [activeTopTab, setActiveTopTab] = useState<string>('전체');
   const [activeBottomTab, setActiveBottomTab] = useState<string>('전체');
   const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({});
@@ -19,8 +21,7 @@ const Search: React.FC<SearchProps> = ({ token }) => {
     useState<React.CSSProperties>({});
   const topTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const bottomTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>('');
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState<string>(initialQuery);
 
   useEffect(() => {
     const activeTab = topTabRefs.current[topTabs.indexOf(activeTopTab)];
@@ -67,6 +68,11 @@ const Search: React.FC<SearchProps> = ({ token }) => {
       setSubmittedSearchQuery(searchQuery);
     }
   };
+
+  useEffect(() => {
+    setSearchQuery(initialQuery);
+    setSubmittedSearchQuery(initialQuery);
+  }, [initialQuery]);
 
   return (
     <section className="w-full pt-8 flex-col bg-primary flex justify-center">

@@ -1,3 +1,4 @@
+import { MeetingInfo } from '@/pages/ClubPage/MeetingList';
 import {
   ClubApiResponse,
   ClubApplicant,
@@ -8,32 +9,6 @@ import { ApplyForMeetingRequest } from '@/types/Meetings';
 import { Member } from '@/types/Member';
 import { MemberAuthorityApiResponse } from '@/types/MemberAuthorityResponse';
 import axiosInstance from './axiosConfig';
-
-// 동아리 내 모임 목록 조회 API
-export const getClubMeetings = async (
-  clubId: string,
-  token: string,
-  page: number = 0,
-  size: number = 10
-): Promise<any> => {
-  try {
-    const response = await axiosInstance.get(`/api/clubs/${clubId}/meetings`, {
-      headers: {
-        Authorization: `${token}`,
-      },
-      params: {
-        page,
-        size,
-      },
-    });
-    return response.data.results;
-  } catch (error) {
-    console.error('Error fetching club meetings:', error);
-    throw error;
-  }
-};
-
-// 기존 코드
 
 // 동아리에 대한 사용자 권한 확인 API
 export const checkClubUserAuthority = async (
@@ -141,14 +116,11 @@ export const rejectClubApplication = async (
   token: string,
 ): Promise<void> => {
   try {
-    await axiosInstance.delete(
-      `/api/clubs/${clubId}/apply/${applyId}/reject`,
-      {
-        headers: {
-          Authorization: `${token}`,
-        },
+    await axiosInstance.delete(`/api/clubs/${clubId}/apply/${applyId}/reject`, {
+      headers: {
+        Authorization: `${token}`,
       },
-    );
+    });
     console.log('지원자가 성공적으로 거절되었습니다.');
   } catch (error) {
     console.error('Error rejecting applicant:', error);
@@ -177,7 +149,7 @@ export const getClubMembers = async (
       role: applicant.role,
       nickName: applicant.userName,
       profileImage: {
-        name: "",  // 만약 name 필드가 필수라면 적절히 할당해야 합니다.
+        name: '', // 만약 name 필드가 필수라면 적절히 할당해야 합니다.
         url: applicant.profileImgUrl,
       },
       mannerTemp: applicant.mannerTemp,
@@ -291,7 +263,10 @@ export const getMeetingMemberList = async (meetingId: string) => {
 };
 
 // 클럽 삭제 API
-export const deleteClub = async (clubId: string, token: string): Promise<void> => {
+export const deleteClub = async (
+  clubId: string,
+  token: string,
+): Promise<void> => {
   try {
     await axiosInstance.delete(`/api/clubs/${clubId}`, {
       headers: {
@@ -309,7 +284,7 @@ export const deleteClub = async (clubId: string, token: string): Promise<void> =
 export const createClubMeeting = async (
   clubId: string,
   token: string,
-  meetingData: any // 서버에 전송할 모임 데이터
+  meetingData: any, // 서버에 전송할 모임 데이터
 ): Promise<void> => {
   try {
     await axiosInstance.post(`/api/clubs/${clubId}/meetings`, meetingData, {
@@ -321,6 +296,68 @@ export const createClubMeeting = async (
     console.log('모임이 성공적으로 생성되었습니다.');
   } catch (error) {
     console.error('Error creating meeting:', error);
+    throw error;
+  }
+};
+
+export const getClubMeetings = async (
+  clubId: string,
+  token: string,
+  page: number = 0,
+  size: number = 10,
+): Promise<MeetingInfo[]> => {
+  try {
+    const response = await axiosInstance.get(`/api/clubs/${clubId}/meetings`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    return response.data.results;
+  } catch (error) {
+    console.error('Error fetching club meetings:', error);
+    throw error;
+  }
+};
+
+export const applyForMeeting = async (
+  meetingId: string,
+  token: string,
+  answers: { question: string; answer: string }[],
+): Promise<void> => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/clubs/meetings/${meetingId}/apply`,
+      { answers },
+      {
+        headers: {
+          Authorization: `${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    console.log('모임 신청이 성공적으로 완료되었습니다.');
+  } catch (error) {
+    console.error('모임 신청 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+export const getMyMeetings = async (
+  clubId: string,
+  token: string,
+): Promise<MeetingInfo[]> => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/clubs/${clubId}/meetings/participating`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      },
+    );
+    return response.data.results;
+  } catch (error) {
+    console.error('Error fetching my meetings:', error);
     throw error;
   }
 };

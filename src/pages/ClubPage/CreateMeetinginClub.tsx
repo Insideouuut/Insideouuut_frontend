@@ -1,6 +1,6 @@
+import { createClubMeeting } from '@/api/clubApi';
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-import { createClubMeeting } from '@/api/clubApi';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const CreateMeeting: React.FC = () => {
@@ -14,14 +14,36 @@ const CreateMeeting: React.FC = () => {
   const [joinQuestions, setJoinQuestions] = useState<string[]>(['']);
   const [category, setCategory] = useState('');
   const [categoryDetail, setCategoryDetail] = useState('');
-  const [level, setLevel] = useState('');
+  const [level, setLevel] = useState('NONE'); // 기본값을 "NONE"으로 설정
   const [ageRange, setAgeRange] = useState<[number, number]>([15, 50]);
   const [hasGenderRatio, setHasGenderRatio] = useState('지정');
-  const [ratio, setRatio] = useState('5 : 5');
+  const [leftRatio, setLeftRatio] = useState('5');
+  const [rightRatio, setRightRatio] = useState('5');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const navigate = useNavigate();
-  const { clubId } = useParams<{ clubId: string }>();
+  const { id: clubId } = useParams<{ id: string }>();
+
+  const categoryOptions = {
+    SPORTS: '운동',
+    SOCIAL: '사교/취미',
+    STUDY: '스터디',
+  };
+
+  const levelOptions = {
+    NONE: '무관', // "무관"을 첫 번째로 설정
+    BEGINNER: '하',
+    INTERMEDIATE: '중',
+    ADVANCED: '상',
+  };
+
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+  };
+
+  const handleLevelSelect = (selectedLevel: string) => {
+    setLevel(selectedLevel);
+  };
 
   const handleRuleChange = (index: number, value: string) => {
     const newRules = [...rules];
@@ -61,32 +83,33 @@ const CreateMeeting: React.FC = () => {
     setMemberLimit(Number(value));
   };
 
-  const formatFee = (value: number) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const formatFee = (value: string) => {
+    const numericValue = value.replace(/\D/g, '');
+    return numericValue;
   };
 
   const handleFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // 숫자가 아닌 문자를 제거
-    setFee(Number(value));
+    setFee(formatFee(e.target.value));
   };
 
-  const categoryOptions = {
-    SPORTS: '운동',
-    SOCIAL: '사교/취미',
-    STUDY: '스터디',
-  };
+  const formatDate = (date: string): string => {
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
 
-  const levelOptions = {
-    BEGINNER: '하',
-    INTERMEDIATE: '중',
-    ADVANCED: '상',
-    NONE: '무관',
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const newErrors: { [key: string]: string } = {};
 
+    // Validation 로직
     if (!title) newErrors.title = '필수 입력입니다.';
     else if (title.length < 3 || title.length > 10)
       newErrors.title = '제목은 3~10글자 내로 작성해주세요.';
@@ -110,39 +133,41 @@ const CreateMeeting: React.FC = () => {
       return;
     }
 
+    const formattedDate = formatDate(date);
+
     const newMeeting = {
-      type: "동아리 모임",
+      type: '동아리 모임',
       name: title,
       introduction: description,
       category,
-      categoryDetail: "기타",
+      categoryDetail,
       participantLimit:
         typeof memberLimit === 'string' ? parseInt(memberLimit) : memberLimit,
       rules,
       joinQuestions,
-      date,
-      level,
+      date: formattedDate, // 포맷된 날짜 사용
+      level, // level 값이 포함됨
       ageRange,
       hasGenderRatio,
-      ratio,
-      hasMembershipFee: typeof fee === 'number' && fee > 0,
-      membershipFeeAmount: typeof fee === 'string' ? parseInt(fee) : fee,
+      ratio: `${leftRatio} : ${rightRatio}`, // 성비를 왼쪽과 오른쪽 값으로 설정
+      hasMembershipFee: Number(fee) > 0, // 쉼표 제거 후 0보다 크면 true
+      membershipFeeAmount: fee, // 쉼표 제거 후 숫자 변환
       meetingPlace: {
         name: location,
-        placeUrl: "",
-        kakaoMapId: "",
-        address_name: "",
-        road_address_name: "",
-        latitude: "",
-        longitude: "",
-      }
+        placeUrl: '',
+        kakaoMapId: '',
+        address_name: '',
+        road_address_name: '',
+        latitude: '',
+        longitude: '',
+      },
     };
 
     try {
       const token = localStorage.getItem('accessToken') || '';
       await createClubMeeting(clubId!, token, newMeeting);
       alert('모임이 성공적으로 생성되었습니다.');
-      navigate(`/club/${clubId}/meetings`);
+      navigate(`/club/${clubId}/meetingList`);
     } catch (error) {
       console.error('모임 생성에 실패했습니다:', error);
       alert('모임 생성에 실패했습니다.');
@@ -155,8 +180,12 @@ const CreateMeeting: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 제목 입력 */}
         <div className="flex flex-col">
-          <label htmlFor="title" className="mb-2">제목</label>
-          {errors.title && <span className="text-red-500 text-[12px]">{errors.title}</span>}
+          <label htmlFor="title" className="mb-2">
+            제목
+          </label>
+          {errors.title && (
+            <span className="text-red-500 text-[12px]">{errors.title}</span>
+          )}
           <input
             id="title"
             type="text"
@@ -167,8 +196,14 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 설명 입력 */}
         <div className="flex flex-col">
-          <label htmlFor="description" className="mb-2">설명</label>
-          {errors.description && <span className="text-red-500 text-[12px]">{errors.description}</span>}
+          <label htmlFor="description" className="mb-2">
+            설명
+          </label>
+          {errors.description && (
+            <span className="text-red-500 text-[12px]">
+              {errors.description}
+            </span>
+          )}
           <textarea
             id="description"
             value={description}
@@ -176,23 +211,26 @@ const CreateMeeting: React.FC = () => {
             className="p-2 border rounded"
           />
         </div>
-        {/* 카테고리 입력 */}
+        {/* 카테고리 선택 */}
         <div className="flex flex-col">
-          <label htmlFor="category" className="mb-2">카테고리</label>
-          <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="p-2 border rounded"
-          >
+          <label className="mb-2">카테고리</label>
+          <div className="flex space-x-2">
             {Object.entries(categoryOptions).map(([key, value]) => (
-              <option key={key} value={key}>{value}</option>
+              <Button
+                key={key}
+                onClick={() => handleCategorySelect(key)}
+                className={`px-4 py-2 rounded-md ${category === key ? 'bg-primary text-white hover:bg-green-700' : 'bg-gray-200 text-black hover:bg-gray-300'} `}
+              >
+                {value}
+              </Button>
             ))}
-          </select>
+          </div>
         </div>
         {/* 카테고리 상세 입력 */}
         <div className="flex flex-col">
-          <label htmlFor="categoryDetail" className="mb-2">카테고리 상세</label>
+          <label htmlFor="categoryDetail" className="mb-2">
+            카테고리 상세
+          </label>
           <input
             id="categoryDetail"
             type="text"
@@ -204,8 +242,14 @@ const CreateMeeting: React.FC = () => {
         {/* 장소 및 최대 인원 입력 */}
         <div className="flex w-full justify-between">
           <div className="flex flex-col w-[48%]">
-            <label htmlFor="location" className="mb-2">장소</label>
-            {errors.location && <span className="text-red-500 text-[12px]">{errors.location}</span>}
+            <label htmlFor="location" className="mb-2">
+              장소
+            </label>
+            {errors.location && (
+              <span className="text-red-500 text-[12px]">
+                {errors.location}
+              </span>
+            )}
             <input
               id="location"
               type="text"
@@ -215,8 +259,14 @@ const CreateMeeting: React.FC = () => {
             />
           </div>
           <div className="flex flex-col w-[48%]">
-            <label htmlFor="memberLimit" className="mb-2">최대 인원</label>
-            {errors.memberLimit && <span className="text-red-500 text-[12px]">{errors.memberLimit}</span>}
+            <label htmlFor="memberLimit" className="mb-2">
+              최대 인원
+            </label>
+            {errors.memberLimit && (
+              <span className="text-red-500 text-[12px]">
+                {errors.memberLimit}
+              </span>
+            )}
             <select
               id="memberLimit"
               value={memberLimit}
@@ -248,8 +298,12 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 일시 입력 */}
         <div className="flex flex-col">
-          <label htmlFor="date" className="mb-2">일시</label>
-          {errors.date && <span className="text-red-500 text-[12px]">{errors.date}</span>}
+          <label htmlFor="date" className="mb-2">
+            일시
+          </label>
+          {errors.date && (
+            <span className="text-red-500 text-[12px]">{errors.date}</span>
+          )}
           <input
             id="date"
             type="datetime-local"
@@ -260,32 +314,20 @@ const CreateMeeting: React.FC = () => {
         </div>
         {/* 회비 입력 */}
         <div className="flex flex-col">
-          <label htmlFor="fee" className="mb-2">회비</label>
-          {errors.fee && <span className="text-red-500 text-[12px]">{errors.fee}</span>}
-          <select
-            id="fee"
-            value={fee}
-            onChange={(e) => setFee(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option value="">선택하세요</option>
-            <option value="custom">직접 입력</option>
-            <option value="5000">5,000원</option>
-            <option value="10000">10,000원</option>
-            <option value="20000">20,000원</option>
-          </select>
-          {(fee === 'custom' || typeof fee === 'number') && (
-            <div className="flex items-center mt-2">
-              <input
-                type="text"
-                value={typeof fee === 'number' ? formatFee(fee) : ''}
-                onChange={handleFeeChange}
-                className="p-2 border rounded flex-grow"
-                placeholder="회비를 입력하세요"
-              />
-              <span className="ml-2">원</span>
-            </div>
+          <label htmlFor="fee" className="mb-2">
+            회비
+          </label>
+          {errors.fee && (
+            <span className="text-red-500 text-[12px]">{errors.fee}</span>
           )}
+          <input
+            id="fee"
+            type="text"
+            value={fee}
+            onChange={handleFeeChange}
+            className="p-2 border rounded flex-grow"
+            placeholder="회비를 입력하세요"
+          />
         </div>
         {/* 규칙 입력 */}
         <div className="flex flex-col">
@@ -330,7 +372,11 @@ const CreateMeeting: React.FC = () => {
               />
               {joinQuestions.length > 1 && (
                 <Button
-                  onClick={() => setJoinQuestions(joinQuestions.filter((_, i) => i !== index))}
+                  onClick={() =>
+                    setJoinQuestions(
+                      joinQuestions.filter((_, i) => i !== index),
+                    )
+                  }
                   className="ml-2 bg-red-500 text-white hover:bg-red-700"
                 >
                   삭제
@@ -347,19 +393,22 @@ const CreateMeeting: React.FC = () => {
             </Button>
           )}
         </div>
-        {/* 레벨, 성비, 나이 범위 입력 */}
+        {/* 레벨 선택 */}
         <div className="flex flex-col">
           <label className="mb-2">레벨</label>
-          <select
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
-            className="p-2 border rounded"
-          >
+          <div className="flex space-x-2">
             {Object.entries(levelOptions).map(([key, value]) => (
-              <option key={key} value={key}>{value}</option>
+              <Button
+                key={key}
+                onClick={() => handleLevelSelect(key)}
+                className={`px-4 py-2 rounded-md ${level === key ? 'bg-primary text-white hover:bg-green-700' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
+              >
+                {value}
+              </Button>
             ))}
-          </select>
+          </div>
         </div>
+        {/* 나이 범위 입력 */}
         <div className="flex flex-col">
           <label className="mb-2">나이 범위</label>
           <input
@@ -377,6 +426,7 @@ const CreateMeeting: React.FC = () => {
             placeholder="최대 나이"
           />
         </div>
+        {/* 성비 설정 */}
         <div className="flex flex-col">
           <label className="mb-2">성비 설정</label>
           <select
@@ -388,13 +438,23 @@ const CreateMeeting: React.FC = () => {
             <option value="미지정">미지정</option>
           </select>
           {hasGenderRatio === '지정' && (
-            <input
-              type="text"
-              value={ratio}
-              onChange={(e) => setRatio(e.target.value)}
-              className="p-2 border rounded mt-2"
-              placeholder="예: 5 : 5"
-            />
+            <div className="flex items-center mt-2">
+              <input
+                type="text"
+                value={leftRatio}
+                onChange={(e) => setLeftRatio(e.target.value)}
+                className="p-2 border rounded w-[45%]"
+                placeholder="왼쪽 성비"
+              />
+              <span className="mx-2">:</span>
+              <input
+                type="text"
+                value={rightRatio}
+                onChange={(e) => setRightRatio(e.target.value)}
+                className="p-2 border rounded w-[45%]"
+                placeholder="오른쪽 성비"
+              />
+            </div>
           )}
         </div>
         {/* 생성 버튼 */}

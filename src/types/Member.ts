@@ -24,7 +24,7 @@ export interface ApiResponse {
 }
 
 export interface ProfileImage {
-  name: string;  // ProfileImage에 name 필드가 필요하다면 유지
+  name: string; // ProfileImage에 name 필드가 필요하다면 유지
   url: string;
 }
 

@@ -1,70 +1,101 @@
-import { getMeetingData } from '@/api/meetingApi';
-import { Button } from '@/components/ui/button';
-import { Result } from '@/types/Meetings';
+import { getMyMeetings } from '@/api/clubApi';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import DetailsModal from './DetailsModal';
+import { MeetingInfo } from './MeetingList';
 
-const Mymeeting: React.FC = () => {
+const MyMeetingList: React.FC = () => {
+  const [myMeetings, setMyMeetings] = useState<MeetingInfo[]>([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingInfo | null>(
+    null,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태 추가
   const { id: clubId } = useParams<{ id: string }>();
-  const [clubData, setClubData] = useState<Result | null>(null);
 
   useEffect(() => {
-    if (clubId) {
-      const fetchData = async () => {
-        try {
-          const data = await getMeetingData(clubId);
-          if (data.type === '동아리') {
-            setClubData(data);
-          }
-        } catch (error) {
-          console.error('클럽 데이터를 가져오는 중 오류 발생:', error);
-        }
-      };
+    const fetchMyMeetings = async () => {
+      if (!clubId) {
+        setError('클럽 ID를 찾을 수 없습니다.');
+        setLoading(false);
+        return;
+      }
 
-      fetchData();
-    }
+      try {
+        const token = localStorage.getItem('accessToken') || '';
+        const myMeetingsData = await getMyMeetings(clubId, token);
+        setMyMeetings(myMeetingsData);
+      } catch (err) {
+        setError('나의 미팅 목록을 불러오는 중 오류가 발생했습니다.');
+        console.error(err);
+      } finally {
+        setLoading(false); // 로딩 완료 후 로딩 상태를 false로 설정
+      }
+    };
+
+    fetchMyMeetings();
   }, [clubId]);
 
-  if (!clubData) {
-    return <div>데이터를 불러오는 중...</div>;
-  }
+  const handleRowClick = (meeting: MeetingInfo) => {
+    setSelectedMeeting(meeting);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMeeting(null);
+  };
 
   return (
     <div className="flex flex-col p-6 rounded-lg w-[820px] border-2 border-gray-200">
-      {clubData.type === '모임' && (
-        <div>
-          <h2 className="text-xl font-bold mb-4">나의 모임</h2>
-          <div className="max-h-[700px] overflow-scroll space-y-4">
-            <div className="p-4 border rounded-lg shadow-sm bg-white flex flex-col space-y-2">
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold">{clubData.name}</h3>
-                  <p>{clubData.introduction}</p>
-                  <p>장소: {clubData.place.name}</p>
-                  <p>
-                    인원: {clubData.participantsNumber}/
-                    {clubData.participantLimit}
-                  </p>
-                  <p>일시: {clubData.date}</p>
-                  <p>
-                    회비:{' '}
-                    {clubData.hasMembershipFee
-                      ? `${clubData.membershipFeeAmount.toLocaleString()}원`
-                      : '무료'}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-2 justify-center items-end">
-                  <Button className="px-4 py-2 bg-red-500 bg-opacity-80 text-white rounded-md hover:bg-red-700">
-                    모임 나가기
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="overflow-x-auto">
+        <h2 className="text-xl font-bold mb-6 text-left">나의 모임 목록</h2>
+        {loading && <p>로딩 중...</p>} {/* 로딩 상태 표시 */}
+        {error && <p className="text-red-500">{error}</p>}
+        {!loading && !error && (
+          <table className="min-w-full bg-white border-y-2">
+            <thead>
+              <tr>
+                <th className="py-2 px-5 border-b text-lg">제목</th>
+                <th className="py-2 px-5 border-b text-lg">설명</th>
+                <th className="py-2 px-5 border-b text-lg">장소</th>
+                <th className="py-2 px-5 border-b text-lg">인원</th>
+                <th className="py-2 px-5 border-b text-lg">일시</th>
+              </tr>
+            </thead>
+            <tbody>
+              {myMeetings.map((meeting: MeetingInfo, index: number) => (
+                <tr
+                  key={index}
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleRowClick(meeting)}
+                >
+                  <td className="py-3 px-5 border-b text-sm text-gray-800">
+                    {meeting.name}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-600">
+                    {meeting.introduction.length > 10
+                      ? `${meeting.introduction.slice(0, 10)}...`
+                      : meeting.introduction}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-500">
+                    {meeting.place.name}
+                  </td>
+                  <td className="py-3 px-5 border-b text-center text-sm text-gray-500">
+                    {meeting.participantsNumber} / {meeting.participantLimit}
+                  </td>
+                  <td className="py-3 px-5 border-b text-sm text-gray-500">
+                    {meeting.date}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      {selectedMeeting && (
+        <DetailsModal meeting={selectedMeeting} onClose={handleCloseModal} />
       )}
     </div>
   );
 };
 
-export default Mymeeting;
+export default MyMeetingList;

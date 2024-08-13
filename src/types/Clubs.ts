@@ -168,11 +168,10 @@ export interface UpdateClubDataRequest {
   imageFiles: File[]; // 수정된 부분
 }
 
-
 export interface ClubApplicantDetail {
-  applyId: number;       // 신청서 ID
-  question: string;      // 신청서 질문
-  answer: string;        // 신청서 답변
+  applyId: number; // 신청서 ID
+  question: string; // 신청서 질문
+  answer: string; // 신청서 답변
 }
 
 export interface ClubApplicantApiResponse {
@@ -184,12 +183,12 @@ export interface ClubApplicantApiResponse {
     resultCount: number;
     pageable: null | object;
   };
-  result: ClubApplicantDetail[][];  // 이중 배열
+  result: ClubApplicantDetail[][]; // 이중 배열
 }
 
 export interface ClubApplicant {
-  clubUserId: number;  // 새로 추가된 속성
-  role: string;        // 새로 추가된 속성
+  clubUserId: number; // 새로 추가된 속성
+  role: string; // 새로 추가된 속성
   userName: string;
   profileImgUrl: string;
   mannerTemp: number;

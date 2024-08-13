@@ -1,6 +1,6 @@
 // src/components/ClubManagement.tsx
 
-import { getClubData, updateClubData, deleteClub } from '@/api/clubApi';
+import { deleteClub, getClubData, updateClubData } from '@/api/clubApi';
 import {
   deleteMeetingData,
   endMeeting,
@@ -305,7 +305,9 @@ const ClubManagement: React.FC = () => {
         } else {
           await deleteMeetingData(id!, token); // 모임 삭제 API 호출
         }
-        alert(`${type === 'club' ? '클럽이' : '모임이'} 성공적으로 삭제되었습니다.`);
+        alert(
+          `${type === 'club' ? '클럽이' : '모임이'} 성공적으로 삭제되었습니다.`,
+        );
         setDisbandText('');
         setDisbandError('');
       } catch (error) {
