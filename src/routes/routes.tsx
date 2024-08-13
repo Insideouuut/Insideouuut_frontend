@@ -5,6 +5,7 @@ import Signup from '@/pages/Auth/Signup';
 import UserInfo from '@/pages/Auth/UserInfo';
 import ClubMemberList from '@/pages/ClubPage/member/ClubMemberList';
 import MeetingMemberList from '@/pages/ClubPage/member/MeetingMemberList';
+import UserProfile from '@/pages/ClubPage/member/UserProfile';
 import Main from '@/pages/Main/Main';
 import BoardList from '@/pages/board/BoardList';
 import PostDetail from '@/pages/board/PostDetail';
@@ -87,6 +88,10 @@ const clubRoutes = {
       path: 'chatRooms/:chatRoomId',
       element: <Chat />,
     },
+    {
+      path: 'userProfile/:clubUserId',
+      element: <UserProfile />,
+    },
   ],
 };
 
@@ -126,6 +131,10 @@ const meetingRoutes = {
     {
       path: 'chatRooms/:chatRoomId',
       element: <Chat />,
+    },
+    {
+      path: 'userProfile/:clubUserId',
+      element: <UserProfile />,
     },
   ],
 };

@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { useUserStore } from '@/store/userStore';
 import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
 import React, { useEffect, useRef, useState } from 'react';
@@ -17,9 +18,7 @@ const ClubPage: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem('accessToken'),
-  );
+  const { isLoggedIn, clearUser } = useUserStore();
   const [hasNotifications, setHasNotifications] = useState(false);
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
@@ -70,7 +69,7 @@ const ClubPage: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    clearUser();
     setIsProfileModalOpen(false);
     localStorage.removeItem('accessToken');
   };
@@ -154,7 +153,7 @@ const ClubPage: React.FC = () => {
         toggleProfileModal={toggleProfileModal}
         toggleNotificationModal={toggleNotificationModal}
         isLoggedIn={isLoggedIn}
-        handleLoginLogout={() => setIsLoggedIn(!isLoggedIn)}
+        handleLoginLogout={() => handleLogout}
         profileRef={profileRef}
         hasNotifications={hasNotifications}
       />
