@@ -4,6 +4,8 @@ declare namespace kakao.maps {
   }
 
   class Map {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getCenter: any;
     constructor(container: HTMLElement, options: MapOptions);
   }
 

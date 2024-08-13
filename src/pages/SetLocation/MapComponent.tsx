@@ -1,5 +1,5 @@
 import proj4 from 'proj4';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 interface MapComponentProps {
   onLocationSelect: (location: string, lat: number, lng: number) => void;
@@ -30,6 +30,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
 }) => {
   const [radius, setRadius] = useState(2); // 반경 초기값 설정
   const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
+  const [locationSet, setLocationSet] = useState(false); // 위치가 설정되었는지 추적
+  const [isNeighborhoodsUpdated, setIsNeighborhoodsUpdated] = useState(false); // 이웃 목록이 업데이트되었는지 추적
+  const mapRef = useRef<kakao.maps.Map | null>(null); // 지도를 저장
+  const polygonsRef = useRef<kakao.maps.Polygon[]>([]); // 폴리곤을 저장
 
   const fetchGeoJsonData =
     useCallback(async (): Promise<GeoJsonData | null> => {
@@ -68,13 +72,48 @@ const MapComponent: React.FC<MapComponentProps> = ({
     return distance <= radiusKm;
   };
 
-  const addNeighborhoodPolygonsWithinRadius = useCallback(
-    async (
-      map: kakao.maps.Map,
-      centerLat: number,
-      centerLng: number,
-      radiusKm: number,
-    ) => {
+  const drawNeighborhoodPolygons = useCallback(
+    async (map: kakao.maps.Map, neighborhoodsArray: string[]) => {
+      const data = await fetchGeoJsonData();
+      if (!data) return;
+
+      const utmk =
+        '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs';
+      const wgs84 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
+      const transformer = proj4(utmk, wgs84);
+
+      neighborhoodsArray.forEach((neighborhood) => {
+        data.features.forEach((feature) => {
+          if (feature.properties.EMD_KOR_NM === neighborhood) {
+            const polygonPath: kakao.maps.LatLng[] = [];
+            const coordinates = feature.geometry.coordinates;
+            coordinates.forEach((coordinateArray) => {
+              coordinateArray.forEach((coordinate) => {
+                const [longi, lati] = transformer.forward(
+                  coordinate as [number, number],
+                );
+                polygonPath.push(new kakao.maps.LatLng(lati, longi));
+              });
+            });
+
+            const polygon = new kakao.maps.Polygon({
+              path: polygonPath,
+              strokeColor: '#4B8959',
+              fillColor: '#5DB270',
+              fillOpacity: 0.4,
+            });
+
+            polygon.setMap(map);
+            polygonsRef.current.push(polygon); // 폴리곤 저장
+          }
+        });
+      });
+    },
+    [fetchGeoJsonData],
+  );
+
+  const updateNeighborhoodsWithinRadius = useCallback(
+    async (centerLat: number, centerLng: number, radiusKm: number) => {
       const data = await fetchGeoJsonData();
       if (!data) return;
 
@@ -101,25 +140,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
         });
 
         if (withinRadius) {
-          const polygonPath: kakao.maps.LatLng[] = [];
-          coordinates.forEach((coordinateArray) => {
-            coordinateArray.forEach((coordinate) => {
-              const [longi, lati] = transformer.forward(
-                coordinate as [number, number],
-              );
-              polygonPath.push(new kakao.maps.LatLng(lati, longi));
-            });
-          });
-
-          const polygon = new kakao.maps.Polygon({
-            path: polygonPath,
-            strokeColor: '#4B8959',
-            fillColor: '#5DB270',
-            fillOpacity: 0.7,
-          });
-
-          polygon.setMap(map);
-
           neighborhoodSet.add(feature.properties.EMD_KOR_NM);
         }
       });
@@ -127,6 +147,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       const neighborhoodsArray = Array.from(neighborhoodSet);
       setNeighborhoods(neighborhoodsArray);
       onNeighborhoodsUpdate(neighborhoodsArray);
+      setIsNeighborhoodsUpdated(true); // 이웃 목록 업데이트 완료
     },
     [fetchGeoJsonData, onNeighborhoodsUpdate],
   );
@@ -148,6 +169,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       };
 
       const map = new kakao.maps.Map(container, options);
+      mapRef.current = map; // 지도를 저장
 
       const marker = new kakao.maps.Marker({
         position: locPosition,
@@ -161,22 +183,48 @@ const MapComponent: React.FC<MapComponentProps> = ({
           console.log('Current Location:', fullAddress);
           onLocationSelect(fullAddress, lat, lng);
 
-          // 반경 내의 모든 이웃 폴리곤 그리기
-          await addNeighborhoodPolygonsWithinRadius(map, lat, lng, radius);
+          // 초기에 이웃 목록을 업데이트
+          await updateNeighborhoodsWithinRadius(lat, lng, radius);
+          setLocationSet(true); // 위치 설정 완료
         }
       });
     };
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Got position: ', position);
-        handlePosition(position);
-      },
-      (error) => {
-        console.error('Error getting position: ', error);
-      },
-    );
-  }, [onLocationSelect, radius, addNeighborhoodPolygonsWithinRadius]);
+    if (!locationSet) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('Got position: ', position);
+          handlePosition(position);
+        },
+        (error) => {
+          console.error('Error getting position: ', error);
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onLocationSelect, updateNeighborhoodsWithinRadius, locationSet]);
+
+  // 이웃 목록 업데이트가 완료된 후 폴리곤 그리기
+  useEffect(() => {
+    if (isNeighborhoodsUpdated && mapRef.current) {
+      drawNeighborhoodPolygons(mapRef.current, neighborhoods);
+      setIsNeighborhoodsUpdated(false); // 폴리곤을 그린 후 다시 false로 설정
+    }
+  }, [isNeighborhoodsUpdated, drawNeighborhoodPolygons, neighborhoods]);
+
+  // 반경 변경 시 이웃 목록만 업데이트
+  useEffect(() => {
+    if (locationSet && mapRef.current) {
+      const center = mapRef.current.getCenter();
+      if (center) {
+        updateNeighborhoodsWithinRadius(
+          center.getLat(),
+          center.getLng(),
+          radius,
+        );
+      }
+    }
+  }, [radius, updateNeighborhoodsWithinRadius, locationSet]);
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full max-w-screen-lg mx-auto">
