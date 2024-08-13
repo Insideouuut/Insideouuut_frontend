@@ -10,16 +10,25 @@ import { EllipsisVertical, Thermometer } from 'lucide-react';
 import React from 'react';
 
 interface MemberProps {
+  key: number;
   userName: string;
   profileImgUrl: string;
   mannerTemp: number;
 }
 
 const ClubMember: React.FC<MemberProps> = ({
+  key,
   userName,
   profileImgUrl,
   mannerTemp,
 }) => {
+  const handleProfileViewClick = (id: number) => {
+    console.log(id);
+  };
+  const handleReportClick = (id: number) => {
+    console.log(id);
+  };
+
   return (
     <div className="flex justify-between w-full items-center py-4">
       <div className="flex items-center gap-4">
@@ -39,11 +48,19 @@ const ClubMember: React.FC<MemberProps> = ({
             <EllipsisVertical size={24} />
           </PopoverTrigger>
           <PopoverContent className="flex flex-col items-start w-auto absolute -right-2">
-            <Button variant="link" className="text-slate-900 p-1">
+            <Button
+              onClick={() => handleProfileViewClick(key)}
+              variant="link"
+              className="text-slate-900 p-1"
+            >
               프로필 보기
             </Button>
             <Separator />
-            <Button variant="link" className="text-rose-500 p-1">
+            <Button
+              onClick={() => handleReportClick(key)}
+              variant="link"
+              className="text-rose-500 p-1"
+            >
               신고하기
             </Button>
           </PopoverContent>
