@@ -117,7 +117,7 @@ const MemberApproval: React.FC = () => {
                 <img
                   src={member.profileImage}
                   alt="avatar"
-                  className="w-10 h-10 rounded-full mr-4"
+                  className="w-10 h-10 rounded-full object-cover  mr-4"
                 />
                 <span>{member.nickname}</span>
                 <span className="ml-4 text-sm text-gray-500">

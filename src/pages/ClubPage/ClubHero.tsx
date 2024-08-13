@@ -95,10 +95,22 @@ const ClubHero: React.FC<ClubHeroProps> = ({
               {translateCategory(data.category)}
             </span>
           </div>
-          <h1 className="text-[30px] font-neoExtraBold text-black mb-3">
+
+          <h1
+            className="text-[30px] font-neoExtraBold text-black mb-3"
+            style={{
+              textShadow: '2px 2px 0px #FFF, 0 0 5px #FFF, 0 0 5px #FFF',
+            }}
+          >
             {data.name}
           </h1>
-          <p className="text-[17px] text-black font-neoBold mt-2">
+
+          <p
+            className="text-[17px] text-black font-neoBold mt-2"
+            style={{
+              textShadow: '1px 1px 0px #FFF, 0 0 3px #FFF, 0 0 3px #FFF',
+            }}
+          >
             {data.introduction}
           </p>
           <div className="flex items-center space-x-2 mt-2">
@@ -110,7 +122,7 @@ const ClubHero: React.FC<ClubHeroProps> = ({
         </div>
         <div className="relative flex flex-col items-end w-[30%] mt-12">
           <div className="flex w-28 flex-col gap-y-[2px]">
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
+            <div className="flex bg-white bg-opacity-80 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
               <CalendarDays className="w-[17px]" />
               <span className="w-[80%] text-center text-[11px]">
                 {isMeeting(data)
@@ -122,23 +134,26 @@ const ClubHero: React.FC<ClubHeroProps> = ({
                   : data.date}
               </span>
             </div>
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
+            <div className="flex bg-white bg-opacity-80 justify-between px-2 py-[2px] text-[12px] font-neoBold rounded-md items-center">
               <MapPin className="w-[17px]" />
               <span className="w-[80%] text-center">
                 {isMeeting(data) ? data.place.name : data.activityRegion}
               </span>
             </div>
-            <div className="flex bg-black bg-opacity-10 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
+            <div className="flex bg-white bg-opacity-80 justify-between px-2 py-[2px] text-sm font-neoBold rounded-md items-center">
               <Users className="w-[17px]" />
               <span className="w-[80%] text-center">{`${isMeeting(data) ? data.participantsNumber : data.participantNumber} / ${data.participantLimit}`}</span>
             </div>
           </div>
           {userAuthority === '호스트' || userAuthority === '멤버' ? (
-            <div className="flex w-[195px] h-[90px] rounded-lg bg-black bg-opacity-10 items-center mt-4">
+            <div className="flex w-[195px] h-[90px] rounded-lg bg-white bg-opacity-80 items-center mt-4">
               <img
-                src={userProfile?.profileImage || ''}
+                src={
+                  userProfile?.profileImage ||
+                  'https://w7.pngwing.com/pngs/665/132/png-transparent-user-defult-avatar.png'
+                }
                 alt="Profile"
-                className="w-10 h-10 rounded-full ml-4"
+                className="w-10 h-10 object-cover rounded-full ml-4"
               />
               <div className="w-full">
                 <div className="flex justify-center w-full">
