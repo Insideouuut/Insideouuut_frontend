@@ -81,7 +81,7 @@ const ClubPage: React.FC = () => {
 
     if (menu === 'chatRooms' && chatRoomId) {
       navigate(`${basePath}/chatRooms/${chatRoomId}`);
-    } else {
+    } else if (menu !== 'chatRooms') {
       navigate(menu === 'home' ? basePath : `${basePath}/${menu}`);
     }
   };
@@ -124,7 +124,13 @@ const ClubPage: React.FC = () => {
             }
           } else if (type === 'meeting') {
             fetchedData = await getMeetingData(id);
+            console.log('모임데이터: ', fetchedData);
             setData(fetchedData ?? null);
+
+            // chatRoomId가 존재한다면 설정
+            if (fetchedData?.chatRoomId) {
+              setChatRoomId(fetchedData.chatRoomId.toString());
+            }
 
             const authorityResponse = await checkMeetingUserAuthority(
               id,

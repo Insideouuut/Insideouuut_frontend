@@ -46,7 +46,6 @@ export interface UserInfoFormInput {
   birth: string;
   gender: 'MALE' | 'FEMALE';
   interests: string[];
-  location: string;
 }
 
 export interface UserInfoRequest {
@@ -55,5 +54,4 @@ export interface UserInfoRequest {
   birthDate: string;
   gender: 'MALE' | 'FEMALE';
   category: string[];
-  location: string;
 }

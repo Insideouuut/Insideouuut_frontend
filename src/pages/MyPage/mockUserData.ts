@@ -8,7 +8,8 @@ export const emptyUserData = {
   isVerified: false, // 추가
   confirmPassword: '',
   phoneNumber: '',
-  mbti: '',
   interests: [],
   clubIds: [],
+  birth: '',
+  gender: '',
 };

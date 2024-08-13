@@ -9,6 +9,7 @@ const Reissue = () => {
     const reissue = async () => {
       try {
         const response = await reissueToken();
+
         const statusCode = response.data.status.code;
         const statusMessage = response.data.status.message;
         const token = response.headers['authorization'];
@@ -17,9 +18,11 @@ const Reissue = () => {
           localStorage.setItem('accessToken', token);
           navigate('/isFirstLoginWithKakao');
         } else {
+          navigate('/login');
           alert(statusMessage);
         }
       } catch (error) {
+        navigate('/login');
         console.error('reissueToken:', error);
         alert('Failed to reissue token: ' + error);
       }

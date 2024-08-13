@@ -10,9 +10,10 @@ interface UserState {
   password: string;
   confirmPassword: string;
   phoneNumber: string;
+  birth: string;
+  gender: string;
   locations: string[]; // 추가
   isVerified: boolean; // 추가
-  mbti: string;
   interests: string[];
   isLoggedIn: boolean;
   setUser: (user: Partial<UserState>) => void;
