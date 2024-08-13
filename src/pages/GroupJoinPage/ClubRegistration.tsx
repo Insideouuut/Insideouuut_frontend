@@ -1,13 +1,14 @@
-import { applyForClub } from '@/api/clubApi'; // 새로 추가한 동아리 가입 API 호출 함수
+import { applyForClub } from '@/api/clubApi';
 import { applyForMeeting } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
 import { ClubData } from '@/types/Clubs';
 import { Result } from '@/types/Meetings';
+import { AxiosError } from 'axios'; // AxiosError 타입을 가져옵니다.
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Link import 추가
+import { useNavigate } from 'react-router-dom';
 
 interface ClubRegistrationProps {
-  clubData: Result | ClubData; // type을 받아서 동아리 또는 모임으로 구분
+  clubData: Result | ClubData;
   type: 'club' | 'meeting';
 }
 
@@ -15,7 +16,7 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
   clubData,
   type,
 }) => {
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
   const [isAgreed, setIsAgreed] = useState(false);
   const [isInfoAgreed, setIsInfoAgreed] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>(
@@ -32,7 +33,6 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
   );
 
   useEffect(() => {
-    // 클럽 데이터와 타입 콘솔에 출력
     console.log('Club Data:', clubData);
     console.log('Type:', type);
   }, [clubData, type]);
@@ -71,11 +71,14 @@ const ClubRegistration: React.FC<ClubRegistrationProps> = ({
         await applyForClub(clubData.id.toString(), token, answers);
         alert('동아리 가입 신청이 성공적으로 이루어졌습니다.');
       }
-
-      // 여기서 navigate를 사용하여 search 페이지로 이동
       navigate('/search');
     } catch (error) {
-      alert('가입 신청에 실패했습니다.');
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 403) {
+        alert('가입 연령에 맞지 않습니다.');
+      } else {
+        alert('가입 신청에 실패했습니다.');
+      }
     }
   };
 

@@ -1,8 +1,11 @@
-import { getClubApplicants } from '@/api/clubApi';
+import {
+  acceptClubApplication,
+  getClubApplicants,
+  rejectClubApplication,
+} from '@/api/clubApi';
 import {
   acceptMeetingApplication,
   getMeetingApplicants,
-  getMeetingApplicationDetails, // 새로 추가된 함수
   rejectMeetingApplication,
 } from '@/api/meetingApi';
 import { Button } from '@/components/ui/button';
@@ -12,7 +15,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { ApplyForMeetingResponse } from '@/types/Meetings';
+import { MeetingApplicant } from '@/types/MeetingApplicantsTypes';
 import { Dialog } from '@headlessui/react';
 import { EllipsisVertical, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -31,9 +34,9 @@ const MemberApproval: React.FC = () => {
   const location = useLocation();
   const type = location.pathname.includes('/club') ? 'club' : 'meeting';
   const [members, setMembers] = useState<Member[]>([]);
-  const [selectedApplication, setSelectedApplication] = useState<
-    ApplyForMeetingResponse[] | null
-  >(null);
+  const [selectedApplication, setSelectedApplication] = useState<Member | null>(
+    null,
+  );
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   useEffect(() => {
@@ -53,13 +56,15 @@ const MemberApproval: React.FC = () => {
           setMembers(formattedMembers);
         } else if (type === 'meeting') {
           const applicants = await getMeetingApplicants(clubId!, token);
-          const formattedMembers = applicants.map((applicant) => ({
-            applyId: applicant.applyId,
-            profileImage: applicant.basicUserResponse.profileImage.url,
-            nickname: applicant.basicUserResponse.nickname,
-            mannerTemp: applicant.basicUserResponse.mannerTemp,
-            answer: applicant.answer,
-          }));
+          const formattedMembers = applicants.map(
+            (applicant: MeetingApplicant) => ({
+              applyId: applicant.applyId,
+              profileImage: applicant.basicUserResponse.profileImage.url,
+              nickname: applicant.basicUserResponse.nickname,
+              mannerTemp: applicant.basicUserResponse.mannerTemp,
+              answer: applicant.answer,
+            }),
+          );
           setMembers(formattedMembers);
         }
       } catch (error) {
@@ -70,18 +75,9 @@ const MemberApproval: React.FC = () => {
     fetchMembers();
   }, [clubId, type]);
 
-  const openApplicationModal = async (member: Member) => {
-    const token = localStorage.getItem('accessToken') || '';
-    try {
-      const applicationDetails = await getMeetingApplicationDetails(
-        String(member.applyId),
-        token,
-      );
-      setSelectedApplication(applicationDetails);
-      setIsApplicationModalOpen(true);
-    } catch (error) {
-      console.error('Error fetching application details:', error);
-    }
+  const openApplicationModal = (member: Member) => {
+    setSelectedApplication(member);
+    setIsApplicationModalOpen(true);
   };
 
   const closeApplicationModal = () => {
@@ -92,10 +88,18 @@ const MemberApproval: React.FC = () => {
   const handleAction = async (action: '승인' | '거절', applyId: number) => {
     const token = localStorage.getItem('accessToken') || '';
     try {
-      if (action === '승인') {
-        await acceptMeetingApplication(String(applyId), token);
-      } else {
-        await rejectMeetingApplication(String(applyId), token);
+      if (type === 'club') {
+        if (action === '승인') {
+          await acceptClubApplication(clubId!, String(applyId), token);
+        } else {
+          await rejectClubApplication(clubId!, String(applyId), token);
+        }
+      } else if (type === 'meeting') {
+        if (action === '승인') {
+          await acceptMeetingApplication(String(applyId), token);
+        } else {
+          await rejectMeetingApplication(String(applyId), token);
+        }
       }
       setMembers((prevMembers) =>
         prevMembers.filter((member) => member.applyId !== applyId),
@@ -176,12 +180,15 @@ const MemberApproval: React.FC = () => {
             <Dialog.Description>
               {selectedApplication && (
                 <div>
-                  {selectedApplication.map((application, index) => (
-                    <div key={index} className="mb-4">
-                      <p className="font-bold">질문: {application.question}</p>
-                      <p>답변: {application.answer}</p>
-                    </div>
-                  ))}
+                  <img
+                    src={selectedApplication.profileImage}
+                    alt="avatar"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <span>{selectedApplication.nickname}</span>
+                  <p className="mt-4">
+                    {selectedApplication.answer || '신청서 내용이 없습니다.'}
+                  </p>
                 </div>
               )}
             </Dialog.Description>
@@ -189,7 +196,7 @@ const MemberApproval: React.FC = () => {
               <Button
                 className="bg-primary text-white px-4 py-2 rounded hover:bg-green-700"
                 onClick={() =>
-                  handleAction('승인', selectedApplication![0].applyId)
+                  handleAction('승인', selectedApplication!.applyId)
                 }
               >
                 승인
@@ -197,7 +204,7 @@ const MemberApproval: React.FC = () => {
               <Button
                 className="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600"
                 onClick={() =>
-                  handleAction('거절', selectedApplication![0].applyId)
+                  handleAction('거절', selectedApplication!.applyId)
                 }
               >
                 거절

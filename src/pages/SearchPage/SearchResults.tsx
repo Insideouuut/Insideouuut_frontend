@@ -49,11 +49,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           token,
         );
 
-        const filteredResults = results.filter(
-          (item) =>
-            item.name.includes(searchQuery) ||
-            item.introduction.includes(searchQuery),
-        );
+        // null 값을 제외한 데이터만 필터링
+        const filteredResults = results
+          .filter((item) => item !== null)
+          .filter(
+            (item) =>
+              item.name.includes(searchQuery) ||
+              item.introduction.includes(searchQuery),
+          );
 
         setFilteredData(filteredResults || []);
       } catch (err) {
@@ -74,6 +77,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  // null을 제외한 데이터를 기준으로 현재 페이지의 항목을 설정
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);

@@ -5,15 +5,15 @@ import notification_default from '@/assets/icons/notification_default.svg';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/store/userStore';
 import { Menu, X } from 'lucide-react';
-import React, { RefObject, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   toggleProfileModal: (e: React.MouseEvent) => void;
   toggleNotificationModal: (e: React.MouseEvent) => void;
   isLoggedIn: boolean;
   handleLoginLogout: () => void;
-  profileRef: RefObject<HTMLImageElement> | null;
+  profileRef: React.RefObject<HTMLImageElement> | null;
   hasNotifications: boolean;
 }
 
@@ -26,9 +26,17 @@ const Header: React.FC<HeaderProps> = ({
   hasNotifications,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const { profileImage } = useUserStore((state) => ({
@@ -41,15 +49,9 @@ const Header: React.FC<HeaderProps> = ({
     <nav className="bg-white px-4 py-3.5 relative">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-10">
-          {isLoggedIn ? (
-            <Link to="/main">
-              <img src={logo} alt="Logo" className="h-8 w-32" />
-            </Link>
-          ) : (
-            <Link to="/">
-              <img src={logo} alt="Logo" className="h-8 w-32" />
-            </Link>
-          )}
+          <Link to={isLoggedIn ? '/main' : '/'}>
+            <img src={logo} alt="Logo" className="h-8 w-32" />
+          </Link>
         </div>
         <div className="hidden lg:flex items-center space-x-4 relative">
           {isLoggedIn ? (
@@ -88,10 +90,16 @@ const Header: React.FC<HeaderProps> = ({
               <div className="flex items-center space-x-4">
                 <input
                   type="text"
-                  placeholder="모임,동아리를 검색해보세요"
-                  className="text-xs border rounded px-5 py-2 "
+                  placeholder="모임, 동아리를 검색해보세요"
+                  className="text-xs border rounded px-5 py-2"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
-                <Button className="hover:text-neutral-100 hover:bg-green-700">
+                <Button
+                  onClick={handleSearch}
+                  className="hover:text-neutral-100 hover:bg-green-700"
+                >
                   검색
                 </Button>
                 <button

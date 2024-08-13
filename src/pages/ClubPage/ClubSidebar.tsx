@@ -1,3 +1,4 @@
+import { removeClubMember } from '@/api/clubApi'; // 동아리 나가기 API 가져오기
 import {
   ChevronDown,
   ChevronUp,
@@ -35,6 +36,10 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
   const [isBoardOpen, setIsBoardOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [leaveConfirmation, setLeaveConfirmation] = useState('');
+  const [leaveError, setLeaveError] = useState('');
+
   const navigate = useNavigate();
 
   const basePath = type === 'club' ? `/club/${id}` : `/meeting/${id}`;
@@ -77,6 +82,23 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
 
   const getMenuClass = (menu: string) => {
     return selectedMenu === menu ? 'text-green-600' : 'hover:bg-gray-100';
+  };
+
+  const handleLeaveClub = async () => {
+    if (leaveConfirmation !== '나가기') {
+      setLeaveError('Please type "나가기" to confirm.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('accessToken') || '';
+      await removeClubMember(id.toString(), id.toString(), token); // 동아리 나가기 API 호출
+      alert('동아리에서 성공적으로 나갔습니다.');
+      navigate('/main'); // 동아리를 나간 후 메인 페이지로 이동
+    } catch (error) {
+      console.error('Error leaving the club:', error);
+      alert('동아리에서 나가는데 실패했습니다.');
+    }
   };
 
   return (
@@ -247,22 +269,20 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
                 >
                   모임 관리
                 </div>
+                {userAuthority === '멤버' && (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setIsLeaveModalOpen(true)}
+                    onKeyDown={(event) => handleKeyDown(event, 'leaveClub')}
+                    className={`cursor-pointer hover:bg-gray-100 p-2 text-sm rounded-lg ${getMenuClass('leaveClub')}`}
+                  >
+                    동아리 나가기
+                  </div>
+                )}
               </div>
             </div>
           )}
-
-        {userAuthority === '멤버' && type === 'meeting' && (
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => handleMenuClick('leaveMeeting')}
-            onKeyDown={(event) => handleKeyDown(event, 'leaveMeeting')}
-            className={`flex items-center space-x-2 cursor-pointer p-2 rounded-lg ${getMenuClass('leaveMeeting')}`}
-          >
-            <House className="w-5 h-5" />
-            <span className="text-sm">모임 나가기</span>
-          </div>
-        )}
 
         {userAuthority === '호스트' && (
           <div className="space-y-1">
@@ -317,6 +337,44 @@ const ClubSidebar: React.FC<ClubSidebarProps> = ({
           </div>
         )}
       </nav>
+
+      {isLeaveModalOpen && (
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-lg font-bold mb-4">동아리 나가기</h2>
+            <p className="mb-4">정말로 동아리에서 나가시겠습니까?</p>
+            <p className="mb-4">
+              &quot;나가기&quot;를 입력하여 확인하세요:
+              <input
+                type="text"
+                value={leaveConfirmation}
+                onChange={(e) => {
+                  setLeaveConfirmation(e.target.value);
+                  setLeaveError('');
+                }}
+                className="block w-full mt-2 p-2 border rounded"
+              />
+              {leaveError && (
+                <p className="text-red-500 text-sm mt-2">{leaveError}</p>
+              )}
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="bg-gray-300 text-gray-800 p-2 rounded hover:bg-gray-400"
+                onClick={() => setIsLeaveModalOpen(false)}
+              >
+                취소
+              </button>
+              <button
+                className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                onClick={handleLeaveClub}
+              >
+                나가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

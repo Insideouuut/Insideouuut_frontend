@@ -4,7 +4,9 @@ import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
 import { useUserStore } from '@/store/userStore';
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Search from './searchHero';
+
 const SearchPage: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
@@ -19,11 +21,22 @@ const SearchPage: React.FC = () => {
     left: number;
   }>({ top: 0, left: 0 });
   const [token, setToken] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const location = useLocation();
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken') || '';
     setToken(accessToken);
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('query');
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [location.search]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -45,7 +58,6 @@ const SearchPage: React.FC = () => {
     clearUser();
     setIsProfileModalOpen(false);
     localStorage.removeItem('accessToken');
-    // localStorage.removeItem('neighborhoods'); 이웃 토큰 추후 상의
   };
 
   return (
@@ -58,7 +70,8 @@ const SearchPage: React.FC = () => {
         hasNotifications={hasNotifications}
         profileRef={null}
       />
-      <Search token={token} />
+      <Search token={token} initialQuery={searchQuery} />{' '}
+      {/* initialQuery 추가 */}
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
