@@ -22,6 +22,8 @@ const SearchPage: React.FC = () => {
   }>({ top: 0, left: 0 });
   const [token, setToken] = useState('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [topTab, setTopTab] = useState<string>('전체');
+  const [bottomTab, setBottomTab] = useState<string>('전체');
 
   const location = useLocation();
 
@@ -33,9 +35,12 @@ const SearchPage: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('query');
-    if (query) {
-      setSearchQuery(query);
-    }
+    const topTabParam = params.get('topTab');
+    const bottomTabParam = params.get('bottomTab');
+
+    if (query) setSearchQuery(query);
+    if (topTabParam) setTopTab(topTabParam);
+    if (bottomTabParam) setBottomTab(bottomTabParam);
   }, [location.search]);
 
   const toggleProfileModal = (e?: React.MouseEvent) => {
@@ -70,8 +75,12 @@ const SearchPage: React.FC = () => {
         hasNotifications={hasNotifications}
         profileRef={null}
       />
-      <Search token={token} initialQuery={searchQuery} />{' '}
-      {/* initialQuery 추가 */}
+      <Search
+        token={token}
+        initialQuery={searchQuery}
+        initialTopTab={topTab}
+        initialBottomTab={bottomTab}
+      />
       <Footer />
       {isProfileModalOpen && (
         <ProfileModal
