@@ -182,8 +182,8 @@ const ChatRoom: React.FC = () => {
       />
       <HeroSection
         backgroundColor="bg-primary"
-        title="우리 동네를 설정해요"
-        subtitle="내 위치를 기반으로 영역을 설정해서 원하는 모임/동아리를 찾아봐요"
+        title="채팅방"
+        subtitle="내가 참여중인 모임, 동아리의 유저들과 대화를 나눠봐요"
         animationData={animationData}
       />
       <main className="relative mt-4 min-h-screen flex flex-col items-center">
