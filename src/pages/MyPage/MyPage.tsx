@@ -4,12 +4,12 @@ import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import NotificationModal from '@/components/ui/notificationModal';
 import ProfileModal from '@/components/ui/profileModal';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUserStore } from '@/store/userStore';
 import React, { useEffect, useRef, useState } from 'react';
 import MyModong from './MyModong';
 import UpdateUser from './UpdateUser';
-
 const MyPage: React.FC = () => {
   const { isLoggedIn, nickname, clearUser } = useUserStore();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -126,8 +126,9 @@ const MyPage: React.FC = () => {
           <p className="font-neoLight text-xs">회원 이미지는 원형으로 출력</p>
           <p className="font-medium text-xs mt-4">
             나의 매너 온도:
-            {mannerRating !== null ? ` ${mannerRating}` : '정보 없음'}
+            {mannerRating !== null ? ` ${mannerRating}°C` : '정보 없음'}
           </p>
+          <Progress value={mannerRating} className="mt-2 mb-10 w-[50%]" />
           <div className="shadow-md border w-full border-gray-200 rounded-lg m-12 p-24 max-w-full  md:w-[800px]">
             <Tabs defaultValue="account" className="w-full">
               <div className="w-full flex items-center justify-center mb-10">
