@@ -47,7 +47,6 @@ const MeetingMember: React.FC<MemberProps> = ({
     try {
       await apiInstance.api.reportUser(meetingUserId, { reason });
       console.log(`Reported user: ${meetingUserId} with reason: ${reason}`);
-      window.location.reload();
     } catch (error) {
       console.error('Failed to report user:', error);
     } finally {
@@ -59,7 +58,6 @@ const MeetingMember: React.FC<MemberProps> = ({
     try {
       await apiInstance.api.likeUser(meetingUserId);
       console.log(`Liked user: ${meetingUserId}`);
-      window.location.reload();
     } catch (error) {
       console.error('Failed to like user:', error);
     } finally {
