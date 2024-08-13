@@ -10,4 +10,6 @@ export const emptyUserData = {
   phoneNumber: '',
   interests: [],
   clubIds: [],
+  birth: '',
+  gender: '',
 };

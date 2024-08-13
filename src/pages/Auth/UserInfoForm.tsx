@@ -27,7 +27,6 @@ const defaultData: UserInfoFormInput = {
   birth: '',
   gender: 'MALE',
   interests: [],
-  location: '',
 };
 
 const userInfoSchema = z.object({
@@ -44,7 +43,6 @@ const userInfoSchema = z.object({
   interests: z
     .array(z.string())
     .min(1, '관심사를 최소 하나 이상 선택해주세요.'),
-  location: z.string().min(1, '내 지역을 입력해주세요.'),
 });
 
 const UserInfoForm = () => {
@@ -71,7 +69,6 @@ const UserInfoForm = () => {
       birthDate: data.birth,
       gender: data.gender,
       category: data.interests,
-      location: data.location,
     };
     const token = localStorage.getItem('accessToken');
 
@@ -79,7 +76,13 @@ const UserInfoForm = () => {
       const response = await enterUserInfo(userInfoData, token);
       if (response.status.code === 200) {
         alert('사용자 정보 입력에 성공했습니다.');
-        setUser(userInfoData);
+        setUser({
+          nickname: userInfoData.nickName,
+          phoneNumber: userInfoData.phoneNumber,
+          birth: userInfoData.birthDate,
+          gender: userInfoData.gender,
+          interests: userInfoData.category,
+        });
         navigate('/main');
       } else {
         alert(response.status.message);
@@ -108,7 +111,6 @@ const UserInfoForm = () => {
     try {
       const response = await checkNickname(nickname);
       const statusCode = response.data.status.code;
-      console.log('nickname response:', response);
 
       if (statusCode === 200) {
         alert('사용가능한 닉네임입니다.');
@@ -288,27 +290,6 @@ const UserInfoForm = () => {
               {errors.interests && (
                 <span className="text-red-500 text-sm">
                   {errors.interests.message}
-                </span>
-              )}
-            </div>
-
-            <div className="grid gap-2 justify-items-start">
-              <Label htmlFor="location">내 지역</Label>
-              <Controller
-                name="location"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="location"
-                    type="text"
-                    placeholder="내 지역"
-                    {...field}
-                  />
-                )}
-              />
-              {errors.location && (
-                <span className="text-red-500 text-sm">
-                  {errors.location.message}
                 </span>
               )}
             </div>
