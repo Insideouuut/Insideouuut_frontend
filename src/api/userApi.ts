@@ -42,3 +42,15 @@ export const updateUserProfileImage = async (file: File) => {
     throw error;
   }
 };
+
+// 특정 유저 프로필 조회 API
+export const getUserProfile = async (userId: number) => {
+  const response = axiosInstance.get(`/api/users/${userId}`);
+  return response;
+};
+
+// 유저 신고 API
+export const reportUser = async (userId: number) => {
+  const response = axiosInstance.get(`/api/users/report/${userId}`);
+  return response;
+};
