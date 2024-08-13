@@ -7,8 +7,8 @@ import { MoveRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomImg from './BottomBG.png';
+import MiddleImg from './middle.png';
 import NewCard from './NewCard';
-
 const MiddleSection: React.FC = () => {
   const [data, setData] = useState<Result[]>([]);
   const [clubs, setClubs] = useState<Result[]>([]);
@@ -110,14 +110,25 @@ const MiddleSection: React.FC = () => {
             'polygon(80px 0, 100% 0, 100% calc(100% - 80px), calc(100% - 80px) 100%, 0 100%, 0 80px)',
         }}
       >
-        <div className="font-neoBold text-2xl md:text-3xl lg:text-4xl space-y-2 text-white">
-          <p>지금 참여하고</p>
-          <p>자기계발의</p>
-          <p>기회를 누리세요!</p>
+        <div className="flex">
+          <div>
+            <div className="font-neoBold text-2xl md:text-3xl lg:text-4xl space-y-2 text-white">
+              <p>지금 참여하고</p>
+              <p>자기계발의</p>
+              <p>기회를 누리세요!</p>
+            </div>
+            <Link to="/mypage">
+              <Button className="mt-16 bg-slate-100 hover:bg-slate-200 text-black font-neo">
+                참여중인 모임/동아리 목록 가기
+              </Button>
+            </Link>
+          </div>
+          <img
+            src={MiddleImg}
+            alt="MiddleImg"
+            className="ml-10 w-[550px] object-cover"
+          />
         </div>
-        <Button className="mt-16 bg-slate-100 hover:bg-slate-200 text-black font-neo">
-          참여중인 모임/동아리 목록 가기
-        </Button>
       </section>
 
       <p className="text-grey-900 text-3xl py-10">관심 카테고리의 모동</p>
@@ -149,7 +160,7 @@ const MiddleSection: React.FC = () => {
           </p>
           <div className="font-neoExtraBold text-sm hidden md:flex lg:flex space-x-4 text-primary items-center">
             <Link
-              to="/"
+              to="/search"
               className="z-30 hover:text-green-500 hover:underline  flex items-center"
             >
               <span>모두 보러 가기</span>
